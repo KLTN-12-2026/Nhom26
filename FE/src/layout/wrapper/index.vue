@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper">
         <div class="header-wrapper">
-            <TopClient></TopClient>
+            <HeaderClient></HeaderClient>
             <MenuClient></MenuClient>
         </div>
         <div class="page-wrapper">
@@ -11,13 +11,13 @@
         </div>
         <div class="overlay toggle-icon"></div>
         <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
-        <BotClient></BotClient>
+        <FooterClient></FooterClient>
     </div>
 </template>
 <script>
-import TopClient from "../components/TopClient.vue";
+import HeaderClient from "../components/HeaderClient.vue";
 import MenuClient from "../components/MenuClient.vue";
-import BotClient from "../components/BotClient.vue";
+import FooterClient from "../components/FooterClient.vue";
 
 import "../../assets/js/bootstrap.bundle.min.js";
 import "../../assets/js/jquery.min.js";
@@ -27,11 +27,13 @@ import "../../assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js";
 import "../../assets/js/pace.min.js";
 import "../../assets/js/index.js";
 import "../../assets/js/app.js";
+
 export default {
+    name: 'DefaultWrapper',
     components: {
-        TopClient,
-        BotClient,
-        MenuClient
+        HeaderClient,
+        MenuClient,
+        FooterClient
     }
 }
 </script>
