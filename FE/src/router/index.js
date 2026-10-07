@@ -44,6 +44,46 @@ const routes = [
         component: () => import('../components/client/profile/index.vue'),
         meta: { layout: 'client' }
     },
+    {
+        path: '/client/tai-khoan',
+        component: () => import('../components/client/profile/index.vue'),
+        meta: { layout: 'client' }
+    },
+    {
+        path: '/client/lap-ke-hoach-ai',
+        component: () => import('../components/client/lap-ke-hoach-ai/index.vue'),
+        meta: { layout: 'client' }
+    },
+    {
+        path: '/client/ke-hoach',
+        component: () => import('../components/client/ke-hoach/index.vue'),
+        meta: { layout: 'client' }
+    },
+    {
+        path: '/client/nhom-du-lich',
+        component: () => import('../components/client/nhom-du-lich/index.vue'),
+        meta: { layout: 'client' }
+    },
+    {
+        path: '/client/hoat-dong',
+        component: () => import('../components/client/hoat-dong/index.vue'),
+        meta: { layout: 'client' }
+    },
+    {
+        path: '/client/danh-gia',
+        component: () => import('../components/client/danh-gia/index.vue'),
+        meta: { layout: 'client' }
+    },
+    {
+        path: '/client/bao-cao-loi',
+        component: () => import('../components/client/bao-cao-loi/index.vue'),
+        meta: { layout: 'client' }
+    },
+    {
+        path: '/client/chi-tiet-dia-diem',
+        component: () => import('../components/client/chi-tiet-dia-diem/index.vue'),
+        meta: { layout: 'client' }
+    },
 
     // =========================================================
     // 2. TÁC NHÂN: DOITAC (ĐỐI TÁC) — Layout 'doitac'

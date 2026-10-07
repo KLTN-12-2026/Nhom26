@@ -1,80 +1,95 @@
 <template>
-    <div class="row">
-        <div class="col-12">
-            <div class="card border-top border-0 border-4 border-danger">
-                <div class="card-body p-4">
-                    <div class="card-title d-flex align-items-center justify-content-between">
-                        <div>
-                            <i class="bx bx-shield-quarter me-1 font-22 text-danger"></i>
-                            <span class="h5 mb-0 text-danger fw-bold">Phân Quyền Chức Năng Admin</span>
-                        </div>
-                        <button class="btn btn-danger btn-sm px-3" @click="luuPhanQuyen">
-                            <i class="bx bx-save"></i> Lưu Thay Đổi Phân Quyền
-                        </button>
-                    </div>
-                    <hr>
+    <div class="admin-page-container">
+        <!-- 1. Breadcrumb & Database Sync Pill -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
+            <nav class="breadcrumb-admin d-flex align-items-center small text-muted">
+                <router-link to="/admin/dashboard" class="text-secondary text-decoration-none">Trang chủ</router-link>
+                <i class="bx bx-chevron-right mx-1"></i>
+                <span class="text-secondary">Phân hệ Quản trị</span>
+                <i class="bx bx-chevron-right mx-1"></i>
+                <span class="text-primary fw-bold">Phân quyền Admin</span>
+            </nav>
+            <div class="sync-pill d-flex align-items-center gap-1">
+                <span class="dot-green"></span>
+                <span class="font-11 text-success fw-semibold">Cơ sở dữ liệu: Hoạt động đồng bộ</span>
+            </div>
+        </div>
 
-                    <!-- Chọn chức vụ -->
-                    <div class="row g-3 mb-4 align-items-center">
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Chọn Chức Vụ Phân Quyền:</label>
-                            <select class="form-select" v-model="selectedRole">
-                                <option value="1">Super Admin</option>
-                                <option value="2">Quản Lý Nội Dung & Tour</option>
-                                <option value="3">Kế Toán & Đối Soát</option>
-                                <option value="4">Chăm Sóc Khách Hàng</option>
-                            </select>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="alert alert-info border-0 bg-light-info alert-dismissible fade show py-2 mb-0 mt-3 mt-md-0">
-                                <div class="d-flex align-items-center">
-                                    <div class="font-20 text-info"><i class='bx bx-info-circle'></i></div>
-                                    <div class="ms-3">
-                                        <div class="text-info">Tích chọn các quyền hạn tương ứng được phép thực thi trong hệ thống cho chức vụ đã chọn.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Ma trận phân quyền -->
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="30%">Nhóm Chức Năng</th>
-                                    <th class="text-center" width="15%">Xem (Read)</th>
-                                    <th class="text-center" width="15%">Thêm (Create)</th>
-                                    <th class="text-center" width="15%">Sửa (Update)</th>
-                                    <th class="text-center" width="15%">Xóa (Delete)</th>
-                                    <th class="text-center" width="10%">Tất cả</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="group in permissions" :key="group.id">
-                                    <td class="fw-bold">
-                                        <i :class="group.icon + ' me-2 text-danger'"></i> {{ group.name }}
-                                    </td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" v-model="group.read">
-                                    </td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" v-model="group.create">
-                                    </td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" v-model="group.update">
-                                    </td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" v-model="group.delete">
-                                    </td>
-                                    <td class="text-center">
-                                        <button class="btn btn-outline-secondary btn-sm py-0 px-2" @click="toggleAll(group)">Chọn hết</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+        <!-- 2. Page Header Title & Action Button -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <h3 class="fw-bold text-dark mb-0">Phân Quyền Vai Trò (RBAC Matrix)</h3>
+                    <span class="badge bg-light text-secondary border font-11">Table: phan_quyens</span>
                 </div>
+                <p class="text-muted small mb-0 mt-1">
+                    Cấu hình ma trận phân quyền chi tiết cho từng chức vụ trên các module chức năng.
+                </p>
+            </div>
+            <div>
+                <button class="btn btn-primary rounded-3 px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1" @click="luuPhanQuyen">
+                    <i class="bx bx-save font-18"></i> Lưu Ma Trận Phân Quyền
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. Role Selector Filter -->
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label fw-bold mb-0 text-dark font-13">Chọn Chức Vụ Thiết Lập:</label>
+                    <select class="form-select form-select-sm" style="width: 260px;" v-model="selectedRole">
+                        <option value="1">Super Admin (Quản Trị Tối Cao)</option>
+                        <option value="2">Content Manager (Quản Lý Nội Dung)</option>
+                        <option value="3">Kế Toán & Đối Soát (Accountant)</option>
+                        <option value="4">Chăm Sóc Khách Hàng (Support Lead)</option>
+                    </select>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm rounded-3" @click="chonTatCa(true)">Chọn Tất Cả</button>
+                    <button class="btn btn-outline-secondary btn-sm rounded-3" @click="chonTatCa(false)">Bỏ Chọn</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Matrix Permissions Table -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small text-uppercase">
+                        <tr>
+                            <th width="30%">MODULE CHỨC NĂNG</th>
+                            <th width="14%" class="text-center">XEM (VIEW)</th>
+                            <th width="14%" class="text-center">THÊM (CREATE)</th>
+                            <th width="14%" class="text-center">SỬA (EDIT)</th>
+                            <th width="14%" class="text-center">XÓA (DELETE)</th>
+                            <th width="14%" class="text-center">DUYỆT (APPROVE)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="mod in permissionMatrix" :key="mod.id">
+                            <td>
+                                <strong class="text-dark d-block font-13">{{ mod.name }}</strong>
+                                <small class="text-muted font-monospace font-11">Module: {{ mod.code }}</small>
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input" v-model="mod.canView">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input" v-model="mod.canCreate">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input" v-model="mod.canEdit">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input" v-model="mod.canDelete">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input" v-model="mod.canApprove">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -85,30 +100,46 @@ export default {
     name: 'AdminPhanQuyen',
     data() {
         return {
-            selectedRole: '2',
-            permissions: [
-                { id: 1, name: 'Quản lý Người Dùng & Admin', icon: 'bx bx-user', read: true, create: false, update: false, delete: false },
-                { id: 2, name: 'Quản lý Đối Tác & Hợp Đồng', icon: 'bx bx-briefcase', read: true, create: true, update: true, delete: false },
-                { id: 3, name: 'Kiểm Duyệt Địa Điểm Du Lịch', icon: 'bx bx-map-pin', read: true, create: true, update: true, delete: true },
-                { id: 4, name: 'Quản Lý Tour & Lịch Khởi Hành', icon: 'bx bx-compass', read: true, create: true, update: true, delete: false },
-                { id: 5, name: 'Quản Lý Đánh Giá Khách Hàng', icon: 'bx bx-star', read: true, create: false, update: true, delete: true },
-                { id: 6, name: 'Quản Lý Tài Chính & Đối Soát', icon: 'bx bx-dollar-circle', read: false, create: false, update: false, delete: false },
-                { id: 7, name: 'Voucher & Mã Giảm Giá Admin', icon: 'bx bx-purchase-tag', read: true, create: true, update: true, delete: false },
-                { id: 8, name: 'Quản Lý Báo Cáo Lỗi & Phản Hồi', icon: 'bx bx-bug', read: true, create: false, update: true, delete: false }
+            selectedRole: '1',
+            permissionMatrix: [
+                { id: 1, code: 'MOD_ADMIN', name: 'Quản lý Tài Khoản Admin & Chức Vụ', canView: true, canCreate: true, canEdit: true, canDelete: true, canApprove: true },
+                { id: 2, code: 'MOD_DOITAC', name: 'Quản lý Đối Tác & Hợp Đồng B2B', canView: true, canCreate: true, canEdit: true, canDelete: false, canApprove: true },
+                { id: 3, code: 'MOD_TOUR', name: 'Quản lý Tour Tuyến & Lịch Trình', canView: true, canCreate: true, canEdit: true, canDelete: true, canApprove: true },
+                { id: 4, code: 'MOD_DIADIEM', name: 'Kiểm Duyệt Địa Điểm & Trạm Đón (POI)', canView: true, canCreate: true, canEdit: true, canDelete: false, canApprove: true },
+                { id: 5, code: 'MOD_TAICHINH', name: 'Quản lý Tài Chính & Đối Soát Doanh Thu', canView: true, canCreate: false, canEdit: false, canDelete: false, canApprove: true },
+                { id: 6, code: 'MOD_NGUOIDUNG', name: 'Quản lý Người Dùng & Hồ Sơ Du Khách', canView: true, canCreate: false, canEdit: true, canDelete: true, canApprove: false },
+                { id: 7, code: 'MOD_BAOCAO', name: 'Báo Cáo Sự Cố & Hỗ Trợ Kỹ Thuật', canView: true, canCreate: false, canEdit: true, canDelete: true, canApprove: true }
             ]
         }
     },
     methods: {
-        toggleAll(group) {
-            const allChecked = group.read && group.create && group.update && group.delete;
-            group.read = !allChecked;
-            group.create = !allChecked;
-            group.update = !allChecked;
-            group.delete = !allChecked;
+        chonTatCa(val) {
+            this.permissionMatrix.forEach(m => {
+                m.canView = val;
+                m.canCreate = val;
+                m.canEdit = val;
+                m.canDelete = val;
+                m.canApprove = val;
+            });
         },
         luuPhanQuyen() {
-            alert('Đã cập nhật ma trận phân quyền thành công!');
+            alert('Đã cập nhật cấu hình ma trận phân quyền RBAC thành công!');
         }
     }
 }
 </script>
+
+<style scoped>
+.sync-pill {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 4px 12px;
+    border-radius: 999px;
+}
+.dot-green {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #22c55e;
+}
+</style>
