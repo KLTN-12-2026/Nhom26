@@ -22,6 +22,7 @@ class DoiTac extends Authenticatable
     protected $fillable = [
         'ma_doi_tac',
         'ten_doi_tac',
+        'ma_so_thue',
         'ten_nguoi_dai_dien',
         'email',
         'mat_khau',

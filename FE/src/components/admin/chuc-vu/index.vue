@@ -27,50 +27,59 @@
                 </p>
             </div>
             <div>
-                <button class="btn btn-primary rounded-3 px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1" @click="moModalThem">
-                    <i class="bx bx-plus font-18"></i> + Thêm Chức Vụ
+                <!-- Nút mở Modal Thêm mới chức vụ -->
+                <button class="btn btn-primary rounded-3 px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1"
+                    data-bs-toggle="modal" data-bs-target="#themMoiModal">
+                    <i class="bx bx-plus font-18"></i>Thêm Chức Vụ
                 </button>
             </div>
         </div>
 
         <!-- 3. 4 KPI Metrics Cards -->
         <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
+            <!-- Card 1: Tổng số chức vụ -->
             <div class="col">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <span class="font-11 fw-bold text-muted text-uppercase">TỔNG SỐ CHỨC VỤ</span>
-                            <h2 class="fw-bold text-dark my-1">05</h2>
+                            <h2 class="fw-bold text-dark my-1">{{ list_chuc_vu.length < 10 ? '0' + list_chuc_vu.length : list_chuc_vu.length }}</h2>
                             <small class="text-primary font-11">Đồng bộ từ bảng chuc_vus</small>
                         </div>
                         <div class="kpi-icon-box bg-light-primary text-primary"><i class="bx bx-badge-check"></i></div>
                     </div>
                 </div>
             </div>
+
+            <!-- Card 2: Đang áp dụng -->
             <div class="col">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <span class="font-11 fw-bold text-muted text-uppercase">ĐANG ÁP DỤNG</span>
-                            <h2 class="fw-bold text-success my-1">04</h2>
+                            <h2 class="fw-bold text-success my-1">{{ countActive < 10 ? '0' + countActive : countActive }}</h2>
                             <small class="text-muted font-11">Trạng thái Is_active: true</small>
                         </div>
                         <div class="kpi-icon-box bg-light-success text-success"><i class="bx bx-check-circle"></i></div>
                     </div>
                 </div>
             </div>
+
+            <!-- Card 3: Nhân sự thực tế -->
             <div class="col">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <span class="font-11 fw-bold text-muted text-uppercase">NHÂN SỰ THỰC TẾ</span>
-                            <h2 class="fw-bold text-dark my-1">18</h2>
+                            <h2 class="fw-bold text-dark my-1">{{ totalPersonnel < 10 ? '0' + totalPersonnel : totalPersonnel }}</h2>
                             <small class="text-primary font-11">Liên kết bảng admins</small>
                         </div>
                         <div class="kpi-icon-box bg-light-info text-info"><i class="bx bx-group"></i></div>
                     </div>
                 </div>
             </div>
+
+            <!-- Card 4: Quyền hạn hệ thống -->
             <div class="col">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-start">
@@ -85,66 +94,94 @@
             </div>
         </div>
 
-        <!-- 4. Filter Bar -->
+        <!-- 4. Filter Bar: Thanh tìm kiếm và bộ lọc trạng thái -->
         <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
             <div class="row g-2 align-items-center">
-                <div class="col-md-5">
+                <!-- Ô tìm kiếm kèm nút kính lúp ở sau -->
+                <div class="col-md-6">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-light border-end-0 text-muted"><i class="bx bx-search"></i></span>
-                        <input type="text" class="form-control border-start-0" v-model="searchQuery" placeholder="Tìm theo tên chức vụ hoặc nhiệm vụ...">
+                        <input 
+                            type="search" 
+                            name="search_chuc_vu_keyword" 
+                            autocomplete="off" 
+                            class="form-control shadow-none" 
+                            v-model="key_search" 
+                            placeholder="Tìm kiếm theo mã, tên chức vụ, mô tả...">
+                        <!-- Nút kính lúp ở sau ô tìm kiếm -->
+                        <button class="btn btn-primary px-3" type="button" title="Tìm kiếm">
+                            <i class="bx bx-search"></i>
+                        </button>
                     </div>
                 </div>
+                <!-- Bộ lọc theo trạng thái hoạt động -->
                 <div class="col-md-3">
                     <select class="form-select form-select-sm" v-model="filterStatus">
                         <option value="">Tất cả trạng thái</option>
                         <option value="1">Đang hoạt động</option>
-                        <option value="0">Tạm khóa</option>
+                        <option value="0">Tạm ngưng</option>
                     </select>
                 </div>
-                <div class="col-md-4 text-end">
-                    <span class="small text-muted">Hiển thị <strong class="text-primary">{{ filteredList.length }}</strong> chức vụ</span>
+                <!-- Thống kê số lượng kết quả hiển thị -->
+                <div class="col-md-3 text-end">
+                    <span class="small text-muted">Hiển thị <strong class="text-primary">{{ list_chuc_vu_loc.length }}</strong> chức vụ</span>
                 </div>
             </div>
         </div>
 
-        <!-- 5. Data Table -->
+        <!-- 5. Data Table: Bảng danh sách chức vụ -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light small text-uppercase">
+                    <thead class="table-light small text-uppercase text-center align-middle">
                         <tr>
-                            <th width="8%" class="text-center">#</th>
-                            <th width="24%">TÊN CHỨC VỤ</th>
-                            <th width="32%">MÔ TẢ NHIỆM VỤ</th>
-                            <th width="14%" class="text-center">SỐ NHÂN SỰ</th>
-                            <th width="12%" class="text-center">TRẠNG THÁI</th>
-                            <th width="10%" class="text-end">THAO TÁC</th>
+                            <th width="6%">#</th>
+                            <th width="14%">MÃ CHỨC VỤ</th>
+                            <th width="24%" class="text-start">TÊN CHỨC VỤ</th>
+                            <th width="30%" class="text-start">MÔ TẢ NHIỆM VỤ</th>
+                            <th width="12%">SỐ NHÂN SỰ</th>
+                            <th width="12%">TRẠNG THÁI</th>
+                            <th width="14%">THAO TÁC</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, index) in filteredList" :key="item.id">
-                            <td class="text-center fw-bold">{{ index + 1 }}</td>
-                            <td>
-                                <strong class="text-dark">{{ item.ten_chuc_vu }}</strong>
-                                <small class="text-muted d-block font-monospace font-11">CODE: {{ item.code }}</small>
+                        <tr v-for="(cv, index) in list_chuc_vu_loc" :key="index">
+                            <td class="text-center align-middle fw-bold">{{ index + 1 }}</td>
+                            <td class="text-center align-middle">
+                                <strong class="text-primary font-13 font-monospace">{{ cv.ma_chuc_vu }}</strong>
                             </td>
-                            <td class="text-muted small">{{ item.mo_ta }}</td>
-                            <td class="text-center">
-                                <span class="badge bg-light-primary text-primary px-3 py-1 font-12">{{ item.so_nhan_su }} nhân sự</span>
+                            <td class="align-middle fw-bold text-dark">
+                                {{ cv.ten_chuc_vu }}
                             </td>
-                            <td class="text-center">
-                                <span v-if="item.trang_thai === 1" class="badge bg-success-subtle text-success px-2 py-1 rounded-pill font-11">● Hoạt động</span>
-                                <span v-else class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill font-11">● Tạm khóa</span>
+                            <td class="align-middle text-muted small">
+                                {{ cv.mo_ta || 'Chưa có mô tả' }}
                             </td>
-                            <td class="text-end">
+                            <td class="text-center align-middle">
+                                <span class="badge bg-light-primary text-primary px-3 py-1 font-12">
+                                    {{ cv.so_nhan_su || 0 }} nhân sự
+                                </span>
+                            </td>
+                            <td class="text-center align-middle">
+                                <button v-on:click="changeStatus(cv)" v-if="cv.trang_thai == 1" class="btn btn-sm btn-success">
+                                    Hoạt động
+                                </button>
+                                <button v-on:click="changeStatus(cv)" v-else class="btn btn-sm btn-secondary">
+                                    Tạm ngưng
+                                </button>
+                            </td>
+                            <td class="text-center align-middle">
                                 <div class="d-inline-flex gap-1">
+                                    <!-- Nút liên kết phân quyền -->
                                     <router-link to="/admin/phan-quyen" class="btn btn-sm btn-action text-secondary" title="Phân quyền">
                                         <i class="bx bx-shield-quarter"></i>
                                     </router-link>
-                                    <button class="btn btn-sm btn-action text-secondary" title="Sửa" @click="suaChucVu(item)">
+                                    <!-- Nút Cập nhật mở modal -->
+                                    <button v-on:click="Object.assign(update_ChucVu, cv)" class="btn btn-sm btn-action text-primary" 
+                                        data-bs-toggle="modal" data-bs-target="#capNhatModal" title="Cập nhật">
                                         <i class="bx bx-edit"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-action text-secondary" title="Xóa" @click="xoaChucVu(item)">
+                                    <!-- Nút Xóa mở modal -->
+                                    <button v-on:click="Object.assign(delete_ChucVu, cv)" class="btn btn-sm btn-action text-danger" 
+                                        data-bs-toggle="modal" data-bs-target="#xoaModal" title="Xóa">
                                         <i class="bx bx-trash"></i>
                                     </button>
                                 </div>
@@ -153,98 +190,351 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Phân trang footer -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between pt-4 border-top mt-3 gap-2">
+                <span class="small text-muted">Trang 1 trên 1 (Dữ liệu đồng bộ Database)</span>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+                        <li class="page-item active"><a class="page-link bg-primary border-primary" href="#">1</a></li>
+                        <li class="page-item disabled"><a class="page-link" href="#">Sau</a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
 
-        <!-- Modal Thêm/Sửa Chức Vụ -->
-        <div class="modal fade show d-block" tabindex="-1" v-if="showModal" style="background: rgba(0,0,0,0.5);">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content rounded-4 border-0 shadow-lg">
-                    <div class="modal-header border-bottom p-3 px-4">
-                        <h5 class="modal-title fw-bold text-dark">{{ isEdit ? 'Cập Nhật Chức Vụ' : 'Thêm Chức Vụ Mới' }}</h5>
-                        <button type="button" class="btn-close" @click="showModal = false"></button>
+        <!-- 1. Modal Thêm Mới Chức Vụ -->
+        <div class="modal fade" id="themMoiModal" tabindex="-1" aria-labelledby="themMoiModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h1 class="modal-title fs-5 text-white" id="themMoiModalLabel">
+                            <i class="bx bx-plus me-1"></i>Thêm Mới Chức Vụ
+                        </h1>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body p-4">
-                        <div class="mb-3">
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Mã Chức Vụ</label>
+                            <input v-model="create_ChucVu.ma_chuc_vu" type="text" class="form-control form-control-sm" placeholder="VD: CV05 (Để trống để tự sinh)">
+                        </div>
+                        <div class="mb-2">
                             <label class="form-label fw-semibold">Tên Chức Vụ <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" v-model="form.ten_chuc_vu" placeholder="Nhập tên chức vụ...">
+                            <input v-model="create_ChucVu.ten_chuc_vu" type="text" class="form-control form-control-sm" placeholder="Nhập tên chức vụ...">
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Mã Code Chức Vụ</label>
-                            <input type="text" class="form-control text-uppercase" v-model="form.code" placeholder="VD: ADMIN_LEAD">
-                        </div>
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label class="form-label fw-semibold">Mô Tả Nhiệm Vụ</label>
-                            <textarea class="form-control" rows="3" v-model="form.mo_ta" placeholder="Mô tả phạm vi quyền hạn..."></textarea>
+                            <textarea v-model="create_ChucVu.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả phạm vi quyền hạn..."></textarea>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Trạng Thái</label>
+                            <select v-model="create_ChucVu.trang_thai" class="form-select form-select-sm">
+                                <option :value="1">Hoạt động</option>
+                                <option :value="0">Tạm ngưng</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="modal-footer border-top p-3 px-4">
-                        <button type="button" class="btn btn-light rounded-3" @click="showModal = false">Hủy</button>
-                        <button type="button" class="btn btn-primary rounded-3 px-4 fw-semibold" @click="luuChucVu">Lưu Chức Vụ</button>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                        <button v-on:click="themMoiChucVu()" type="button" class="btn btn-primary btn-sm px-3" data-bs-dismiss="modal">Thêm Chức Vụ</button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- 2. Modal Cập Nhật Chức Vụ -->
+        <div class="modal fade" id="capNhatModal" tabindex="-1" aria-labelledby="capNhatModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h1 class="modal-title fs-5 text-white" id="capNhatModalLabel">
+                            <i class="bx bx-edit me-1"></i>Cập Nhật Chức Vụ
+                        </h1>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Mã Chức Vụ</label>
+                            <input v-model="update_ChucVu.ma_chuc_vu" type="text" class="form-control form-control-sm bg-light" disabled>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Tên Chức Vụ <span class="text-danger">*</span></label>
+                            <input v-model="update_ChucVu.ten_chuc_vu" type="text" class="form-control form-control-sm" placeholder="Nhập tên chức vụ...">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Mô Tả Nhiệm Vụ</label>
+                            <textarea v-model="update_ChucVu.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả phạm vi quyền hạn..."></textarea>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Trạng Thái</label>
+                            <select v-model="update_ChucVu.trang_thai" class="form-select form-select-sm">
+                                <option :value="1">Hoạt động</option>
+                                <option :value="0">Tạm ngưng</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                        <button v-on:click="capNhatChucVu()" type="button" class="btn btn-primary btn-sm px-3" data-bs-dismiss="modal">Cập nhật</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Modal Xác Nhận Xóa Chức Vụ -->
+        <div class="modal fade" id="xoaModal" tabindex="-1" aria-labelledby="xoaModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h1 class="modal-title fs-5 text-white" id="xoaModalLabel">
+                            <i class="bx bx-trash me-1"></i>Xác Nhận Xóa Chức Vụ
+                        </h1>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning border-0 mb-0" role="alert">
+                            <i class='bx bx-error-circle me-1 fs-5 align-middle'></i>
+                            Bạn có chắc chắn muốn xóa chức vụ <strong>{{ delete_ChucVu.ten_chuc_vu }}</strong> 
+                            (Mã: <code>{{ delete_ChucVu.ma_chuc_vu }}</code>) không?
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                        <button v-on:click="xoaChucVu()" type="button" class="btn btn-danger btn-sm px-3" data-bs-dismiss="modal">Xác nhận xóa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     name: 'AdminChucVu',
+    // 1. Khai báo các biến trạng thái (state) của component
     data() {
         return {
-            searchQuery: '',
+            // Từ khóa tìm kiếm nhanh
+            key_search: '',
+
+            // Bộ lọc chọn trạng thái
             filterStatus: '',
-            showModal: false,
-            isEdit: false,
-            form: { id: null, ten_chuc_vu: '', code: '', mo_ta: '', so_nhan_su: 0, trang_thai: 1 },
-            roles: [
-                { id: 1, code: 'SUPER_ADMIN', ten_chuc_vu: 'Super Admin (Quản Trị Tối Cao)', mo_ta: 'Toàn quyền cấu hình máy chủ, phân quyền và dữ liệu hệ thống', so_nhan_su: 3, trang_thai: 1 },
-                { id: 2, code: 'CONTENT_MANAGER', ten_chuc_vu: 'Quản Lý Nội Dung & Tour', mo_ta: 'Kiểm duyệt địa điểm, quản lý thông tin tour và các gói khuyến mãi', so_nhan_su: 6, trang_thai: 1 },
-                { id: 3, code: 'ACCOUNTANT', ten_chuc_vu: 'Kế Toán & Đối Soát', mo_ta: 'Quản lý tài chính, giao dịch thanh toán và đối soát hoa hồng đối tác', so_nhan_su: 4, trang_thai: 1 },
-                { id: 4, code: 'SUPPORT_LEAD', ten_chuc_vu: 'Chăm Sóc Khách Hàng (Support)', mo_ta: 'Tiếp nhận xử lý báo cáo lỗi, giải đáp thắc mắc và đánh giá của khách', so_nhan_su: 5, trang_thai: 1 },
-                { id: 5, code: 'TESTER_DEV', ten_chuc_vu: 'Kỹ Thuật Viên Vận Hành', mo_ta: 'Giám sát hệ thống API và máy chủ vận hành 24/7', so_nhan_su: 0, trang_thai: 0 }
-            ]
+
+            // Danh sách chức vụ lấy từ database
+            list_chuc_vu: [],
+
+            // Object form thêm mới chức vụ
+            create_ChucVu: {
+                ma_chuc_vu: '',
+                ten_chuc_vu: '',
+                mo_ta: '',
+                trang_thai: 1
+            },
+
+            // Object chức vụ đang được chọn để cập nhật
+            update_ChucVu: {
+                ma_chuc_vu: '',
+                ten_chuc_vu: '',
+                mo_ta: '',
+                trang_thai: 1
+            },
+
+            // Object chức vụ đang được chọn để xóa
+            delete_ChucVu: {
+                ma_chuc_vu: '',
+                ten_chuc_vu: '',
+            },
         }
     },
+
+    // 2. Các thuộc tính tính toán (Computed Properties)
     computed: {
-        filteredList() {
-            return this.roles.filter(r => {
-                const matchSearch = r.ten_chuc_vu.toLowerCase().includes(this.searchQuery.toLowerCase()) || r.mo_ta.toLowerCase().includes(this.searchQuery.toLowerCase());
-                const matchStatus = this.filterStatus === '' || r.trang_thai === parseInt(this.filterStatus);
-                return matchSearch && matchStatus;
+        // Đếm tổng số chức vụ đang ở trạng thái Hoạt động
+        countActive() {
+            return this.list_chuc_vu.filter(c => c.trang_thai !== 0).length;
+        },
+
+        // Tính tổng số nhân sự đang được phân công vào các chức vụ
+        totalPersonnel() {
+            return this.list_chuc_vu.reduce((total, c) => total + (parseInt(c.so_nhan_su) || 0), 0);
+        },
+
+        // Danh sách Chức Vụ được lọc đa điều kiện: từ khóa tìm kiếm (không dấu, không phân biệt hoa thường), trạng thái
+        list_chuc_vu_loc() {
+            let list = this.list_chuc_vu;
+
+            // Bước 1: Lọc theo trạng thái hoạt động (1: hoạt động, 0: tạm ngưng)
+            if (this.filterStatus !== '') {
+                list = list.filter(item => item.trang_thai === parseInt(this.filterStatus));
+            }
+
+            // Bước 2: Nếu ô tìm kiếm rỗng, trả về danh sách sau khi đã lọc theo trạng thái
+            if (!this.key_search) {
+                return list;
+            }
+
+            // Bước 3: Chuẩn hóa từ khóa tìm kiếm (xóa dấu tiếng Việt, chuyển chữ thường)
+            let kw = this.removeVietnameseTones(this.key_search);
+
+            // Bước 4: Tìm kiếm đối chiếu không phân biệt hoa thường và không phân biệt có dấu / không dấu
+            return list.filter((item) => {
+                let maChucVu  = this.removeVietnameseTones(item.ma_chuc_vu);
+                let tenChucVu = this.removeVietnameseTones(item.ten_chuc_vu);
+                let moTa      = this.removeVietnameseTones(item.mo_ta);
+
+                return maChucVu.includes(kw) || tenChucVu.includes(kw) || moTa.includes(kw);
             });
+        },
+
+        // Alias tương thích cho danh sách đã lọc
+        filteredList() {
+            return this.list_chuc_vu_loc;
         }
     },
+
+    // 3. Vòng đời component: gọi API lấy dữ liệu ngay khi giao diện được tải (mounted)
+    mounted() {
+        this.loadData();
+    },
+
+    // 4. Các hàm xử lý hành động (Methods)
     methods: {
-        moModalThem() {
-            this.isEdit = false;
-            this.form = { id: Date.now(), ten_chuc_vu: '', code: '', mo_ta: '', so_nhan_su: 0, trang_thai: 1 };
-            this.showModal = true;
+        // Hàm tiện ích: Loại bỏ toàn bộ dấu tiếng Việt và chuyển sang chữ thường (hỗ trợ tìm kiếm linh hoạt)
+        removeVietnameseTones(str) {
+            if (!str) return '';
+            return String(str)
+                .normalize('NFD')                  // Tách các ký tự có dấu thành ký tự gốc + dấu
+                .replace(/[\u0300-\u036f]/g, '')   // Xóa bỏ tất cả các dấu thanh
+                .replace(/[đĐ]/g, 'd')             // Chuyển ký tự đ, Đ thành d
+                .toLowerCase()                     // Chuyển toàn bộ về chữ thường
+                .trim();
         },
-        suaChucVu(item) {
-            this.isEdit = true;
-            this.form = { ...item };
-            this.showModal = true;
+
+        // Gọi API lấy danh sách toàn bộ chức vụ từ máy chủ
+        loadData() {
+            axios.get('http://127.0.0.1:8000/api/admin/chuc-vu/get-data')
+                .then(response => {
+                    this.list_chuc_vu = response.data.data;
+                })
+                .catch(error => {
+                    console.error('Lỗi khi tải danh sách chức vụ:', error);
+                });
         },
-        luuChucVu() {
-            if (!this.form.ten_chuc_vu) {
-                alert('Vui lòng nhập tên chức vụ!');
-                return;
-            }
-            if (this.isEdit) {
-                const idx = this.roles.findIndex(r => r.id === this.form.id);
-                if (idx !== -1) this.roles[idx] = { ...this.form };
-            } else {
-                this.roles.push({ ...this.form });
-            }
-            this.showModal = false;
-            alert('Lưu chức vụ thành công!');
+
+        // Gọi API thêm mới chức vụ
+        themMoiChucVu() {
+            axios.post('http://127.0.0.1:8000/api/admin/chuc-vu/create', this.create_ChucVu)
+                .then(response => {
+                    if (response.data.status) {
+                        if (this.$toast) {
+                            this.$toast.success(response.data.message);
+                        } else {
+                            alert(response.data.message);
+                        }
+                        this.loadData(); // Tải lại bảng dữ liệu sau khi thêm mới
+                        // Reset lại form thêm mới về trạng thái ban đầu
+                        this.create_ChucVu = {
+                            ma_chuc_vu: '',
+                            ten_chuc_vu: '',
+                            mo_ta: '',
+                            trang_thai: 1
+                        };
+                    } else {
+                        const msg = response.data.message || "Thêm chức vụ thất bại!";
+                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
+                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                });
         },
-        xoaChucVu(item) {
-            if (confirm(`Bạn có chắc muốn xóa chức vụ "${item.ten_chuc_vu}"?`)) {
-                this.roles = this.roles.filter(r => r.id !== item.id);
-            }
-        }
+
+        // Gọi API cập nhật thông tin chức vụ
+        capNhatChucVu() {
+            axios.post('http://127.0.0.1:8000/api/admin/chuc-vu/update', this.update_ChucVu)
+                .then(res => {
+                    if (res.data.status) {
+                        if (this.$toast) {
+                            this.$toast.success(res.data.message);
+                        } else {
+                            alert(res.data.message);
+                        }
+                        this.loadData(); // Tải lại bảng dữ liệu sau khi cập nhật
+                        this.update_ChucVu = {
+                            ma_chuc_vu: '',
+                            ten_chuc_vu: '',
+                            mo_ta: '',
+                            trang_thai: 1
+                        };
+                    } else {
+                        const msg = res.data.message || "Cập nhật chức vụ thất bại";
+                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
+                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                });
+        },
+
+        // Gọi API xóa mềm chức vụ
+        xoaChucVu() {
+            axios.post('http://127.0.0.1:8000/api/admin/chuc-vu/destroy', this.delete_ChucVu)
+                .then(res => {
+                    if (res.data.status) {
+                        if (this.$toast) {
+                            this.$toast.success(res.data.message);
+                        } else {
+                            alert(res.data.message);
+                        }
+                        this.loadData(); // Tải lại bảng dữ liệu sau khi xóa
+                        this.delete_ChucVu = {
+                            ma_chuc_vu: '',
+                            ten_chuc_vu: '',
+                        };
+                    } else {
+                        const msg = res.data.message || "Xóa chức vụ thất bại";
+                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
+                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                });
+        },
+
+        // Gọi API thay đổi trạng thái hoạt động của chức vụ
+        changeStatus(chucVu) {
+            axios.post('http://127.0.0.1:8000/api/admin/chuc-vu/change-status', chucVu)
+                .then(res => {
+                    if (res.data.status) {
+                        if (this.$toast) {
+                            this.$toast.success(res.data.message);
+                        } else {
+                            alert(res.data.message);
+                        }
+                        // Cập nhật ngay trên view và đồng bộ lại danh sách
+                        chucVu.trang_thai = chucVu.trang_thai == 1 ? 0 : 1;
+                        this.loadData();
+                    } else {
+                        const msg = res.data.message || "Đổi trạng thái thất bại";
+                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
+                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                });
+        },
     }
 }
 </script>

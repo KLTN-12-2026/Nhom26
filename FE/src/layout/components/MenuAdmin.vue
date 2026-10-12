@@ -13,7 +13,6 @@
                     <div class="text-success font-11 fw-semibold d-flex align-items-center gap-1">
                         <span class="dot-green"></span> Super Admin (Root)
                     </div>
-                    <div class="text-muted font-10 text-truncate">admin@danangtravel.gov...</div>
                 </div>
                 <button class="btn btn-sm btn-light border-0 d-lg-none ms-auto p-1" @click="closeSidebar">
                     <i class="bx bx-x font-20 text-muted"></i>

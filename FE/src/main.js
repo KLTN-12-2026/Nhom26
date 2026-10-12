@@ -7,9 +7,17 @@ import DoiTacLayout from './layout/wrapper/doitac.vue'
 import AdminLayout from './layout/wrapper/admin.vue'
 import BlankLayout from './layout/wrapper/blank.vue'
 
+import ToastPlugin from 'vue-toast-notification';
+import 'vue-toast-notification/dist/theme-bootstrap.css';
+
 const app = createApp(App)
 
 app.use(router)
+app.use(ToastPlugin, {
+    position: 'top-right',
+    duration: 3000
+})
+
 
 // Đăng ký Layout cho 3 tác nhân: Client, DoiTac, Admin & Blank
 app.component("client-layout", ClientLayout);

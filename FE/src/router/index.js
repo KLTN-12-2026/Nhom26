@@ -2,17 +2,39 @@ import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
     // =========================================================
+    // AUTHENTICATION (ĐĂNG NHẬP / ĐĂNG KÝ) — Layout 'blank'
+    // =========================================================
+    {
+        path: '/login',
+        name: 'Login',
+        component: () => import('../components/login/dangky-dangnhap/index.vue'),
+        meta: { layout: 'blank' }
+    },
+    {
+        path: '/kich-hoat',
+        name: 'KichHoat',
+        component: () => import('../components/login/makichhoat/index.vue'),
+        meta: { layout: 'blank' }
+    },
+    {
+        path: '/quen-mat-khau',
+        name: 'QuenMatKhau',
+        component: () => import('../components/login/quen-mat-khau/index.vue'),
+        meta: { layout: 'blank' }
+    },
+
+    // =========================================================
     // 1. TÁC NHÂN: CLIENT (KHÁCH HÀNG) — Layout 'client'
     // =========================================================
     {
         path: '/',
         component: () => import('../components/client/home/index.vue'),
-        meta: { layout: 'client' }
+        meta: { layout: 'blank' }
     },
     {
         path: '/client/home',
         component: () => import('../components/client/home/index.vue'),
-        meta: { layout: 'client' }
+        meta: { layout: 'blank' }
     },
     {
         path: '/client/tim-kiem-dia-diem',

@@ -19,6 +19,8 @@ class ChucNang extends Model
     protected $fillable = [
         'ma_chuc_nang',
         'ten_chuc_nang',
+        'duong_dan',
+        'trang_thai',
         'mo_ta'
     ];
 }
