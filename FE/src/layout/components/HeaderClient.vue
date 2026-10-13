@@ -168,7 +168,10 @@ export default {
         },
         handleLogout() {
             if (confirm('Bạn có muốn đăng xuất khỏi tài khoản khách hàng không?')) {
+                localStorage.removeItem('xs');
                 localStorage.removeItem('token_client');
+                localStorage.removeItem('nguoi_dung_token');
+                localStorage.removeItem('nguoi_dung');
                 this.$router.push('/client/home');
             }
         }

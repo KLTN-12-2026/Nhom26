@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="admin-page-container">
         <!-- 1. Thanh điều hướng Breadcrumb & Trạng thái đồng bộ Database -->
         <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
@@ -181,12 +181,12 @@
                             <td class="text-center align-middle">
                                 <div class="d-inline-flex gap-1">
                                     <!-- Nút Cập nhật mở modal -->
-                                    <button v-on:click="Object.assign(update_ChucNang, cn)" class="btn btn-sm btn-action text-primary" 
+                                    <button v-on:click="Object.assign(edit_chuc_nang, cn)" class="btn btn-sm btn-action text-primary" 
                                         data-bs-toggle="modal" data-bs-target="#capNhatModal" title="Cập nhật">
                                         <i class="bx bx-edit"></i>
                                     </button>
                                     <!-- Nút Xóa mở modal -->
-                                    <button v-on:click="Object.assign(delete_ChucNang, cn)" class="btn btn-sm btn-action text-danger" 
+                                    <button v-on:click="Object.assign(delete_chuc_nang, cn)" class="btn btn-sm btn-action text-danger" 
                                         data-bs-toggle="modal" data-bs-target="#xoaModal" title="Xóa">
                                         <i class="bx bx-trash"></i>
                                     </button>
@@ -230,23 +230,23 @@
                     <div class="modal-body">
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mã Chức Năng</label>
-                            <input v-model="create_ChucNang.ma_chuc_nang" type="text" class="form-control form-control-sm" placeholder="VD: CN05 (Để trống để tự sinh)">
+                            <input v-model="add_chuc_nang.ma_chuc_nang" type="text" class="form-control form-control-sm" placeholder="VD: CN05 (Để trống để tự sinh)">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Tên Chức Năng <span class="text-danger">*</span></label>
-                            <input v-model="create_ChucNang.ten_chuc_nang" type="text" class="form-control form-control-sm" placeholder="Nhập tên chức năng...">
+                            <input v-model="add_chuc_nang.ten_chuc_nang" type="text" class="form-control form-control-sm" placeholder="Nhập tên chức năng...">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Đường Dẫn Route</label>
-                            <input v-model="create_ChucNang.duong_dan" type="text" class="form-control form-control-sm" placeholder="VD: /admin/chuc-nang">
+                            <input v-model="add_chuc_nang.duong_dan" type="text" class="form-control form-control-sm" placeholder="VD: /admin/chuc-nang">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mô Tả</label>
-                            <textarea v-model="create_ChucNang.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả tính năng..."></textarea>
+                            <textarea v-model="add_chuc_nang.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả tính năng..."></textarea>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Trạng Thái</label>
-                            <select v-model="create_ChucNang.trang_thai" class="form-select form-select-sm">
+                            <select v-model="add_chuc_nang.trang_thai" class="form-select form-select-sm">
                                 <option :value="1">Hoạt động</option>
                                 <option :value="0">Tạm ngưng</option>
                             </select>
@@ -273,23 +273,23 @@
                     <div class="modal-body">
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mã Chức Năng</label>
-                            <input v-model="update_ChucNang.ma_chuc_nang" type="text" class="form-control form-control-sm bg-light" disabled>
+                            <input v-model="edit_chuc_nang.ma_chuc_nang" type="text" class="form-control form-control-sm bg-light" disabled>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Tên Chức Năng <span class="text-danger">*</span></label>
-                            <input v-model="update_ChucNang.ten_chuc_nang" type="text" class="form-control form-control-sm" placeholder="Nhập tên chức năng...">
+                            <input v-model="edit_chuc_nang.ten_chuc_nang" type="text" class="form-control form-control-sm" placeholder="Nhập tên chức năng...">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Đường Dẫn Route</label>
-                            <input v-model="update_ChucNang.duong_dan" type="text" class="form-control form-control-sm" placeholder="VD: /admin/chuc-nang">
+                            <input v-model="edit_chuc_nang.duong_dan" type="text" class="form-control form-control-sm" placeholder="VD: /admin/chuc-nang">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mô Tả</label>
-                            <textarea v-model="update_ChucNang.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả tính năng..."></textarea>
+                            <textarea v-model="edit_chuc_nang.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả tính năng..."></textarea>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Trạng Thái</label>
-                            <select v-model="update_ChucNang.trang_thai" class="form-select form-select-sm">
+                            <select v-model="edit_chuc_nang.trang_thai" class="form-select form-select-sm">
                                 <option :value="1">Hoạt động</option>
                                 <option :value="0">Tạm ngưng</option>
                             </select>
@@ -316,8 +316,8 @@
                     <div class="modal-body">
                         <div class="alert alert-warning border-0 mb-0" role="alert">
                             <i class='bx bx-error-circle me-1 fs-5 align-middle'></i>
-                            Bạn có chắc chắn muốn xóa chức năng <strong>{{ delete_ChucNang.ten_chuc_nang }}</strong> 
-                            (Mã: <code>{{ delete_ChucNang.ma_chuc_nang }}</code>) không?
+                            Bạn có chắc chắn muốn xóa chức năng <strong>{{ delete_chuc_nang.ten_chuc_nang }}</strong> 
+                            (Mã: <code>{{ delete_chuc_nang.ma_chuc_nang }}</code>) không?
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -332,7 +332,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/axios';
 
 export default {
     name: 'AdminChucNang',
@@ -344,7 +344,7 @@ export default {
             filterStatus: '',   // Trạng thái lọc: '' (tất cả), '1' (hoạt động), '0' (tạm ngưng)
 
             // Dữ liệu form thêm mới chức năng
-            create_ChucNang: {
+            add_chuc_nang: {
                 ma_chuc_nang: '',
                 ten_chuc_nang: '',
                 duong_dan: '',
@@ -353,7 +353,7 @@ export default {
             },
 
             // Dữ liệu form cập nhật chức năng
-            update_ChucNang: {
+            edit_chuc_nang: {
                 ma_chuc_nang: '',
                 ten_chuc_nang: '',
                 duong_dan: '',
@@ -362,7 +362,7 @@ export default {
             },
 
             // Dữ liệu phục vụ modal xóa chức năng
-            delete_ChucNang: {
+            delete_chuc_nang: {
                 ma_chuc_nang: '',
                 ten_chuc_nang: ''
             },
@@ -430,7 +430,7 @@ export default {
 
         // Gọi API lấy danh sách toàn bộ chức năng từ máy chủ
         loadData() {
-            axios.get('http://127.0.0.1:8000/api/admin/chuc-nang/get-data')
+            api.get('/api/admin/chuc-nang/get-data')
                 .then(response => {
                     this.list_chuc_nang = response.data.data;
                 })
@@ -441,114 +441,77 @@ export default {
 
         // Gọi API thêm mới chức năng
         themMoiChucNang() {
-            axios.post('http://127.0.0.1:8000/api/admin/chuc-nang/create', this.create_ChucNang)
+            api.post('/api/admin/chuc-nang/store', this.add_chuc_nang)
                 .then(response => {
                     if (response.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(response.data.message);
-                        } else {
-                            alert(response.data.message);
-                        }
-                        this.loadData(); // Tải lại bảng dữ liệu sau khi thêm mới
-                        // Reset lại form thêm mới về trạng thái ban đầu
-                        this.create_ChucNang = {
-                            ma_chuc_nang: '',
-                            ten_chuc_nang: '',
-                            duong_dan: '',
-                            mo_ta: '',
-                            trang_thai: 1
-                        };
+                        this.$toast.success(response.data.message);
+                        this.loadData();
+                        this.add_chuc_nang = { ma_chuc_nang: '', ten_chuc_nang: '', duong_dan: '', mo_ta: '', trang_thai: 1 };
                     } else {
-                        const msg = response.data.message || "Thêm chức năng thất bại!";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(response.data.message || 'Thêm chức năng thất bại!');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API cập nhật thông tin chức năng
         capNhatChucNang() {
-            axios.post('http://127.0.0.1:8000/api/admin/chuc-nang/update', this.update_ChucNang)
+            api.post('/api/admin/chuc-nang/update', this.edit_chuc_nang)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        this.loadData(); // Tải lại bảng dữ liệu sau khi cập nhật
-                        this.update_ChucNang = {
-                            ma_chuc_nang: '',
-                            ten_chuc_nang: '',
-                            duong_dan: '',
-                            mo_ta: '',
-                            trang_thai: 1
-                        };
+                        this.$toast.success(res.data.message);
+                        this.loadData();
+                        this.edit_chuc_nang = { ma_chuc_nang: '', ten_chuc_nang: '', duong_dan: '', mo_ta: '', trang_thai: 1 };
                     } else {
-                        const msg = res.data.message || "Cập nhật chức năng thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Cập nhật chức năng thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API xóa mềm chức năng
         xoaChucNang() {
-            axios.post('http://127.0.0.1:8000/api/admin/chuc-nang/destroy', this.delete_ChucNang)
+            api.post('/api/admin/chuc-nang/delete', this.delete_chuc_nang)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        this.loadData(); // Tải lại bảng dữ liệu sau khi xóa
-                        this.delete_ChucNang = {
-                            ma_chuc_nang: '',
-                            ten_chuc_nang: '',
-                        };
+                        this.$toast.success(res.data.message);
+                        this.loadData();
+                        this.delete_chuc_nang = { ma_chuc_nang: '', ten_chuc_nang: '' };
                     } else {
-                        const msg = res.data.message || "Xóa chức năng thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Xóa chức năng thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API thay đổi trạng thái hoạt động của chức năng
         changeStatus(chucNang) {
-            axios.post('http://127.0.0.1:8000/api/admin/chuc-nang/change-status', chucNang)
+            api.post('/api/admin/chuc-nang/change-status', chucNang)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        // Cập nhật trạng thái ngay lập tức trên view và đồng bộ từ database
+                        this.$toast.success(res.data.message);
                         chucNang.trang_thai = chucNang.trang_thai == 1 ? 0 : 1;
                         this.loadData();
                     } else {
-                        const msg = res.data.message || "Đổi trạng thái thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Đổi trạng thái thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
     }

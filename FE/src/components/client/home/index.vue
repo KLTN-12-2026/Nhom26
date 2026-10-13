@@ -71,18 +71,18 @@
                         <!-- Top Pill Badge -->
                         <div class="hero-badge-pill">
                             <span class="badge-dot"></span>
-                            <span>ĐÀ NẴNG SMART TOURISM AI • 2026</span>
+                            <span>ĐÀ NẴNG SMART TRAVEL • HỆ THỐNG LẬP KẾ HOẠCH DU LỊCH CÁ NHÂN HÓA</span>
                         </div>
 
                         <!-- Main Headline -->
                         <h1 class="hero-title">
-                            Khám Phá Đà Nẵng Theo Cách Riêng<br />
-                            Của Bạn Với <span class="ai-gradient-text">Trợ Lý Du Lịch AI</span>
+                            Xây Dựng Kế Hoạch Du Lịch Đà Nẵng<br />
+                            Tối Ưu Cá Nhân Hóa Với <span class="ai-gradient-text">Trợ Lý Thông Minh</span>
                         </h1>
 
                         <!-- Subtitle -->
                         <p class="hero-desc">
-                            Hệ thống phân tích sở thích cá nhân, tự động tối ưu hóa ngân sách và lên lịch trình từng phút cho chuyến du lịch Đà Nẵng hoàn hảo nhất của bạn.
+                            Hệ thống hỗ trợ lập kế hoạch du lịch cá nhân hóa tại Đà Nẵng ứng dụng thuật toán tối ưu lịch trình. Phân tích sở thích cá nhân, tự động tối ưu hóa ngân sách và gợi ý lịch trình chi tiết cho chuyến đi hoàn hảo.
                         </p>
                     </div>
                 </div>
@@ -605,7 +605,7 @@
                 <!-- Footer Copyright Bottom -->
                 <div class="footer-bottom-bar">
                     <div class="copyright-text">
-                        © 2026 <strong>Đà Nẵng Smart Travel AI Ecosystem</strong>. Toàn quyền sở hữu bản quyền.
+                        © 2026 <strong>Đà Nẵng Smart Travel</strong>. Bản quyền thuộc về hệ thống Đà Nẵng Smart Travel.
                     </div>
                     <div class="system-status-pill">
                         <span class="status-pulse-dot"></span>

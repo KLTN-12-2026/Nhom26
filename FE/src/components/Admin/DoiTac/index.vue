@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="admin-page-container">
         <!-- 1. Thanh điều hướng Breadcrumb & Trạng thái đồng bộ Database -->
         <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
@@ -232,12 +232,12 @@
                                         <i class="bx bx-shield-quarter"></i>
                                     </button>
                                     <!-- Nút Cập nhật mở modal -->
-                                    <button v-on:click="Object.assign(update_DoiTac, dt)" class="btn btn-sm btn-action text-primary" 
+                                    <button v-on:click="Object.assign(edit_doi_tac, dt)" class="btn btn-sm btn-action text-primary" 
                                         data-bs-toggle="modal" data-bs-target="#capNhatModal" title="Cập nhật">
                                         <i class="bx bx-edit"></i>
                                     </button>
                                     <!-- Nút Xóa mở modal -->
-                                    <button v-on:click="Object.assign(delete_DoiTac, dt)" class="btn btn-sm btn-action text-danger" 
+                                    <button v-on:click="Object.assign(delete_doi_tac, dt)" class="btn btn-sm btn-action text-danger" 
                                         data-bs-toggle="modal" data-bs-target="#xoaModal" title="Xóa">
                                         <i class="bx bx-trash"></i>
                                     </button>
@@ -282,38 +282,38 @@
                     <div class="modal-body">
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mã Đối Tác</label>
-                            <input v-model="create_DoiTac.ma_doi_tac" type="text" class="form-control form-control-sm" placeholder="VD: DT06 (Để trống để tự sinh)">
+                            <input v-model="add_doi_tac.ma_doi_tac" type="text" class="form-control form-control-sm" placeholder="VD: DT06 (Để trống để tự sinh)">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Tên Doanh Nghiệp / Đối Tác <span class="text-danger">*</span></label>
-                            <input v-model="create_DoiTac.ten_doi_tac" type="text" class="form-control form-control-sm" placeholder="Nhập tên doanh nghiệp...">
+                            <input v-model="add_doi_tac.ten_doi_tac" type="text" class="form-control form-control-sm" placeholder="Nhập tên doanh nghiệp...">
                         </div>
                         <div class="row g-2 mb-2">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Mã Số Thuế</label>
-                                <input v-model="create_DoiTac.ma_so_thue" type="text" class="form-control form-control-sm" placeholder="VD: 0300456123">
+                                <input v-model="add_doi_tac.ma_so_thue" type="text" class="form-control form-control-sm" placeholder="VD: 0300456123">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Người Đại Diện</label>
-                                <input v-model="create_DoiTac.ten_nguoi_dai_dien" type="text" class="form-control form-control-sm" placeholder="Họ và tên người đại diện...">
+                                <input v-model="add_doi_tac.ten_nguoi_dai_dien" type="text" class="form-control form-control-sm" placeholder="Họ và tên người đại diện...">
                             </div>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Email Đăng Nhập <span class="text-danger">*</span></label>
-                            <input v-model="create_DoiTac.email" type="email" autocomplete="off" class="form-control form-control-sm" placeholder="contact@company.com">
+                            <input v-model="add_doi_tac.email" type="email" autocomplete="off" class="form-control form-control-sm" placeholder="contact@company.com">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mật Khẩu</label>
-                            <input v-model="create_DoiTac.mat_khau" type="password" autocomplete="new-password" class="form-control form-control-sm" placeholder="Mặc định: 123456">
+                            <input v-model="add_doi_tac.mat_khau" type="password" autocomplete="new-password" class="form-control form-control-sm" placeholder="Mặc định: 123456">
                         </div>
                         <div class="row g-2 mb-2">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Số Điện Thoại</label>
-                                <input v-model="create_DoiTac.so_dien_thoai" type="text" class="form-control form-control-sm" placeholder="09xxxxxxxx">
+                                <input v-model="add_doi_tac.so_dien_thoai" type="text" class="form-control form-control-sm" placeholder="09xxxxxxxx">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Trạng Thái Duyệt</label>
-                                <select v-model="create_DoiTac.trang_thai_duyet" class="form-select form-select-sm">
+                                <select v-model="add_doi_tac.trang_thai_duyet" class="form-select form-select-sm">
                                     <option value="DaDuyet">Đã duyệt</option>
                                     <option value="ChoDuyet">Chờ duyệt</option>
                                     <option value="TuChoi">Từ chối</option>
@@ -322,11 +322,11 @@
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Địa Chỉ Trụ Sở</label>
-                            <input v-model="create_DoiTac.dia_chi" type="text" class="form-control form-control-sm" placeholder="Số nhà, đường, quận/huyện, thành phố...">
+                            <input v-model="add_doi_tac.dia_chi" type="text" class="form-control form-control-sm" placeholder="Số nhà, đường, quận/huyện, thành phố...">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Trạng Thái Tài Khoản</label>
-                            <select v-model="create_DoiTac.is_block" class="form-select form-select-sm">
+                            <select v-model="add_doi_tac.is_block" class="form-select form-select-sm">
                                 <option :value="0">Hoạt động</option>
                                 <option :value="1">Khóa tài khoản</option>
                             </select>
@@ -353,55 +353,55 @@
                     <div class="modal-body">
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mã Đối Tác</label>
-                            <input v-model="update_DoiTac.ma_doi_tac" type="text" class="form-control form-control-sm bg-light" disabled>
+                            <input v-model="edit_doi_tac.ma_doi_tac" type="text" class="form-control form-control-sm bg-light" disabled>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Tên Doanh Nghiệp / Đối Tác <span class="text-danger">*</span></label>
-                            <input v-model="update_DoiTac.ten_doi_tac" type="text" class="form-control form-control-sm" placeholder="Nhập tên doanh nghiệp...">
+                            <input v-model="edit_doi_tac.ten_doi_tac" type="text" class="form-control form-control-sm" placeholder="Nhập tên doanh nghiệp...">
                         </div>
                         <div class="row g-2 mb-2">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Mã Số Thuế</label>
-                                <input v-model="update_DoiTac.ma_so_thue" type="text" class="form-control form-control-sm" placeholder="VD: 0300456123">
+                                <input v-model="edit_doi_tac.ma_so_thue" type="text" class="form-control form-control-sm" placeholder="VD: 0300456123">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Người Đại Diện</label>
-                                <input v-model="update_DoiTac.ten_nguoi_dai_dien" type="text" class="form-control form-control-sm" placeholder="Họ và tên người đại diện...">
+                                <input v-model="edit_doi_tac.ten_nguoi_dai_dien" type="text" class="form-control form-control-sm" placeholder="Họ và tên người đại diện...">
                             </div>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Email Đăng Nhập <span class="text-danger">*</span></label>
-                            <input v-model="update_DoiTac.email" type="email" autocomplete="off" class="form-control form-control-sm" placeholder="contact@company.com">
+                            <input v-model="edit_doi_tac.email" type="email" autocomplete="off" class="form-control form-control-sm" placeholder="contact@company.com">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mật Khẩu Mới</label>
-                            <input v-model="update_DoiTac.mat_khau" type="password" autocomplete="new-password" class="form-control form-control-sm" placeholder="Để trống nếu không đổi">
+                            <input v-model="edit_doi_tac.mat_khau" type="password" autocomplete="new-password" class="form-control form-control-sm" placeholder="Để trống nếu không đổi">
                         </div>
                         <div class="row g-2 mb-2">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Số Điện Thoại</label>
-                                <input v-model="update_DoiTac.so_dien_thoai" type="text" class="form-control form-control-sm" placeholder="09xxxxxxxx">
+                                <input v-model="edit_doi_tac.so_dien_thoai" type="text" class="form-control form-control-sm" placeholder="09xxxxxxxx">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Trạng Thái Duyệt</label>
-                                <select v-model="update_DoiTac.trang_thai_duyet" class="form-select form-select-sm">
+                                <select v-model="edit_doi_tac.trang_thai_duyet" class="form-select form-select-sm">
                                     <option value="DaDuyet">Đã duyệt</option>
                                     <option value="ChoDuyet">Chờ duyệt</option>
                                     <option value="TuChoi">Từ chối</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="mb-2" v-if="update_DoiTac.trang_thai_duyet === 'TuChoi'">
+                        <div class="mb-2" v-if="edit_doi_tac.trang_thai_duyet === 'TuChoi'">
                             <label class="form-label fw-semibold text-danger">Lý Do Từ Chối</label>
-                            <textarea v-model="update_DoiTac.ly_do_tu_choi" class="form-control form-control-sm" rows="2" placeholder="Nhập lý do từ chối hồ sơ..."></textarea>
+                            <textarea v-model="edit_doi_tac.ly_do_tu_choi" class="form-control form-control-sm" rows="2" placeholder="Nhập lý do từ chối hồ sơ..."></textarea>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Địa Chỉ Trụ Sở</label>
-                            <input v-model="update_DoiTac.dia_chi" type="text" class="form-control form-control-sm" placeholder="Số nhà, đường, quận/huyện, thành phố...">
+                            <input v-model="edit_doi_tac.dia_chi" type="text" class="form-control form-control-sm" placeholder="Số nhà, đường, quận/huyện, thành phố...">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Trạng Thái Tài Khoản</label>
-                            <select v-model="update_DoiTac.is_block" class="form-select form-select-sm">
+                            <select v-model="edit_doi_tac.is_block" class="form-select form-select-sm">
                                 <option :value="0">Hoạt động</option>
                                 <option :value="1">Khóa tài khoản</option>
                             </select>
@@ -518,8 +518,8 @@
                     <div class="modal-body">
                         <div class="alert alert-warning border-0 mb-0" role="alert">
                             <i class='bx bx-error-circle me-1 fs-5 align-middle'></i>
-                            Bạn có chắc chắn muốn xóa đối tác <strong>{{ delete_DoiTac.ten_doi_tac }}</strong> 
-                            (Mã: <code>{{ delete_DoiTac.ma_doi_tac }}</code>) không?
+                            Bạn có chắc chắn muốn xóa đối tác <strong>{{ delete_doi_tac.ten_doi_tac }}</strong> 
+                            (Mã: <code>{{ delete_doi_tac.ma_doi_tac }}</code>) không?
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -534,7 +534,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/axios';
 
 export default {
     name: 'AdminDoiTac',
@@ -547,7 +547,7 @@ export default {
             filterStatus: '', // Lọc khóa: '' (tất cả), '0' (hoạt động), '1' (đã khóa)
 
             // Dữ liệu form thêm mới đối tác
-            create_DoiTac: {
+            add_doi_tac: {
                 ma_doi_tac: '',
                 ten_doi_tac: '',
                 ma_so_thue: '',
@@ -562,7 +562,7 @@ export default {
             },
 
             // Dữ liệu form cập nhật đối tác
-            update_DoiTac: {
+            edit_doi_tac: {
                 ma_doi_tac: '',
                 ten_doi_tac: '',
                 ma_so_thue: '',
@@ -590,7 +590,7 @@ export default {
             },
 
             // Dữ liệu phục vụ modal xóa đối tác
-            delete_DoiTac: {
+            delete_doi_tac: {
                 ma_doi_tac: '',
                 ten_doi_tac: ''
             },
@@ -671,7 +671,7 @@ export default {
 
         // Gọi API lấy danh sách toàn bộ đối tác từ máy chủ
         loadData() {
-            axios.get('http://127.0.0.1:8000/api/admin/doi-tac/get-data')
+            api.get('/api/admin/doi-tac/get-data')
                 .then(response => {
                     this.list_doi_tac = response.data.data;
                 })
@@ -682,74 +682,39 @@ export default {
 
         // Gọi API thêm mới đối tác
         themMoiDoiTac() {
-            axios.post('http://127.0.0.1:8000/api/admin/doi-tac/create', this.create_DoiTac)
+            api.post('/api/admin/doi-tac/store', this.add_doi_tac)
                 .then(response => {
                     if (response.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(response.data.message);
-                        } else {
-                            alert(response.data.message);
-                        }
-                        this.loadData(); // Tải lại dữ liệu sau khi thêm mới
-                        // Reset lại form thêm mới
-                        this.create_DoiTac = {
-                            ma_doi_tac: '',
-                            ten_doi_tac: '',
-                            ma_so_thue: '',
-                            ten_nguoi_dai_dien: '',
-                            email: '',
-                            mat_khau: '',
-                            so_dien_thoai: '',
-                            dia_chi: '',
-                            is_block: 0,
-                            trang_thai_duyet: 'DaDuyet',
-                            ly_do_tu_choi: ''
-                        };
+                        this.$toast.success(response.data.message);
+                        this.loadData();
+                        this.add_doi_tac = { ma_doi_tac: '', ten_doi_tac: '', ma_so_thue: '', ten_nguoi_dai_dien: '', email: '', mat_khau: '', so_dien_thoai: '', dia_chi: '', is_block: 0, trang_thai_duyet: 'DaDuyet', ly_do_tu_choi: '' };
                     } else {
-                        const msg = response.data.message || "Thêm đối tác thất bại!";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(response.data.message || 'Thêm đối tác thất bại!');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API cập nhật thông tin đối tác
         capNhatDoiTac() {
-            axios.post('http://127.0.0.1:8000/api/admin/doi-tac/update', this.update_DoiTac)
+            api.post('/api/admin/doi-tac/update', this.edit_doi_tac)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        this.loadData(); // Tải lại dữ liệu sau khi cập nhật
-                        this.update_DoiTac = {
-                            ma_doi_tac: '',
-                            ten_doi_tac: '',
-                            ma_so_thue: '',
-                            ten_nguoi_dai_dien: '',
-                            email: '',
-                            mat_khau: '',
-                            so_dien_thoai: '',
-                            dia_chi: '',
-                            is_block: 0,
-                            trang_thai_duyet: 'DaDuyet',
-                            ly_do_tu_choi: ''
-                        };
+                        this.$toast.success(res.data.message);
+                        this.loadData();
+                        this.edit_doi_tac = { ma_doi_tac: '', ten_doi_tac: '', ma_so_thue: '', ten_nguoi_dai_dien: '', email: '', mat_khau: '', so_dien_thoai: '', dia_chi: '', is_block: 0, trang_thai_duyet: 'DaDuyet', ly_do_tu_choi: '' };
                     } else {
-                        const msg = res.data.message || "Cập nhật đối tác thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Cập nhật đối tác thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
@@ -770,76 +735,57 @@ export default {
 
         // Xác nhận lưu quyết định duyệt hồ sơ
         xacNhanDuyet() {
-            axios.post('http://127.0.0.1:8000/api/admin/doi-tac/duyet', this.duyet_DoiTac)
+            api.post('/api/admin/doi-tac/duyet', this.duyet_DoiTac)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
+                        this.$toast.success(res.data.message);
                         this.loadData();
                     } else {
-                        const msg = res.data.message || "Cập nhật duyệt thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Cập nhật duyệt thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API xóa mềm đối tác
         xoaDoiTac() {
-            axios.post('http://127.0.0.1:8000/api/admin/doi-tac/destroy', this.delete_DoiTac)
+            api.post('/api/admin/doi-tac/delete', this.delete_doi_tac)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        this.loadData(); // Tải lại bảng dữ liệu sau khi xóa
-                        this.delete_DoiTac = {
-                            ma_doi_tac: '',
-                            ten_doi_tac: '',
-                        };
+                        this.$toast.success(res.data.message);
+                        this.loadData();
+                        this.delete_doi_tac = { ma_doi_tac: '', ten_doi_tac: '' };
                     } else {
-                        const msg = res.data.message || "Xóa đối tác thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Xóa đối tác thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API thay đổi trạng thái hoạt động/khóa của đối tác
         changeStatus(doiTac) {
-            axios.post('http://127.0.0.1:8000/api/admin/doi-tac/change-status', doiTac)
+            api.post('/api/admin/doi-tac/change-status', doiTac)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        // Cập nhật trạng thái ngay trên view và đồng bộ từ database
+                        this.$toast.success(res.data.message);
                         doiTac.is_block = doiTac.is_block == 1 ? 0 : 1;
                         this.loadData();
                     } else {
-                        const msg = res.data.message || "Đổi trạng thái thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Đổi trạng thái thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
     }

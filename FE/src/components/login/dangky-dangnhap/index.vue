@@ -10,6 +10,22 @@
       <span>Trang chủ</span>
     </router-link>
 
+    <!-- Header thương hiệu web -->
+    <div class="project-header text-center mb-3">
+      <div class="brand-logo-badge mb-2">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
+      </div>
+      <h1 class="project-title">
+        Đà Nẵng Smart Travel
+      </h1>
+      <p class="project-subtitle">
+        Hệ thống hỗ trợ lập kế hoạch du lịch cá nhân hóa tại Đà Nẵng ứng dụng thuật toán tối ưu lịch trình
+      </p>
+    </div>
+
     <!-- Hộp Card Đăng nhập / Đăng ký 2 trong 1 -->
     <div class="auth-container" :class="{ 'active': isSignUp }">
       <!-- FORM ĐĂNG KÝ (BÊN PHẢI KHI KÍCH HOẠT) -->
@@ -75,7 +91,7 @@
           <div class="overlay-panel overlay-left">
             <h1 class="overlay-title">Chào mừng trở lại!</h1>
             <p class="overlay-desc">
-              Nếu bạn đã có tài khoản, hãy đăng nhập ngay để kết nối với hệ thống
+              Đăng nhập để trải nghiệm hệ thống hỗ trợ lập kế hoạch du lịch cá nhân hóa tại Đà Nẵng ứng dụng thuật toán tối ưu lịch trình
             </p>
             <button class="btn-ghost" @click="togglePanel(false)">
               ĐĂNG NHẬP
@@ -86,7 +102,7 @@
           <div class="overlay-panel overlay-right">
             <h1 class="overlay-title">Xin chào bạn!</h1>
             <p class="overlay-desc">
-              Bạn chưa có tài khoản? Đăng ký ngay để trải nghiệm tất cả dịch vụ và tiện ích
+              Tạo tài khoản để khám phá hệ thống hỗ trợ lập kế hoạch du lịch cá nhân hóa tại Đà Nẵng ứng dụng thuật toán tối ưu lịch trình
             </p>
             <button class="btn-ghost" @click="togglePanel(true)">
               ĐĂNG KÝ
@@ -94,6 +110,13 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Footer nhỏ -->
+    <div class="project-footer text-center mt-3">
+      <small class="project-footer-text">
+        © 2026 <strong>Đà Nẵng Smart Travel</strong>
+      </small>
     </div>
 
     <!-- Thông báo Toast -->
@@ -107,6 +130,8 @@
 </template>
 
 <script>
+import api from '@/axios';
+
 export default {
   name: 'AuthLoginRegister',
   data() {
@@ -135,7 +160,7 @@ export default {
     };
   },
   mounted() {
-    if (this.$route && (this.$route.query.mode === 'signup' || this.$route.query.mode === 'register')) {
+    if (this.$route && (this.$route.query.mode === 'signup' || this.$route.query.mode === 'register' || this.$route.path === '/dang-ky')) {
       this.isSignUp = true;
     }
   },
@@ -144,6 +169,12 @@ export default {
       this.isSignUp = signUp;
     },
     showToast(message, type = 'info') {
+      if (this.$toast) {
+        if (type === 'success') this.$toast.success(message);
+        else if (type === 'error') this.$toast.error(message);
+        else if (type === 'warning') this.$toast.warning(message);
+        else this.$toast.info(message);
+      }
       if (this.toastTimer) clearTimeout(this.toastTimer);
       this.toast = { show: true, message, type };
       this.toastTimer = setTimeout(() => {
@@ -156,14 +187,60 @@ export default {
         return;
       }
       this.loading = true;
-      setTimeout(() => {
+
+      api.post('/api/dang-nhap', {
+        email: this.signInData.email.trim(),
+        mat_khau: this.signInData.password
+      })
+      .then(res => {
+        if (res.data.status == 1) {
+          this.showToast(res.data.message || 'Đăng nhập thành công!', 'success');
+          // Lưu token và thông tin user vào localStorage (chuẩn 'xs')
+          localStorage.setItem('xs', res.data.token);
+          localStorage.setItem('nguoi_dung_token', res.data.token);
+          if (res.data.nguoi_dung) {
+            localStorage.setItem('nguoi_dung', JSON.stringify(res.data.nguoi_dung));
+          }
+          // Chuyển hướng
+          setTimeout(() => {
+            const redirectPath = this.$route.query.redirect || '/client/home';
+            this.$router.push(redirectPath);
+          }, 800);
+        } else {
+          // Chưa xác thực
+          if (res.data.not_verified) {
+            this.showToast(res.data.message, 'warning');
+            setTimeout(() => {
+              this.$router.push({
+                path: '/kich-hoat',
+                query: { email: res.data.email || this.signInData.email }
+              });
+            }, 1200);
+          } else {
+            this.showToast(res.data.message || 'Đăng nhập thất bại!', 'error');
+          }
+        }
+      })
+      .catch(err => {
+        if (err.response && err.response.data) {
+          const errors = err.response.data.errors;
+          if (errors) {
+            const firstKey = Object.keys(errors)[0];
+            this.showToast(errors[firstKey][0], 'error');
+          } else {
+            this.showToast(err.response.data.message || 'Có lỗi xảy ra khi đăng nhập!', 'error');
+          }
+        } else {
+          this.showToast('Không thể kết nối đến máy chủ!', 'error');
+        }
+      })
+      .finally(() => {
         this.loading = false;
-        this.showToast(`Đăng nhập thành công với tài khoản: ${this.signInData.email}`, 'success');
-      }, 600);
+      });
     },
     handleSignUp() {
-      if (!this.signUpData.name || !this.signUpData.phone || !this.signUpData.email || !this.signUpData.password || !this.signUpData.confirmPassword) {
-        this.showToast('Vui lòng điền đầy đủ tất cả thông tin đăng ký!', 'warning');
+      if (!this.signUpData.name || !this.signUpData.email || !this.signUpData.password) {
+        this.showToast('Vui lòng điền đầy đủ họ tên, email và mật khẩu!', 'warning');
         return;
       }
       if (this.signUpData.password !== this.signUpData.confirmPassword) {
@@ -171,16 +248,46 @@ export default {
         return;
       }
       this.loading = true;
-      setTimeout(() => {
+
+      api.post('/api/dang-ky', {
+        ho_va_ten: this.signUpData.name.trim(),
+        email: this.signUpData.email.trim(),
+        so_dien_thoai: this.signUpData.phone ? this.signUpData.phone.trim() : null,
+        mat_khau: this.signUpData.password,
+        xac_nhan_mk: this.signUpData.confirmPassword
+      })
+      .then(res => {
+        if (res.data.status == 1) {
+          this.showToast(res.data.message || 'Đăng ký tài khoản thành công!', 'success');
+          setTimeout(() => {
+            this.$router.push({
+              path: '/kich-hoat',
+              query: { email: this.signUpData.email.trim() }
+            });
+          }, 1200);
+        } else {
+          this.showToast(res.data.message || 'Đăng ký thất bại!', 'error');
+        }
+      })
+      .catch(err => {
+        if (err.response && err.response.data) {
+          const errors = err.response.data.errors;
+          if (errors) {
+            const firstKey = Object.keys(errors)[0];
+            this.showToast(errors[firstKey][0], 'error');
+          } else {
+            this.showToast(err.response.data.message || 'Có lỗi xảy ra khi đăng ký!', 'error');
+          }
+        } else {
+          this.showToast('Không thể kết nối đến máy chủ!', 'error');
+        }
+      })
+      .finally(() => {
         this.loading = false;
-        this.showToast(`Đăng ký thành công! Đang chuyển đến trang nhập mã kích hoạt...`, 'success');
-        setTimeout(() => {
-          this.$router.push({ path: '/kich-hoat', query: { email: this.signUpData.email } });
-        }, 1000);
-      }, 600);
+      });
     },
     handleForgotPassword() {
-      this.showToast('Đang gửi hướng dẫn khôi phục mật khẩu về email của bạn...', 'info');
+      this.$router.push('/quen-mat-khau');
     }
   }
 };
@@ -624,6 +731,70 @@ export default {
 
   .auth-container.active .sign-up-container {
     transform: translateY(0);
+  }
+}
+
+/* Header Thương Hiệu Web */
+.project-header {
+  max-width: 860px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 0 16px;
+  z-index: 10;
+}
+
+.brand-logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
+}
+
+.project-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.3;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
+
+.project-subtitle {
+  font-size: 13.5px;
+  color: #475569;
+  font-weight: 500;
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.45;
+}
+
+/* Footer Web */
+.project-footer {
+  max-width: 860px;
+  width: 100%;
+  padding: 0 16px;
+  z-index: 10;
+}
+
+.project-footer-text {
+  color: #64748b;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .project-title {
+    font-size: 20px;
+  }
+  .project-subtitle {
+    font-size: 12px;
+  }
+  .project-header {
+    margin-top: 55px;
   }
 }
 </style>

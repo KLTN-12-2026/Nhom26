@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="admin-page-container">
         <!-- 1. Breadcrumb & Database Sync Pill -->
         <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
@@ -188,12 +188,12 @@
                                 </button>
                             </td>
                             <td class="text-center align-middle">
-                                <button v-on:click="Object.assign(update_Admin, admin)"
+                                <button v-on:click="Object.assign(edit_admin, admin)"
                                     class="btn btn-primary btn-sm me-1" data-bs-toggle="modal"
                                     data-bs-target="#capNhatModal">
                                     Cập nhật
                                 </button>
-                                <button v-on:click="Object.assign(delete_Admin, admin)" class="btn btn-danger btn-sm"
+                                <button v-on:click="Object.assign(delete_admin, admin)" class="btn btn-danger btn-sm"
                                     data-bs-toggle="modal" data-bs-target="#xoaModal">
                                     Xóa
                                 </button>
@@ -230,27 +230,27 @@
                     <div class="modal-body">
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mã Admin</label>
-                            <input v-model="create_Admin.ma_admin" type="text" class="form-control form-control-sm"
+                            <input v-model="add_admin.ma_admin" type="text" class="form-control form-control-sm"
                                 placeholder="VD: AD05 (Để trống để tự sinh)">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Họ và tên</label>
-                            <input v-model="create_Admin.ho_va_ten" type="text" class="form-control form-control-sm"
+                            <input v-model="add_admin.ho_va_ten" type="text" class="form-control form-control-sm"
                                 placeholder="Nhập họ và tên...">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Email đăng nhập</label>
-                            <input v-model="create_Admin.email" type="email" autocomplete="off"
+                            <input v-model="add_admin.email" type="email" autocomplete="off"
                                 class="form-control form-control-sm" placeholder="admin@danangtravel.vn">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mật khẩu</label>
-                            <input v-model="create_Admin.mat_khau" type="password" autocomplete="new-password"
+                            <input v-model="add_admin.mat_khau" type="password" autocomplete="new-password"
                                 class="form-control form-control-sm" placeholder="Nhập mật khẩu (Mặc định 123456)">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Chức vụ</label>
-                            <select v-model="create_Admin.ma_chuc_vu" class="form-select form-select-sm">
+                            <select v-model="add_admin.ma_chuc_vu" class="form-select form-select-sm">
                                 <option v-for="cv in list_chuc_vu" :key="cv.ma_chuc_vu" :value="cv.ma_chuc_vu">
                                     {{ cv.ten_chuc_vu }}
                                 </option>
@@ -258,7 +258,7 @@
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Trạng thái</label>
-                            <select v-model="create_Admin.is_block" class="form-select form-select-sm">
+                            <select v-model="add_admin.is_block" class="form-select form-select-sm">
                                 <option :value="0">Hoạt động</option>
                                 <option :value="1">Đã khóa</option>
                             </select>
@@ -287,27 +287,27 @@
                     <div class="modal-body">
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mã Admin</label>
-                            <input v-model="update_Admin.ma_admin" type="text"
+                            <input v-model="edit_admin.ma_admin" type="text"
                                 class="form-control form-control-sm bg-light" disabled>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Họ và tên</label>
-                            <input v-model="update_Admin.ho_va_ten" type="text" class="form-control form-control-sm"
+                            <input v-model="edit_admin.ho_va_ten" type="text" class="form-control form-control-sm"
                                 placeholder="Nhập họ và tên...">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Email đăng nhập</label>
-                            <input v-model="update_Admin.email" type="email" autocomplete="off"
+                            <input v-model="edit_admin.email" type="email" autocomplete="off"
                                 class="form-control form-control-sm" placeholder="admin@danangtravel.vn">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mật khẩu mới</label>
-                            <input v-model="update_Admin.mat_khau" type="password" autocomplete="new-password"
+                            <input v-model="edit_admin.mat_khau" type="password" autocomplete="new-password"
                                 class="form-control form-control-sm" placeholder="Để trống nếu không đổi mật khẩu">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Chức vụ</label>
-                            <select v-model="update_Admin.ma_chuc_vu" class="form-select form-select-sm">
+                            <select v-model="edit_admin.ma_chuc_vu" class="form-select form-select-sm">
                                 <option v-for="cv in list_chuc_vu" :key="cv.ma_chuc_vu" :value="cv.ma_chuc_vu">
                                     {{ cv.ten_chuc_vu }}
                                 </option>
@@ -315,7 +315,7 @@
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Trạng thái</label>
-                            <select v-model="update_Admin.is_block" class="form-select form-select-sm">
+                            <select v-model="edit_admin.is_block" class="form-select form-select-sm">
                                 <option :value="0">Hoạt động</option>
                                 <option :value="1">Đã khóa</option>
                             </select>
@@ -344,9 +344,9 @@
                     <div class="modal-body">
                         <div class="alert alert-warning border-0 mb-0" role="alert">
                             <i class='bx bx-error-circle me-1 fs-5 align-middle'></i>
-                            Bạn có chắc chắn muốn xóa tài khoản Admin <strong>{{ delete_Admin.ho_va_ten ||
-                                delete_Admin.ho_ten }}</strong> (Mã:
-                            <code>{{ delete_Admin.ma_admin || delete_Admin.ma }}</code>) không? Hành động này không thể
+                            Bạn có chắc chắn muốn xóa tài khoản Admin <strong>{{ delete_admin.ho_va_ten ||
+                                delete_admin.ho_ten }}</strong> (Mã:
+                            <code>{{ delete_admin.ma_admin || delete_admin.ma }}</code>) không? Hành động này không thể
                             hoàn tác!
                         </div>
                     </div>
@@ -362,7 +362,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/axios';
 
 export default {
     name: 'AdminTaiKhoanAdmin',
@@ -383,7 +383,7 @@ export default {
             list_chuc_vu: [],
 
             // Object chứa dữ liệu khi thêm mới Admin
-            create_Admin: {
+            add_admin: {
                 ma_admin: '',
                 ho_va_ten: '',
                 email: '',
@@ -393,7 +393,7 @@ export default {
             },
 
             // Object chứa dữ liệu của admin đang được chọn để cập nhật
-            update_Admin: {
+            edit_admin: {
                 ma_admin: '',
                 ho_va_ten: '',
                 email: '',
@@ -403,7 +403,7 @@ export default {
             },
 
             // Object chứa thông tin admin đang được chọn để xác nhận xóa
-            delete_Admin: {
+            delete_admin: {
                 ma_admin: '',
                 ho_va_ten: '',
                 email: '',
@@ -491,7 +491,7 @@ export default {
 
         // Gọi API lấy danh sách toàn bộ tài khoản Admin từ máy chủ
         loadData() {
-            axios.get('http://127.0.0.1:8000/api/admin/tai-khoan-admin/get-data')
+            api.get('/api/admin/tai-khoan-admin/get-data')
                 .then(response => {
                     this.list_admin = response.data.data;
                 })
@@ -502,7 +502,7 @@ export default {
 
         // Gọi API lấy danh mục các Chức Vụ từ máy chủ để hiển thị trên select option
         loadChucVu() {
-            axios.get('http://127.0.0.1:8000/api/admin/chuc-vu/get-data')
+            api.get('/api/admin/chuc-vu/get-data')
                 .then(response => {
                     if (response.data.status && response.data.data) {
                         this.list_chuc_vu = response.data.data;
@@ -515,13 +515,13 @@ export default {
 
         // Gọi API thêm mới tài khoản Admin
         themMoiAdmin() {
-            axios.post('http://127.0.0.1:8000/api/admin/tai-khoan-admin/create', this.create_Admin)
+            api.post('/api/admin/tai-khoan-admin/store', this.add_admin)
                 .then(response => {
                     if (response.data.status) {
                         this.$toast.success(response.data.message);
                         this.loadData(); // Tải lại bảng dữ liệu sau khi thêm mới
                         // Reset lại form thêm mới về trạng thái ban đầu
-                        this.create_Admin = {
+                        this.add_admin = {
                             ma_admin: '',
                             ho_va_ten: '',
                             email: '',
@@ -545,13 +545,13 @@ export default {
 
         // Gọi API cập nhật thông tin tài khoản Admin
         capNhatAdmin() {
-            axios.post('http://127.0.0.1:8000/api/admin/tai-khoan-admin/update', this.update_Admin)
+            api.post('/api/admin/tai-khoan-admin/update', this.edit_admin)
                 .then(res => {
                     if (res.data.status) {
                         this.$toast.success(res.data.message);
                         this.loadData(); // Tải lại bảng dữ liệu sau khi cập nhật
                         // Reset lại đối tượng cập nhật
-                        this.update_Admin = {
+                        this.edit_admin = {
                             ma_admin: '',
                             ho_va_ten: '',
                             email: '',
@@ -575,12 +575,12 @@ export default {
 
         // Gọi API xóa mềm (Soft Delete) tài khoản Admin
         xoaAdmin() {
-            axios.post('http://127.0.0.1:8000/api/admin/tai-khoan-admin/destroy', this.delete_Admin)
+            api.post('/api/admin/tai-khoan-admin/delete', this.delete_admin)
                 .then(res => {
                     if (res.data.status) {
                         this.$toast.success(res.data.message);
                         this.loadData(); // Tải lại bảng dữ liệu sau khi xóa
-                        this.delete_Admin = {
+                        this.delete_admin = {
                             ma_admin: '',
                             ho_va_ten: '',
                         };
@@ -600,7 +600,7 @@ export default {
 
         // Gọi API thay đổi trạng thái hoạt động (Khóa ⇄ Mở khóa)
         changeStatus(admin) {
-            axios.post('http://127.0.0.1:8000/api/admin/tai-khoan-admin/change-status', admin)
+            api.post('/api/admin/tai-khoan-admin/change-status', admin)
                 .then(res => {
                     if (res.data.status) {
                         this.$toast.success(res.data.message);

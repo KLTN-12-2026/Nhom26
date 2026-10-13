@@ -43,8 +43,8 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">DOANH THU TOÀN SÀN</span>
-            <div class="kpi-value text-dark">1.45<span style="font-size: 1.1rem; font-weight: 600;"> Tỷ</span></div>
-            <span class="kpi-subtext text-success"><i class="bx bx-trending-up me-1"></i>+18.4% so kỳ trước</span>
+            <div class="kpi-value text-dark">{{ formatShortMoney(stats.gmv) }}</div>
+            <span class="kpi-subtext text-success"><i class="bx bx-trending-up me-1"></i>+18.4% tăng trưởng</span>
           </div>
           <div class="kpi-icon icon-blue">
             <i class="bx bx-dollar-circle"></i>
@@ -56,8 +56,8 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">LƯỢT ĐẶT TOUR</span>
-            <div class="kpi-value text-success">1,842</div>
-            <span class="kpi-subtext">Tỷ lệ hoàn thành 98.2%</span>
+            <div class="kpi-value text-success">{{ formatMoney(totalBookings) }}</div>
+            <span class="kpi-subtext">Booking toàn hệ thống</span>
           </div>
           <div class="kpi-icon icon-green">
             <i class="bx bx-cart-alt"></i>
@@ -68,9 +68,9 @@
       <div class="col-12 col-sm-6 col-xl-3">
         <div class="kpi-card">
           <div class="kpi-content">
-            <span class="kpi-label">NGƯỜI DÙNG MỚI</span>
-            <div class="kpi-value text-primary">+620</div>
-            <span class="kpi-subtext">Đăng ký & kích hoạt email</span>
+            <span class="kpi-label">NGƯỜI DÙNG</span>
+            <div class="kpi-value text-primary">{{ formatMoney(stats.total_users) }}</div>
+            <span class="kpi-subtext">Đồng bộ từ khách hàng</span>
           </div>
           <div class="kpi-icon icon-blue">
             <i class="bx bx-user-plus"></i>
@@ -82,7 +82,7 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">HOA HỒNG THỰC THU</span>
-            <div class="kpi-value text-warning">145.2<span style="font-size: 1.1rem; font-weight: 600;"> Tr</span></div>
+            <div class="kpi-value text-warning">{{ formatShortMoney(stats.gmv * 0.1) }}</div>
             <span class="kpi-subtext">10% biên lợi nhuận ròng</span>
           </div>
           <div class="kpi-icon icon-orange">
@@ -219,11 +219,24 @@
 </template>
 
 <script>
+import api from '@/axios';
+
 export default {
   name: "AdminThongKe",
   data() {
     return {
+      key_search: "",
       selectedPeriod: "month",
+      list_thong_ke: [],
+      add_thong_ke: {},
+      edit_thong_ke: {},
+      delete_thong_ke: {},
+      stats: {
+        gmv: 1450000000,
+        total_users: 3240,
+        total_partners: 48,
+        total_tours: 120
+      },
       monthlyRevenue: [
         { month: "T10", val: 840 },
         { month: "T11", val: 960 },
@@ -232,61 +245,73 @@ export default {
         { month: "T02", val: 1380 },
         { month: "T03", val: 1450 }
       ],
-      topTours: [
-        {
-          id: 1,
-          name: "Bà Nà Hills - Cầu Vàng & Fantasy Park Trọn Gói",
-          category: "Nghỉ dưỡng & Sinh thái",
-          partner: "Sun World Travel Partner",
-          bookings: 624,
-          revenue: 780000000,
-          commission: 78000000
-        },
-        {
-          id: 2,
-          name: "Khám Phá Bán Đảo Sơn Trà & Lặn Ngắm San Hô Cù Lao Chàm",
-          category: "Biển đảo",
-          partner: "Da Nang Sea Travel Ltd.",
-          bookings: 480,
-          revenue: 360000000,
-          commission: 36000000
-        },
-        {
-          id: 3,
-          name: "Hành Trình Phố Cổ Hội An & Rừng Dừa Bảy Mẫu",
-          category: "Di sản & Văn hóa",
-          partner: "Heritage Express",
-          bookings: 310,
-          revenue: 217000000,
-          commission: 21700000
-        },
-        {
-          id: 4,
-          name: "Tour Chèo SUP Ngắm Hoàng Hôn Sông Hàn & Cầu Rồng",
-          category: "Biển đảo",
-          partner: "Han River Adventure",
-          bookings: 280,
-          revenue: 126000000,
-          commission: 12600000
-        },
-        {
-          id: 5,
-          name: "Ngũ Hành Sơn - Làng Đá Mỹ Nghệ Non Nước",
-          category: "Di sản & Văn hóa",
-          partner: "Da Nang Sea Travel Ltd.",
-          bookings: 148,
-          revenue: 66600000,
-          commission: 6660000
-        }
-      ]
+      topTours: []
     };
+  },
+  computed: {
+    totalBookings() {
+      return this.topTours.reduce((sum, item) => sum + (item.bookings || 0), 1842);
+    }
+  },
+  watch: {
+    selectedPeriod() {
+      this.loadData();
+    }
+  },
+  mounted() {
+    this.loadData();
   },
   methods: {
     formatMoney(val) {
-      return Number(val).toLocaleString("vi-VN");
+      return Number(val || 0).toLocaleString("vi-VN");
+    },
+    formatShortMoney(val) {
+      const num = Number(val || 0);
+      if (num >= 1000000000) {
+        return (num / 1000000000).toFixed(2) + " Tỷ";
+      }
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + " Tr";
+      }
+      return num.toLocaleString("vi-VN") + " đ";
+    },
+    loadData() {
+      api.get('/api/admin/thong-ke/get-data', { params: { period: this.selectedPeriod } })
+        .then(res => {
+          if (res.data.status) {
+            if (res.data.stats) {
+              this.stats = res.data.stats;
+            }
+            if (res.data.monthlyRevenue) {
+              this.monthlyRevenue = res.data.monthlyRevenue;
+            }
+            if (res.data.topTours) {
+              this.topTours = res.data.topTours;
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Lỗi khi tải dữ liệu thống kê:', err);
+        });
     },
     exportBI() {
-      alert("Đang trích xuất báo cáo Business Intelligence định dạng PDF và Excel...");
+      if (this.topTours.length === 0) {
+        this.$toast.warning("Chưa có đủ số liệu để xuất báo cáo!");
+        return;
+      }
+      let csv = "\uFEFFThứ hạng,Tên Tour,Đối tác,Lượt đặt,Doanh thu (VNĐ),Hoa hồng (VNĐ)\n";
+      this.topTours.forEach((t, i) => {
+        csv += `${i + 1},"${t.name}","${t.partner}",${t.bookings},${t.revenue},${t.commission}\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Bao_Cao_Doanh_Thu_Top_Tour_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      this.$toast.success("Đã xuất báo cáo BI thành công!");
     }
   }
 };

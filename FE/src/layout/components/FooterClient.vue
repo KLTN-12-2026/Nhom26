@@ -9,12 +9,12 @@
                             <i class="bx bx-paper-plane text-white"></i>
                         </div>
                         <div>
-                            <h6 class="mb-0 fw-bold text-dark">Đà Nẵng Smart Travel AI</h6>
-                            <small class="text-primary fw-semibold">Hệ thống Lập Kế hoạch & Tour Thông Minh</small>
+                            <h6 class="mb-0 fw-bold text-dark">Đà Nẵng Smart Travel</h6>
+                            <small class="text-primary fw-semibold">Hệ Thống Lập Kế Hoạch Du Lịch Cá Nhân Hóa</small>
                         </div>
                     </div>
                     <p class="text-muted small mt-2 mb-3 pe-lg-4">
-                        Nền tảng ứng dụng công nghệ trí tuệ nhân tạo (AI) giúp tối ưu hóa thời gian, ngân sách và lịch trình du lịch khám phá trọn vẹn thành phố Đà Nẵng & miền Trung.
+                        Nền tảng hỗ trợ lập kế hoạch du lịch cá nhân hóa tại Đà Nẵng ứng dụng thuật toán tối ưu lịch trình, giúp du khách tối ưu thời gian, chi phí và trải nghiệm trọn vẹn điểm đến Đà Nẵng.
                     </p>
                     <div class="d-flex gap-2">
                         <a href="javascript:;" class="social-circle-btn" title="Facebook"><i class="bx bxl-facebook"></i></a>
@@ -73,7 +73,7 @@
             <!-- Bottom Copyright & SSL Badge -->
             <div class="d-flex flex-wrap align-items-center justify-content-between py-3 small text-muted">
                 <div>
-                    © 2026 <strong>Đà Nẵng Smart Travel Planner Ecosystem</strong>. Bản quyền thuộc về Smart Travel AI.
+                    © 2026 <strong>Đà Nẵng Smart Travel</strong>. Bản quyền thuộc về hệ thống Đà Nẵng Smart Travel.
                 </div>
                 <div class="d-flex align-items-center gap-3 mt-2 mt-md-0">
                     <span><i class="bx bx-shield-check text-success me-1"></i>Bảo mật SSL 256-bit</span>

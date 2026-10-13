@@ -1,33 +1,35 @@
 <template>
   <div class="admin-page-container">
-    <!-- Top Breadcrumb & Live Status -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="breadcrumb-nav">
-        <span class="text-muted">Trang chủ</span>
-        <span class="mx-2 text-muted">/</span>
-        <span class="text-muted">Kế toán & Vận hành</span>
-        <span class="mx-2 text-muted">/</span>
-        <span class="text-primary fw-semibold">Quản lý Tài chính</span>
-      </div>
+    <!-- Breadcrumb & Database Sync Pill -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
+      <nav class="breadcrumb-admin d-flex align-items-center small text-muted">
+        <router-link to="/admin/dashboard" class="text-secondary text-decoration-none">Trang chủ</router-link>
+        <i class="bx bx-chevron-right mx-1"></i>
+        <span class="text-secondary">Phân hệ Tài chính</span>
+        <i class="bx bx-chevron-right mx-1"></i>
+        <span class="text-primary fw-bold">Đối soát & Quyết toán</span>
+      </nav>
       <div class="sync-badge">
         <span class="pulse-dot"></span>
-        <span class="sync-text">Cơ sở dữ liệu: Hoạt động đồng bộ</span>
+        <span class="font-11">Database: Đồng bộ trực tiếp</span>
       </div>
     </div>
 
-    <!-- Title & Action Bar -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Page Header Title -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
       <div>
         <div class="d-flex align-items-center gap-2">
-          <h3 class="page-title mb-0">Quản lý Tài chính</h3>
-          <span class="table-badge">Table: giao_dichs</span>
+          <h3 class="page-title mb-0">Đối Soát & Quyết Toán Hoa Hồng</h3>
+          <span class="table-badge">Table: doi_soat_hoa_hongs</span>
         </div>
-        <p class="text-muted small mb-0 mt-1">Theo dõi dòng tiền toàn sàn, hoa hồng nền tảng và quyết toán công nợ đối tác du lịch.</p>
+        <p class="text-muted small mb-0 mt-1">Quản lý dòng tiền booking, khấu trừ phí hoa hồng sàn và theo dõi quyết toán chi trả cho các đối tác du lịch.</p>
       </div>
-      <button class="btn btn-primary-custom d-flex align-items-center gap-2" @click="openSettleModal">
-        <i class="bx bx-check-double font-20"></i>
-        <span>+ Quyết Toán Định Kỳ</span>
-      </button>
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary-custom d-flex align-items-center gap-2" @click="openSettleModal">
+          <i class="bx bx-calculator font-20"></i>
+          <span>Khởi Tạo Kỳ Quyết Toán</span>
+        </button>
+      </div>
     </div>
 
     <!-- 4 KPI Summary Cards -->
@@ -35,12 +37,12 @@
       <div class="col-12 col-sm-6 col-xl-3">
         <div class="kpi-card">
           <div class="kpi-content">
-            <span class="kpi-label">TỔNG GMV TOÀN SÀN</span>
-            <div class="kpi-value text-dark">1.28<span style="font-size: 1.1rem; font-weight: 600;"> Tỷ</span></div>
-            <span class="kpi-subtext text-success"><i class="bx bx-trending-up me-1"></i>+15.8% tháng này</span>
+            <span class="kpi-label">TỔNG GMV GIAO DỊCH</span>
+            <div class="kpi-value">{{ formatShortMoney(stats.total_gmv) }}</div>
+            <span class="kpi-subtext">Doanh số tour toàn sàn</span>
           </div>
           <div class="kpi-icon icon-blue">
-            <i class="bx bx-wallet"></i>
+            <i class="bx bx-chart"></i>
           </div>
         </div>
       </div>
@@ -48,12 +50,12 @@
       <div class="col-12 col-sm-6 col-xl-3">
         <div class="kpi-card">
           <div class="kpi-content">
-            <span class="kpi-label">HOA HỒNG SÀN (10%)</span>
-            <div class="kpi-value text-success">128<span style="font-size: 1.1rem; font-weight: 600;"> Tr</span></div>
-            <span class="kpi-subtext">Doanh thu ròng thực tế</span>
+            <span class="kpi-label">DOANH THU HOA HỒNG SÀN</span>
+            <div class="kpi-value text-success">{{ formatShortMoney(stats.total_commission) }}</div>
+            <span class="kpi-subtext">Phí dịch vụ trung gian sàn thu</span>
           </div>
           <div class="kpi-icon icon-green">
-            <i class="bx bx-coin-stack"></i>
+            <i class="bx bx-trending-up"></i>
           </div>
         </div>
       </div>
@@ -61,12 +63,12 @@
       <div class="col-12 col-sm-6 col-xl-3">
         <div class="kpi-card">
           <div class="kpi-content">
-            <span class="kpi-label">ĐÃ THANH TOÁN B2B</span>
-            <div class="kpi-value text-primary">1.15<span style="font-size: 1.1rem; font-weight: 600;"> Tỷ</span></div>
-            <span class="kpi-subtext">Đã giải ngân qua ngân hàng</span>
+            <span class="kpi-label">THỰC CHI ĐỐI TÁC</span>
+            <div class="kpi-value text-primary">{{ formatShortMoney(stats.total_payout) }}</div>
+            <span class="kpi-subtext">Tổng tiền chuyển giao đối tác</span>
           </div>
-          <div class="kpi-icon icon-blue">
-            <i class="bx bx-credit-card"></i>
+          <div class="kpi-icon icon-orange">
+            <i class="bx bx-money-withdraw"></i>
           </div>
         </div>
       </div>
@@ -74,9 +76,9 @@
       <div class="col-12 col-sm-6 col-xl-3">
         <div class="kpi-card">
           <div class="kpi-content">
-            <span class="kpi-label">CHỜ ĐỐI SOÁT</span>
-            <div class="kpi-value text-danger">48<span style="font-size: 1.1rem; font-weight: 600;"> Tr</span></div>
-            <span class="kpi-subtext">04 lệnh chuyển tiền chờ duyệt</span>
+            <span class="kpi-label">PHIẾU CHỜ ĐỐI SOÁT</span>
+            <div class="kpi-value text-danger">{{ stats.pending_count }}</div>
+            <span class="kpi-subtext">Cần kế toán duyệt chuyển khoản</span>
           </div>
           <div class="kpi-icon icon-red">
             <i class="bx bx-time-five"></i>
@@ -89,34 +91,27 @@
     <div class="card filter-card mb-4 border-0 shadow-sm">
       <div class="card-body p-3">
         <div class="row g-2 align-items-center">
-          <div class="col-12 col-md-5">
+          <div class="col-12 col-md-6">
             <div class="search-input-wrap">
               <i class="bx bx-search search-icon"></i>
               <input 
                 type="text" 
                 class="form-control search-input" 
-                placeholder="Tìm kiếm theo mã giao dịch, đối tác hoặc ngân hàng..."
-                v-model="searchQuery"
+                placeholder="Tìm kiếm theo mã đối soát, hóa đơn, tên đối tác..."
+                v-model="key_search"
               >
             </div>
           </div>
           <div class="col-6 col-md-3">
-            <select class="form-select filter-select" v-model="filterType">
-              <option value="">Tất cả phương thức</option>
-              <option value="VietinBank">VietinBank</option>
-              <option value="Vietcombank">Vietcombank</option>
-              <option value="MBBank">MBBank</option>
-            </select>
-          </div>
-          <div class="col-6 col-md-2">
             <select class="form-select filter-select" v-model="filterStatus">
               <option value="">Tất cả trạng thái</option>
-              <option value="completed">Đã giải ngân</option>
+              <option value="completed">Đã thanh toán (Giải ngân)</option>
               <option value="pending">Chờ đối soát</option>
+              <option value="cancelled">Tạm treo / Hủy</option>
             </select>
           </div>
-          <div class="col-12 col-md-2 text-md-end text-muted small">
-            Hiển thị <strong class="text-dark">{{ filteredTransactions.length }}</strong> giao dịch
+          <div class="col-6 col-md-3 text-end text-muted small">
+            Hiển thị <strong class="text-dark">{{ filteredTransactions.length }}</strong> phiếu đối soát
           </div>
         </div>
       </div>
@@ -130,33 +125,35 @@
             <tr>
               <th scope="col" class="ps-4">MÃ ĐỐI SOÁT</th>
               <th scope="col">ĐỐI TÁC THỤ HƯỞNG</th>
-              <th scope="col">TÀI KHOẢN NHẬN</th>
               <th scope="col" class="text-end">TỔNG GIÁ TRỊ</th>
               <th scope="col" class="text-end">HOA HỒNG SÀN</th>
               <th scope="col" class="text-end">THỰC CHI ĐỐI TÁC</th>
               <th scope="col" class="text-center">TRẠNG THÁI</th>
-              <th scope="col">NGÀY ĐỐI SOÁT</th>
+              <th scope="col" class="text-center">NGÀY ĐỐI SOÁT</th>
               <th scope="col" class="text-end pe-4">THAO TÁC</th>
             </tr>
           </thead>
           <tbody>
+            <tr v-if="filteredTransactions.length === 0">
+              <td colspan="8" class="text-center py-5 text-muted">
+                <i class="bx bx-receipt font-28 d-block mb-1"></i>
+                Không tìm thấy phiếu đối soát nào!
+              </td>
+            </tr>
             <tr v-for="t in filteredTransactions" :key="t.id">
               <td class="ps-4">
                 <span class="admin-code">{{ t.code }}</span>
               </td>
               <td>
                 <div class="fw-bold text-dark">{{ t.partner }}</div>
-                <small class="text-muted"><i class="bx bx-calendar me-1"></i>Chu kỳ: {{ t.period }}</small>
-              </td>
-              <td>
-                <div class="small fw-semibold">{{ t.bank }}</div>
-                <small class="text-muted font-monospace">{{ t.accountNumber }}</small>
+                <small class="text-muted"><i class="bx bx-receipt me-1"></i>Hóa đơn: <strong>{{ t.invoiceCode }}</strong></small>
               </td>
               <td class="text-end fw-semibold text-dark">
                 {{ formatMoney(t.total) }}đ
               </td>
               <td class="text-end text-success fw-semibold">
                 {{ formatMoney(t.commission) }}đ
+                <small class="d-block text-muted font-11">({{ t.rate }}%)</small>
               </td>
               <td class="text-end text-primary fw-bold">
                 {{ formatMoney(t.payout) }}đ
@@ -165,16 +162,19 @@
                 <span v-if="t.status === 'completed'" class="status-pill status-active">
                   <span class="dot"></span> Đã thanh toán
                 </span>
+                <span v-else-if="t.status === 'cancelled'" class="status-pill status-locked">
+                  <span class="dot"></span> Tạm treo / Hủy
+                </span>
                 <span v-else class="status-pill status-pending">
                   <span class="dot"></span> Chờ đối soát
                 </span>
               </td>
-              <td class="text-muted small">
-                {{ t.createdAt }}
+              <td class="text-center text-muted small">
+                <i class="bx bx-calendar me-1 text-primary"></i>{{ t.settlementDate }}
               </td>
               <td class="text-end pe-4">
                 <div class="action-btn-group">
-                  <button class="action-btn" title="Xem phiếu đối soát" @click="viewDetail(t)">
+                  <button class="action-btn" title="Xem phiếu đối soát chi tiết" @click="viewDetail(t)">
                     <i class="bx bx-receipt"></i>
                   </button>
                   <button 
@@ -185,7 +185,7 @@
                   >
                     <i class="bx bx-check"></i>
                   </button>
-                  <button class="action-btn text-danger" title="Hủy / Treo lệnh" @click="cancelPayout(t)">
+                  <button class="action-btn text-danger" title="Treo lệnh / Hủy" @click="cancelPayout(t)">
                     <i class="bx bx-x"></i>
                   </button>
                 </div>
@@ -197,7 +197,7 @@
 
       <!-- Pagination -->
       <div class="d-flex justify-content-between align-items-center p-3 border-top">
-        <span class="text-muted small">Trang 1 trên 1 (Dữ liệu mẫu chuẩn)</span>
+        <span class="text-muted small">Trang 1 trên 1 (Dữ liệu chuẩn hệ thống)</span>
         <div class="d-flex gap-1">
           <button class="btn btn-sm btn-outline-secondary px-3" disabled>Trước</button>
           <button class="btn btn-sm btn-primary-custom px-3">1</button>
@@ -218,17 +218,17 @@
             <div class="mb-3">
               <label class="form-label small fw-semibold">Chọn Kỳ Quyết Toán</label>
               <select class="form-select">
-                <option>Kỳ 1: 01/03/2025 - 15/03/2025</option>
-                <option>Kỳ 2: 16/03/2025 - 31/03/2025</option>
+                <option>Kỳ hiện tại (Tháng {{ new Date().getMonth() + 1 }}/{{ new Date().getFullYear() }})</option>
+                <option>Kỳ trước đó</option>
               </select>
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-semibold">Tự Động Tính Hoa Hồng</label>
+              <label class="form-label small fw-semibold">Tự Động Tính Hoa Hồng Sàn</label>
               <input type="text" class="form-control" value="10.0% (Cố định sàn)" disabled>
             </div>
             <div class="p-3 bg-light rounded-3 small text-muted">
               <i class="bx bx-info-circle me-1 text-primary"></i>
-              Hệ thống sẽ quét toàn bộ booking đã hoàn tất tour trong kỳ và tạo phiếu đối soát công nợ tự động đến từng đối tác.
+              Hệ thống sẽ quét toàn bộ booking đã hoàn tất tour trong kỳ và tạo phiếu đối soát công nợ tự động đến từng đối tác theo tỷ lệ hoa hồng quy định.
             </div>
           </div>
           <div class="modal-footer border-0 pt-0">
@@ -238,114 +238,226 @@
         </div>
       </div>
     </div>
+
+    <!-- Detail Modal -->
+    <div class="modal fade show d-block" tabindex="-1" v-if="showDetailModal" style="background: rgba(0,0,0,0.45);">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold text-dark">Chi Tiết Phiếu Đối Soát #{{ selectedDetail ? selectedDetail.code : '' }}</h5>
+            <button type="button" class="btn-close" @click="showDetailModal = false"></button>
+          </div>
+          <div class="modal-body pt-3" v-if="selectedDetail">
+            <div class="p-3 bg-light rounded-3 mb-3">
+              <div class="fw-bold text-dark font-16">{{ selectedDetail.partner }}</div>
+              <div class="text-muted small mt-1">
+                <span>Mã đối tác: <strong>{{ selectedDetail.partnerCode }}</strong></span>
+                <span class="mx-2">•</span>
+                <span>Hóa đơn: <strong>{{ selectedDetail.invoiceCode }}</strong></span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Ngày đối soát:</span>
+              <span class="fw-semibold text-dark">{{ selectedDetail.settlementDate }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Tổng doanh thu giao dịch:</span>
+              <span class="fw-bold text-dark">{{ formatMoney(selectedDetail.total) }}đ</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Hoa hồng sàn giữ lại ({{ selectedDetail.rate }}%):</span>
+              <span class="fw-bold text-success">{{ formatMoney(selectedDetail.commission) }}đ</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Số tiền thực chi đối tác:</span>
+              <span class="fw-bold text-primary font-16">{{ formatMoney(selectedDetail.payout) }}đ</span>
+            </div>
+            <div class="d-flex justify-content-between py-2">
+              <span class="text-muted">Trạng thái:</span>
+              <span class="badge" :class="selectedDetail.status === 'completed' ? 'bg-success' : (selectedDetail.status === 'pending' ? 'bg-warning text-dark' : 'bg-danger')">
+                {{ selectedDetail.status === 'completed' ? 'Đã thanh toán' : (selectedDetail.status === 'pending' ? 'Chờ duyệt đối soát' : 'Tạm hoãn / Treo') }}
+              </span>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light px-4" @click="showDetailModal = false">Đóng</button>
+            <button 
+              type="button" 
+              class="btn btn-success px-4" 
+              v-if="selectedDetail && selectedDetail.status === 'pending'"
+              @click="approvePayout(selectedDetail); showDetailModal = false"
+            >
+              Duyệt Chuyển Tiền
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import api from '@/axios';
+
 export default {
   name: "AdminTaiChinh",
   data() {
     return {
+      key_search: "",
       searchQuery: "",
-      filterType: "",
       filterStatus: "",
       showModalSettle: false,
-      transactions: [
-        {
-          id: 1,
-          code: "TXN001",
-          partner: "Da Nang Sea Travel Ltd.",
-          period: "Tháng 02/2025 (Kỳ 1)",
-          bank: "Vietcombank",
-          accountNumber: "0041000349281",
-          total: 48500000,
-          commission: 4850000,
-          payout: 43650000,
-          status: "completed",
-          createdAt: "2025-02-16"
-        },
-        {
-          id: 2,
-          code: "TXN002",
-          partner: "Sun World Travel Partner",
-          period: "Tháng 02/2025 (Kỳ 1)",
-          bank: "VietinBank",
-          accountNumber: "108000492819",
-          total: 92400000,
-          commission: 9240000,
-          payout: 83160000,
-          status: "completed",
-          createdAt: "2025-02-16"
-        },
-        {
-          id: 3,
-          code: "TXN003",
-          partner: "Han River Adventure",
-          period: "Tháng 02/2025 (Kỳ 2)",
-          bank: "MBBank",
-          accountNumber: "0905112233",
-          total: 28000000,
-          commission: 2800000,
-          payout: 25200000,
-          status: "pending",
-          createdAt: "2025-03-01"
-        },
-        {
-          id: 4,
-          code: "TXN004",
-          partner: "Heritage Express",
-          period: "Tháng 02/2025 (Kỳ 2)",
-          bank: "Vietcombank",
-          accountNumber: "007100829103",
-          total: 25300000,
-          commission: 2530000,
-          payout: 22770000,
-          status: "pending",
-          createdAt: "2025-03-01"
-        }
-      ]
+      showDetailModal: false,
+      selectedDetail: null,
+      list_tai_chinh: [],
+      add_tai_chinh: {},
+      edit_tai_chinh: {},
+      delete_tai_chinh: {},
+      stats: {
+        total_gmv: 0,
+        total_commission: 0,
+        total_payout: 0,
+        pending_count: 0
+      },
+      transactions: []
     };
   },
   computed: {
     filteredTransactions() {
+      const q = (this.key_search || this.searchQuery || '').toLowerCase().trim();
       return this.transactions.filter(t => {
         const matchSearch =
-          t.code.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          t.partner.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          t.bank.toLowerCase().includes(this.searchQuery.toLowerCase());
-        const matchType = this.filterType ? t.bank === this.filterType : true;
-        const matchStatus = this.filterStatus ? t.status === this.filterStatus : true;
-        return matchSearch && matchType && matchStatus;
+          !q ||
+          (t.code || '').toLowerCase().includes(q) ||
+          (t.partner || '').toLowerCase().includes(q) ||
+          (t.invoiceCode || '').toLowerCase().includes(q);
+
+        const matchStatus = !this.filterStatus || t.status === this.filterStatus;
+        return matchSearch && matchStatus;
       });
     }
   },
+  mounted() {
+    this.loadData();
+  },
   methods: {
     formatMoney(val) {
-      return Number(val).toLocaleString("vi-VN");
+      return Number(val || 0).toLocaleString("vi-VN");
+    },
+    formatShortMoney(val) {
+      const num = Number(val || 0);
+      if (num >= 1000000000) {
+        return (num / 1000000000).toFixed(2) + " Tỷ";
+      }
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + " Tr";
+      }
+      return num.toLocaleString("vi-VN") + " đ";
+    },
+    loadData() {
+      api.get('/api/admin/tai-chinh/get-data')
+        .then(res => {
+          if (res.data.status) {
+            const list = res.data.data || [];
+            this.list_tai_chinh = list;
+            this.transactions = list.map(item => {
+              // Xử lý ngày đối soát từ ngay_doi_soat hoặc created_at
+              let dateStr = '---';
+              const rawDate = item.ngay_doi_soat || item.created_at;
+              if (rawDate) {
+                const d = new Date(rawDate);
+                if (!isNaN(d.getTime())) {
+                  const day = String(d.getDate()).padStart(2, '0');
+                  const month = String(d.getMonth() + 1).padStart(2, '0');
+                  const year = d.getFullYear();
+                  dateStr = `${day}/${month}/${year}`;
+                } else {
+                  dateStr = String(rawDate).slice(0, 10);
+                }
+              }
+
+              return {
+                id: item.ma_doi_soat,
+                code: 'DS' + String(item.ma_doi_soat).padStart(3, '0'),
+                invoiceCode: item.ma_hoa_don || 'HD---',
+                partner: item.ten_doi_tac || item.ma_doi_tac || 'Đối tác lữ hành',
+                partnerCode: item.ma_doi_tac,
+                rate: item.phan_tram_hoa_hong || 10,
+                total: parseFloat(item.tong_tien_giao_dich) || 0,
+                commission: parseFloat(item.tien_hoa_hong_admin) || 0,
+                payout: parseFloat(item.tien_doi_tac_thuc_nhan) || 0,
+                status: item.trang_thai_thanh_toan == 1 ? 'completed' : (item.trang_thai_thanh_toan == 2 ? 'cancelled' : 'pending'),
+                settlementDate: dateStr
+              };
+            });
+
+            if (res.data.stats) {
+              this.stats = res.data.stats;
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Lỗi khi tải dữ liệu tài chính:', err);
+        });
     },
     openSettleModal() {
       this.showModalSettle = true;
     },
     runSettlement() {
-      alert("Đã khởi tạo quy trình tính toán tự động thành công!");
-      this.showModalSettle = false;
-    },
-    approvePayout(t) {
-      if (t.status === "completed") {
-        alert("Lệnh chuyển tiền này đã hoàn tất trước đó.");
-        return;
-      }
-      if (confirm(`Xác nhận duyệt chuyển khoản số tiền ${this.formatMoney(t.payout)}đ cho ${t.partner}?`)) {
-        t.status = "completed";
-      }
-    },
-    cancelPayout(t) {
-      if (confirm(`Bạn có chắc muốn tạm hoãn phiếu đối soát ${t.code}?`)) {
-        alert(`Đã tạm hoãn phiếu ${t.code}`);
-      }
+      api.post('/api/admin/tai-chinh/run-settlement')
+        .then(res => {
+          if (res.data.status) {
+            this.$toast.success(res.data.message || 'Khởi tạo kỳ đối soát thành công!');
+            this.showModalSettle = false;
+            this.loadData();
+          } else {
+            this.$toast.error(res.data.message || 'Khởi tạo thất bại!');
+          }
+        })
+        .catch(err => {
+          const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
+          this.$toast.error(msg);
+        });
     },
     viewDetail(t) {
-      alert(`Chi tiết phiếu ${t.code}:\nĐối tác: ${t.partner}\nNgân hàng: ${t.bank} - ${t.accountNumber}\nTổng đơn: ${this.formatMoney(t.total)}đ\nHoa hồng: ${this.formatMoney(t.commission)}đ\nThực nhận: ${this.formatMoney(t.payout)}đ`);
+      this.selectedDetail = t;
+      this.showDetailModal = true;
+    },
+    approvePayout(t) {
+      if (t.status === 'completed') {
+        this.$toast.info('Phiếu đối soát này đã được thanh toán giải ngân trước đó!');
+        return;
+      }
+      api.post('/api/admin/tai-chinh/approve-payout', { ma_doi_soat: t.id })
+        .then(res => {
+          if (res.data.status) {
+            this.$toast.success(res.data.message || 'Duyệt thanh toán thành công!');
+            this.loadData();
+          } else {
+            this.$toast.error(res.data.message || 'Thao tác thất bại!');
+          }
+        })
+        .catch(err => {
+          const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
+          this.$toast.error(msg);
+        });
+    },
+    cancelPayout(t) {
+      if (confirm(`Bạn có chắc muốn tạm treo hoặc hủy phiếu đối soát ${t.code}?`)) {
+        api.post('/api/admin/tai-chinh/cancel-payout', { ma_doi_soat: t.id })
+          .then(res => {
+            if (res.data.status) {
+              this.$toast.warning(res.data.message || 'Đã tạm treo phiếu đối soát!');
+              this.loadData();
+            } else {
+              this.$toast.error(res.data.message || 'Thao tác thất bại!');
+            }
+          })
+          .catch(err => {
+            const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
+            this.$toast.error(msg);
+          });
+      }
     }
   }
 };
@@ -356,7 +468,7 @@ export default {
   padding: 0.5rem;
 }
 
-.breadcrumb-nav {
+.breadcrumb-admin {
   font-size: 0.85rem;
 }
 
@@ -384,26 +496,26 @@ export default {
 .page-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #1e293b;
 }
 
 .table-badge {
   background-color: #f1f5f9;
   color: #64748b;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
   padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-family: monospace;
 }
 
 .btn-primary-custom {
   background-color: #0284c7;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 0.55rem 1.25rem;
-  font-size: 0.875rem;
   font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
   transition: all 0.2s;
 }
 
@@ -414,18 +526,13 @@ export default {
 
 .kpi-card {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 1.25rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  transition: all 0.2s;
-}
-
-.kpi-card:hover {
-  border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  height: 100%;
 }
 
 .kpi-label {
@@ -437,16 +544,14 @@ export default {
 
 .kpi-value {
   font-size: 1.75rem;
-  font-weight: 800;
+  font-weight: 700;
   color: #0f172a;
-  margin: 0.35rem 0 0.2rem 0;
-  line-height: 1.2;
+  margin: 0.25rem 0;
 }
 
 .kpi-subtext {
   font-size: 0.75rem;
-  color: #0284c7;
-  font-weight: 500;
+  color: #94a3b8;
 }
 
 .kpi-icon {
@@ -456,13 +561,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.35rem;
+  font-size: 1.4rem;
 }
 
-.icon-blue { background-color: #f0f9ff; color: #0284c7; }
-.icon-green { background-color: #f0fdf4; color: #16a34a; }
-.icon-orange { background-color: #fff7ed; color: #ea580c; }
-.icon-red { background-color: #fef2f2; color: #dc2626; }
+.icon-blue { background-color: #e0f2fe; color: #0284c7; }
+.icon-green { background-color: #dcfce7; color: #16a34a; }
+.icon-orange { background-color: #ffedd5; color: #ea580c; }
+.icon-red { background-color: #fee2e2; color: #dc2626; }
 
 .search-input-wrap {
   position: relative;
@@ -470,74 +575,83 @@ export default {
 
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
   color: #94a3b8;
-  font-size: 1.1rem;
 }
 
 .search-input {
-  padding-left: 38px;
+  padding-left: 2.25rem;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
-  font-size: 0.875rem;
 }
 
 .filter-select {
   border-radius: 8px;
   border: 1px solid #e2e8f0;
-  font-size: 0.875rem;
+}
+
+.table-card {
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .admin-code {
   font-family: monospace;
   font-weight: 700;
-  color: #0284c7;
-  font-size: 0.85rem;
+  color: #0f172a;
+  background-color: #f8fafc;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
 }
 
 .status-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
 }
 
-.status-active { background-color: #ecfdf5; color: #059669; }
-.status-pending { background-color: #fffbeb; color: #d97706; }
+.status-active { background-color: #dcfce7; color: #15803d; }
+.status-pending { background-color: #fef3c7; color: #b45309; }
+.status-locked { background-color: #fee2e2; color: #b91c1c; }
 
 .status-pill .dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: currentColor;
 }
 
+.status-active .dot { background-color: #22c55e; }
+.status-pending .dot { background-color: #f59e0b; }
+.status-locked .dot { background-color: #ef4444; }
+
 .action-btn-group {
-  display: inline-flex;
+  display: flex;
+  justify-content: flex-end;
   gap: 0.35rem;
 }
 
 .action-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  background: transparent;
   border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #64748b;
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #64748b;
   transition: all 0.15s;
 }
 
 .action-btn:hover {
-  background: #f8fafc;
+  background-color: #f8fafc;
   color: #0f172a;
-  border-color: #cbd5e1;
 }
 </style>

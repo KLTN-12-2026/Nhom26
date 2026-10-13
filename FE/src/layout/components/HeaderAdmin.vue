@@ -8,14 +8,14 @@
                     <i class="bx bx-menu"></i>
                 </button>
 
-                <!-- Brand Logo (Đà Nẵng Smart Travel AI) -->
-                <router-link to="/admin/dashboard" class="admin-header-brand text-decoration-none">
+                <!-- Brand Logo (Đà Nẵng Smart Travel) -->
+                <router-link to="/admin/dashboard" class="admin-header-brand text-decoration-none" title="Đà Nẵng Smart Travel">
                     <div class="brand-logo-circle">
                         <i class="bx bxs-map-pin"></i>
                     </div>
                     <div class="d-none d-sm-flex flex-column">
-                        <span class="brand-name">Đà Nẵng Smart Travel AI</span>
-                        <span class="brand-tagline">Du lịch Thông minh & AI Planner</span>
+                        <span class="brand-name">Đà Nẵng Smart Travel</span>
+                        <span class="brand-tagline">Hệ thống Lập Kế hoạch & Tối ưu Lịch trình</span>
                     </div>
                 </router-link>
 
@@ -112,6 +112,7 @@ export default {
     methods: {
         dangXuat() {
             if (confirm('Bạn có muốn đăng xuất khỏi hệ thống quản trị Admin?')) {
+                localStorage.removeItem('xs');
                 localStorage.removeItem('token_admin');
                 this.$router.push('/admin/dashboard');
             }

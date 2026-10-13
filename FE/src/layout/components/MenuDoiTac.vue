@@ -12,8 +12,8 @@
                     </svg>
                 </div>
                 <div class="brand-info">
-                    <h2 class="brand-title">Smart Travel</h2>
-                    <span class="brand-subtitle">PARTNER CENTER</span>
+                    <h2 class="brand-title" title="Đà Nẵng Smart Travel">Đà Nẵng Smart Travel</h2>
+                    <span class="brand-subtitle" title="Hệ thống hỗ trợ lập kế hoạch du lịch cá nhân hóa tại Đà Nẵng">CỔNG ĐỐI TÁC B2B</span>
                 </div>
             </div>
 
@@ -183,6 +183,7 @@ export default {
         },
         handleLogout() {
             if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi kênh đối tác?')) {
+                localStorage.removeItem('xs');
                 localStorage.removeItem('token_doitac');
                 this.$router.push('/doitac/login');
             }

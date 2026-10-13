@@ -36,8 +36,8 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">TỔNG SỐ TICKET</span>
-            <div class="kpi-value">38</div>
-            <span class="kpi-subtext">Đồng bộ từ bao_cao_lois</span>
+            <div class="kpi-value">{{ stats.total }}</div>
+            <span class="kpi-subtext">Đồng bộ từ phan_hois</span>
           </div>
           <div class="kpi-icon icon-blue">
             <i class="bx bx-support"></i>
@@ -49,7 +49,7 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">CHƯA XỬ LÝ</span>
-            <div class="kpi-value text-danger">05</div>
+            <div class="kpi-value text-danger">{{ stats.pending < 10 ? '0' + stats.pending : stats.pending }}</div>
             <span class="kpi-subtext">Cần phản hồi trong 24 giờ</span>
           </div>
           <div class="kpi-icon icon-red">
@@ -62,7 +62,7 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">ĐANG KHẮC PHỤC</span>
-            <div class="kpi-value text-warning">08</div>
+            <div class="kpi-value text-warning">{{ stats.processing < 10 ? '0' + stats.processing : stats.processing }}</div>
             <span class="kpi-subtext">Đang phân công kỹ thuật viên</span>
           </div>
           <div class="kpi-icon icon-orange">
@@ -75,8 +75,8 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">ĐÃ GIẢI QUYẾT</span>
-            <div class="kpi-value text-success">25</div>
-            <span class="kpi-subtext">Tỷ lệ hài lòng 96.5%</span>
+            <div class="kpi-value text-success">{{ stats.resolved < 10 ? '0' + stats.resolved : stats.resolved }}</div>
+            <span class="kpi-subtext">Tỷ lệ hoàn thành {{ stats.total > 0 ? ((stats.resolved / stats.total) * 100).toFixed(1) : 0 }}%</span>
           </div>
           <div class="kpi-icon icon-green">
             <i class="bx bx-check-shield"></i>
@@ -96,7 +96,7 @@
                 type="text" 
                 class="form-control search-input" 
                 placeholder="Tìm theo mã ticket, tên người báo, tiêu đề lỗi..."
-                v-model="searchQuery"
+                v-model="key_search"
               >
             </div>
           </div>
@@ -240,7 +240,7 @@
               </div>
               <div class="col-12">
                 <label class="small text-muted fw-semibold">Ghi chú phản hồi khách hàng:</label>
-                <textarea class="form-control" rows="2" placeholder="Nhập nội dung gửi phản hồi lại cho khách qua email..."></textarea>
+                <textarea class="form-control" rows="2" placeholder="Nhập nội dung gửi phản hồi lại cho khách qua email..." v-model="selectedTicket.adminReply"></textarea>
               </div>
             </div>
           </div>
@@ -249,10 +249,49 @@
             <button 
               type="button" 
               class="btn btn-success px-4"
-              @click="markResolved(selectedTicket); selectedTicket = null"
+              @click="markResolved(selectedTicket)"
             >
               Cập Nhật & Hoàn Tất Sửa Lỗi
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Tạo Ticket Nội Bộ -->
+    <div class="modal fade show d-block" tabindex="-1" v-if="showAddModal" style="background: rgba(0,0,0,0.45);">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold text-dark">Tạo Ticket Báo Lỗi / Hỗ Trợ Mới</h5>
+            <button type="button" class="btn-close" @click="showAddModal = false"></button>
+          </div>
+          <div class="modal-body pt-3">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Mã khách hàng / Người gửi</label>
+              <input type="text" class="form-control" v-model="newTicket.ma_khach_hang" placeholder="VD: KH001 hoặc NV_SUPPORT">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Tiêu đề sự cố</label>
+              <input type="text" class="form-control" v-model="newTicket.tieu_de" placeholder="VD: Lỗi hiển thị lịch tour...">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Phân loại</label>
+              <select class="form-select" v-model="newTicket.loai">
+                <option value="Thanh toán">Thanh toán & Đơn hàng</option>
+                <option value="AI Planner">AI Planner & Lộ trình</option>
+                <option value="Đặt Tour">Đặt Tour & Dịch vụ</option>
+                <option value="Giao diện">Giao diện & Trải nghiệm</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Mô tả chi tiết</label>
+              <textarea class="form-control" rows="3" v-model="newTicket.mo_ta" placeholder="Mô tả hành vi lỗi hoặc khiếu nại..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light px-4" @click="showAddModal = false">Hủy</button>
+            <button type="button" class="btn btn-primary-custom px-4" @click="saveNewTicket">Gửi Ticket</button>
           </div>
         </div>
       </div>
@@ -261,94 +300,166 @@
 </template>
 
 <script>
+import api from '@/axios';
+
 export default {
   name: "AdminBaoCaoLoi",
   data() {
     return {
+      key_search: "",
       searchQuery: "",
       filterCategory: "",
       filterStatus: "",
       selectedTicket: null,
-      reports: [
-        {
-          id: 1,
-          code: "TCK001",
-          sender: "Võ Thị Quỳnh Như",
-          email: "quynhnhu.vo@gmail.com",
-          category: "Thanh toán",
-          title: "Báo lỗi trừ tiền ngân hàng nhưng chưa nhận được mã vé tour Bà Nà",
-          description: "Tôi quét mã QR VietQR trừ 1.250.000đ từ Techcombank lúc 14:15 hôm nay nhưng hệ thống vẫn báo đơn hàng đang chờ thanh toán.",
-          priority: "Khẩn cấp",
-          status: "pending",
-          createdAt: "2025-02-28"
-        },
-        {
-          id: 2,
-          code: "TCK002",
-          sender: "Trần Thế Vinh",
-          email: "vinh.thetran@yahoo.com",
-          category: "AI Planner",
-          title: "AI gợi ý lộ trình lặp lại điểm đến cùng một buổi sáng",
-          description: "Lên kế hoạch 3 ngày 2 đêm, AI xếp Cầu Vàng vào cả sáng ngày 1 và sáng ngày 2.",
-          priority: "Cao",
-          status: "processing",
-          createdAt: "2025-02-26"
-        },
-        {
-          id: 3,
-          code: "TCK003",
-          sender: "Đối tác Da Nang Sea Travel",
-          email: "support@danangseatravel.vn",
-          category: "Đặt Tour",
-          title: "Không cập nhật được số chỗ trống còn lại trên tour Cù Lao Chàm",
-          description: "Khi đổi số lượng khách từ 20 thành 15 hệ thống báo lỗi 500 Network Error.",
-          priority: "Cao",
-          status: "processing",
-          createdAt: "2025-02-25"
-        },
-        {
-          id: 4,
-          code: "TCK004",
-          sender: "Nguyễn Thanh Bình",
-          email: "binh.nguyen@gmail.com",
-          category: "Giao diện",
-          title: "Vỡ giao diện nút Đặt Tour trên điện thoại màn hình nhỏ iPhone SE",
-          description: "Nút bấm bị che khuất bởi thanh menu dưới cùng.",
-          priority: "Bình thường",
-          status: "resolved",
-          createdAt: "2025-02-20"
-        }
-      ]
+      showAddModal: false,
+      list_bao_cao_loi: [],
+      add_bao_cao_loi: {
+        ma_khach_hang: "KH001",
+        tieu_de: "",
+        loai: "Thanh toán",
+        mo_ta: "",
+        trang_thai: "pending"
+      },
+      edit_bao_cao_loi: {},
+      delete_bao_cao_loi: {},
+      newTicket: {
+        ma_khach_hang: "KH001",
+        tieu_de: "",
+        loai: "Thanh toán",
+        mo_ta: "",
+        trang_thai: "pending"
+      },
+      stats: {
+        total: 0,
+        pending: 0,
+        processing: 0,
+        resolved: 0
+      },
+      reports: []
     };
   },
   computed: {
     filteredReports() {
+      const q = (this.key_search || this.searchQuery || '').toLowerCase();
       return this.reports.filter(r => {
         const matchSearch =
-          r.code.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          r.sender.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          r.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          r.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+          (r.code || '').toLowerCase().includes(q) ||
+          (r.sender || '').toLowerCase().includes(q) ||
+          (r.title || '').toLowerCase().includes(q) ||
+          (r.description || '').toLowerCase().includes(q);
         const matchCat = this.filterCategory ? r.category === this.filterCategory : true;
         const matchStatus = this.filterStatus ? r.status === this.filterStatus : true;
         return matchSearch && matchCat && matchStatus;
       });
     }
   },
+  mounted() {
+    this.loadData();
+  },
   methods: {
+    loadData() {
+      api.get('/api/admin/bao-cao-loi/get-data')
+        .then(res => {
+          if (res.data.status) {
+            const list = res.data.data || [];
+            this.list_bao_cao_loi = list;
+            this.reports = list.map(item => ({
+              id: item.id,
+              code: 'TCK' + String(item.id).padStart(3, '0'),
+              sender: item.ten_khach_hang || item.ma_khach_hang || 'Khách hàng',
+              email: item.email_khach_hang || 'support@danangtravel.vn',
+              category: item.loai || 'Hệ thống',
+              title: item.tieu_de || 'Báo cáo sự cố',
+              description: item.mo_ta || '',
+              priority: item.loai === 'Thanh toán' ? 'Khẩn cấp' : (item.loai === 'AI Planner' ? 'Cao' : 'Bình thường'),
+              status: item.trang_thai || 'pending',
+              adminReply: item.phan_hoi_admin || '',
+              createdAt: item.created_at ? item.created_at.slice(0, 10) : ''
+            }));
+
+            if (res.data.stats) {
+              this.stats = res.data.stats;
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Lỗi khi tải danh sách báo cáo lỗi:', err);
+        });
+    },
     viewDetail(r) {
-      this.selectedTicket = r;
+      this.edit_bao_cao_loi = { ...r };
+      this.selectedTicket = { ...r };
     },
     markResolved(r) {
-      r.status = "resolved";
+      if (!r) return;
+      this.edit_bao_cao_loi = { ...r };
+      api.post('/api/admin/bao-cao-loi/update', {
+        id: r.id,
+        trang_thai: 'resolved',
+        phan_hoi_admin: r.adminReply
+      })
+      .then(res => {
+        if (res.data.status) {
+          this.$toast.success(res.data.message || 'Cập nhật và giải quyết ticket thành công!');
+          this.selectedTicket = null;
+          this.loadData();
+        } else {
+          this.$toast.error(res.data.message || 'Cập nhật thất bại!');
+        }
+      })
+      .catch(err => {
+        const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
+        this.$toast.error(msg);
+      });
     },
     deleteReport(r) {
+      this.delete_bao_cao_loi = { ...r };
       if (confirm(`Bạn có chắc muốn xóa ticket ${r.code}?`)) {
-        this.reports = this.reports.filter(i => i.id !== r.id);
+        api.post('/api/admin/bao-cao-loi/delete', { id: r.id })
+          .then(res => {
+            if (res.data.status) {
+              this.$toast.success(res.data.message || 'Xóa ticket thành công!');
+              this.loadData();
+            } else {
+              this.$toast.error(res.data.message || 'Xóa ticket thất bại!');
+            }
+          })
+          .catch(err => {
+            const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
+            this.$toast.error(msg);
+          });
       }
     },
     openModalAdd() {
-      alert("Mở biểu mẫu tạo ticket nội bộ...");
+      this.add_bao_cao_loi = {
+        ma_khach_hang: "KH001",
+        tieu_de: "",
+        loai: "Thanh toán",
+        mo_ta: "",
+        trang_thai: "pending"
+      };
+      this.newTicket = this.add_bao_cao_loi;
+      this.showAddModal = true;
+    },
+    saveNewTicket() {
+      if (!this.newTicket.tieu_de || !this.newTicket.mo_ta) {
+        this.$toast.warning("Vui lòng điền tiêu đề và mô tả sự cố!");
+        return;
+      }
+      api.post('/api/admin/bao-cao-loi/store', this.newTicket)
+        .then(res => {
+          if (res.data.status) {
+            this.$toast.success(res.data.message || 'Tạo ticket thành công!');
+            this.showAddModal = false;
+            this.loadData();
+          } else {
+            this.$toast.error(res.data.message || 'Tạo ticket thất bại!');
+          }
+        })
+        .catch(err => {
+          const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
+          this.$toast.error(msg);
+        });
     }
   }
 };

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="admin-page-container">
         <!-- 1. Breadcrumb & Database Sync Pill -->
         <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
@@ -175,12 +175,12 @@
                                         <i class="bx bx-shield-quarter"></i>
                                     </router-link>
                                     <!-- Nút Cập nhật mở modal -->
-                                    <button v-on:click="Object.assign(update_ChucVu, cv)" class="btn btn-sm btn-action text-primary" 
+                                    <button v-on:click="Object.assign(edit_chuc_vu, cv)" class="btn btn-sm btn-action text-primary" 
                                         data-bs-toggle="modal" data-bs-target="#capNhatModal" title="Cập nhật">
                                         <i class="bx bx-edit"></i>
                                     </button>
                                     <!-- Nút Xóa mở modal -->
-                                    <button v-on:click="Object.assign(delete_ChucVu, cv)" class="btn btn-sm btn-action text-danger" 
+                                    <button v-on:click="Object.assign(delete_chuc_vu, cv)" class="btn btn-sm btn-action text-danger" 
                                         data-bs-toggle="modal" data-bs-target="#xoaModal" title="Xóa">
                                         <i class="bx bx-trash"></i>
                                     </button>
@@ -217,19 +217,19 @@
                     <div class="modal-body">
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mã Chức Vụ</label>
-                            <input v-model="create_ChucVu.ma_chuc_vu" type="text" class="form-control form-control-sm" placeholder="VD: CV05 (Để trống để tự sinh)">
+                            <input v-model="add_chuc_vu.ma_chuc_vu" type="text" class="form-control form-control-sm" placeholder="VD: CV05 (Để trống để tự sinh)">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Tên Chức Vụ <span class="text-danger">*</span></label>
-                            <input v-model="create_ChucVu.ten_chuc_vu" type="text" class="form-control form-control-sm" placeholder="Nhập tên chức vụ...">
+                            <input v-model="add_chuc_vu.ten_chuc_vu" type="text" class="form-control form-control-sm" placeholder="Nhập tên chức vụ...">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mô Tả Nhiệm Vụ</label>
-                            <textarea v-model="create_ChucVu.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả phạm vi quyền hạn..."></textarea>
+                            <textarea v-model="add_chuc_vu.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả phạm vi quyền hạn..."></textarea>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Trạng Thái</label>
-                            <select v-model="create_ChucVu.trang_thai" class="form-select form-select-sm">
+                            <select v-model="add_chuc_vu.trang_thai" class="form-select form-select-sm">
                                 <option :value="1">Hoạt động</option>
                                 <option :value="0">Tạm ngưng</option>
                             </select>
@@ -256,19 +256,19 @@
                     <div class="modal-body">
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mã Chức Vụ</label>
-                            <input v-model="update_ChucVu.ma_chuc_vu" type="text" class="form-control form-control-sm bg-light" disabled>
+                            <input v-model="edit_chuc_vu.ma_chuc_vu" type="text" class="form-control form-control-sm bg-light" disabled>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Tên Chức Vụ <span class="text-danger">*</span></label>
-                            <input v-model="update_ChucVu.ten_chuc_vu" type="text" class="form-control form-control-sm" placeholder="Nhập tên chức vụ...">
+                            <input v-model="edit_chuc_vu.ten_chuc_vu" type="text" class="form-control form-control-sm" placeholder="Nhập tên chức vụ...">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mô Tả Nhiệm Vụ</label>
-                            <textarea v-model="update_ChucVu.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả phạm vi quyền hạn..."></textarea>
+                            <textarea v-model="edit_chuc_vu.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả phạm vi quyền hạn..."></textarea>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Trạng Thái</label>
-                            <select v-model="update_ChucVu.trang_thai" class="form-select form-select-sm">
+                            <select v-model="edit_chuc_vu.trang_thai" class="form-select form-select-sm">
                                 <option :value="1">Hoạt động</option>
                                 <option :value="0">Tạm ngưng</option>
                             </select>
@@ -295,8 +295,8 @@
                     <div class="modal-body">
                         <div class="alert alert-warning border-0 mb-0" role="alert">
                             <i class='bx bx-error-circle me-1 fs-5 align-middle'></i>
-                            Bạn có chắc chắn muốn xóa chức vụ <strong>{{ delete_ChucVu.ten_chuc_vu }}</strong> 
-                            (Mã: <code>{{ delete_ChucVu.ma_chuc_vu }}</code>) không?
+                            Bạn có chắc chắn muốn xóa chức vụ <strong>{{ delete_chuc_vu.ten_chuc_vu }}</strong> 
+                            (Mã: <code>{{ delete_chuc_vu.ma_chuc_vu }}</code>) không?
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -311,7 +311,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/axios';
 
 export default {
     name: 'AdminChucVu',
@@ -328,7 +328,7 @@ export default {
             list_chuc_vu: [],
 
             // Object form thêm mới chức vụ
-            create_ChucVu: {
+            add_chuc_vu: {
                 ma_chuc_vu: '',
                 ten_chuc_vu: '',
                 mo_ta: '',
@@ -336,7 +336,7 @@ export default {
             },
 
             // Object chức vụ đang được chọn để cập nhật
-            update_ChucVu: {
+            edit_chuc_vu: {
                 ma_chuc_vu: '',
                 ten_chuc_vu: '',
                 mo_ta: '',
@@ -344,7 +344,7 @@ export default {
             },
 
             // Object chức vụ đang được chọn để xóa
-            delete_ChucVu: {
+            delete_chuc_vu: {
                 ma_chuc_vu: '',
                 ten_chuc_vu: '',
             },
@@ -416,7 +416,7 @@ export default {
 
         // Gọi API lấy danh sách toàn bộ chức vụ từ máy chủ
         loadData() {
-            axios.get('http://127.0.0.1:8000/api/admin/chuc-vu/get-data')
+            api.get('/api/admin/chuc-vu/get-data')
                 .then(response => {
                     this.list_chuc_vu = response.data.data;
                 })
@@ -427,112 +427,77 @@ export default {
 
         // Gọi API thêm mới chức vụ
         themMoiChucVu() {
-            axios.post('http://127.0.0.1:8000/api/admin/chuc-vu/create', this.create_ChucVu)
+            api.post('/api/admin/chuc-vu/store', this.add_chuc_vu)
                 .then(response => {
                     if (response.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(response.data.message);
-                        } else {
-                            alert(response.data.message);
-                        }
-                        this.loadData(); // Tải lại bảng dữ liệu sau khi thêm mới
-                        // Reset lại form thêm mới về trạng thái ban đầu
-                        this.create_ChucVu = {
-                            ma_chuc_vu: '',
-                            ten_chuc_vu: '',
-                            mo_ta: '',
-                            trang_thai: 1
-                        };
+                        this.$toast.success(response.data.message);
+                        this.loadData();
+                        this.add_chuc_vu = { ma_chuc_vu: '', ten_chuc_vu: '', mo_ta: '', trang_thai: 1 };
                     } else {
-                        const msg = response.data.message || "Thêm chức vụ thất bại!";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(response.data.message || 'Thêm chức vụ thất bại!');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API cập nhật thông tin chức vụ
         capNhatChucVu() {
-            axios.post('http://127.0.0.1:8000/api/admin/chuc-vu/update', this.update_ChucVu)
+            api.post('/api/admin/chuc-vu/update', this.edit_chuc_vu)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        this.loadData(); // Tải lại bảng dữ liệu sau khi cập nhật
-                        this.update_ChucVu = {
-                            ma_chuc_vu: '',
-                            ten_chuc_vu: '',
-                            mo_ta: '',
-                            trang_thai: 1
-                        };
+                        this.$toast.success(res.data.message);
+                        this.loadData();
+                        this.edit_chuc_vu = { ma_chuc_vu: '', ten_chuc_vu: '', mo_ta: '', trang_thai: 1 };
                     } else {
-                        const msg = res.data.message || "Cập nhật chức vụ thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Cập nhật chức vụ thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API xóa mềm chức vụ
         xoaChucVu() {
-            axios.post('http://127.0.0.1:8000/api/admin/chuc-vu/destroy', this.delete_ChucVu)
+            api.post('/api/admin/chuc-vu/delete', this.delete_chuc_vu)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        this.loadData(); // Tải lại bảng dữ liệu sau khi xóa
-                        this.delete_ChucVu = {
-                            ma_chuc_vu: '',
-                            ten_chuc_vu: '',
-                        };
+                        this.$toast.success(res.data.message);
+                        this.loadData();
+                        this.delete_chuc_vu = { ma_chuc_vu: '', ten_chuc_vu: '' };
                     } else {
-                        const msg = res.data.message || "Xóa chức vụ thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Xóa chức vụ thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API thay đổi trạng thái hoạt động của chức vụ
         changeStatus(chucVu) {
-            axios.post('http://127.0.0.1:8000/api/admin/chuc-vu/change-status', chucVu)
+            api.post('/api/admin/chuc-vu/change-status', chucVu)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        // Cập nhật ngay trên view và đồng bộ lại danh sách
+                        this.$toast.success(res.data.message);
                         chucVu.trang_thai = chucVu.trang_thai == 1 ? 0 : 1;
                         this.loadData();
                     } else {
-                        const msg = res.data.message || "Đổi trạng thái thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Đổi trạng thái thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
     }

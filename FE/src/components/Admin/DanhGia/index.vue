@@ -36,8 +36,8 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">TỔNG ĐÁNH GIÁ</span>
-            <div class="kpi-value">1,248</div>
-            <span class="kpi-subtext">Đồng bộ từ bảng danh_gias</span>
+            <div class="kpi-value">{{ stats.total }}</div>
+            <span class="kpi-subtext">Đồng bộ từ bảng danh_gia_tours</span>
           </div>
           <div class="kpi-icon icon-blue">
             <i class="bx bx-message-square-dots"></i>
@@ -49,7 +49,7 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">ĐIỂM TRUNG BÌNH</span>
-            <div class="kpi-value text-success">4.85<span style="font-size: 1rem; color: #64748b;">/5</span></div>
+            <div class="kpi-value text-success">{{ stats.avg_score }}<span style="font-size: 1rem; color: #64748b;">/5</span></div>
             <span class="kpi-subtext">Độ hài lòng người dùng (CSAT)</span>
           </div>
           <div class="kpi-icon icon-green">
@@ -62,8 +62,8 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">ĐÁNH GIÁ 5 SAO</span>
-            <div class="kpi-value text-warning">1,080</div>
-            <span class="kpi-subtext">Chiếm 86.5% tổng nhận xét</span>
+            <div class="kpi-value text-warning">{{ stats.five_star_count }}</div>
+            <span class="kpi-subtext">Chiếm {{ stats.total > 0 ? ((stats.five_star_count / stats.total) * 100).toFixed(1) : 0 }}% tổng nhận xét</span>
           </div>
           <div class="kpi-icon icon-orange">
             <i class="bx bx-like"></i>
@@ -75,8 +75,8 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">CẦN XEM XÉT / ẨN</span>
-            <div class="kpi-value text-danger">12</div>
-            <span class="kpi-subtext">1-2 sao hoặc có dấu hiệu spam</span>
+            <div class="kpi-value text-danger">{{ stats.need_review }}</div>
+            <span class="kpi-subtext">1-2 sao hoặc đã ẩn</span>
           </div>
           <div class="kpi-icon icon-red">
             <i class="bx bx-shield-x"></i>
@@ -96,7 +96,7 @@
                 type="text" 
                 class="form-control search-input" 
                 placeholder="Tìm kiếm theo mã, khách hàng, tour hoặc nội dung..."
-                v-model="searchQuery"
+                v-model="key_search"
               >
             </div>
           </div>
@@ -148,7 +148,7 @@
               <td>
                 <div class="d-flex align-items-center gap-2">
                   <div class="user-avatar-circle">
-                    {{ rv.customer.charAt(0) }}
+                    {{ (rv.customer || 'U').charAt(0) }}
                   </div>
                   <div>
                     <div class="fw-bold text-dark">{{ rv.customer }}</div>
@@ -206,7 +206,7 @@
 
       <!-- Pagination -->
       <div class="d-flex justify-content-between align-items-center p-3 border-top">
-        <span class="text-muted small">Trang 1 trên 1 (Dữ liệu mẫu chuẩn)</span>
+        <span class="text-muted small">Hiển thị <strong>{{ filteredReviews.length }}</strong> đánh giá từ cơ sở dữ liệu</span>
         <div class="d-flex gap-1">
           <button class="btn btn-sm btn-outline-secondary px-3" disabled>Trước</button>
           <button class="btn btn-sm btn-primary-custom px-3">1</button>
@@ -226,7 +226,7 @@
           <div class="modal-body pt-3">
             <div class="d-flex align-items-center gap-3 mb-3 p-3 bg-light rounded-3">
               <div class="user-avatar-circle" style="width: 44px; height: 44px; font-size: 1.1rem;">
-                {{ selectedReview.customer.charAt(0) }}
+                {{ (selectedReview.customer || 'U').charAt(0) }}
               </div>
               <div>
                 <div class="fw-bold">{{ selectedReview.customer }}</div>
@@ -271,94 +271,134 @@
 </template>
 
 <script>
+import api from '@/axios';
+
 export default {
   name: "AdminDanhGia",
   data() {
     return {
+      key_search: "",
       searchQuery: "",
       filterStar: "",
       filterStatus: "",
       selectedReview: null,
-      reviews: [
-        {
-          id: 1,
-          code: "RV001",
-          customer: "Lê Hoàng Yến",
-          email: "hoangyen@gmail.com",
-          tourName: "Tour Lặn Ngắm San Hô Cù Lao Chàm",
-          partner: "Da Nang Sea Travel Ltd.",
-          stars: 5,
-          comment: "Chuyến đi thật tuyệt vời! Hướng dẫn viên chu đáo, nhiệt tình, hải sản ăn rất ngon và tươi sống. Nhất định sẽ quay lại!",
-          status: "approved",
-          createdAt: "2025-02-12"
-        },
-        {
-          id: 2,
-          code: "RV002",
-          customer: "Trần Minh Đức",
-          email: "duc.tran@outlook.com",
-          tourName: "Bà Nà Hills - Cầu Vàng & Fantasy Park",
-          partner: "Sun World Travel Partner",
-          stars: 5,
-          comment: "Cảnh Bà Nà đẹp xuất sắc, xếp hàng cáp treo hơi đông nhưng điều phối nhanh chóng, phục vụ rất chuyên nghiệp.",
-          status: "approved",
-          createdAt: "2025-02-14"
-        },
-        {
-          id: 3,
-          code: "RV003",
-          customer: "Phạm Hải Đăng",
-          email: "dang.pham@gmail.com",
-          tourName: "Tour Chèo SUP Ngắm Hoàng Hôn Sông Hàn",
-          partner: "Han River Adventure",
-          stars: 2,
-          comment: "Áo phao cũ quá, huấn luyện viên đến trễ 20 phút làm lỡ mất khoảnh khắc hoàng hôn đẹp nhất. Mong bên công ty chấn chỉnh.",
-          status: "approved",
-          createdAt: "2025-02-18"
-        },
-        {
-          id: 4,
-          code: "RV004",
-          customer: "Spam Bot 88",
-          email: "spambot88@yahoo.com",
-          tourName: "Hành Trình Phố Cổ Hội An",
-          partner: "Heritage Express",
-          stars: 1,
-          comment: "Vay tiền nhanh không thế chấp vui lòng liên hệ zalo 09xxxxxxxx dịch vụ số 1.",
-          status: "hidden",
-          createdAt: "2025-02-20"
-        }
-      ]
+      list_danh_gia: [],
+      add_danh_gia: {},
+      edit_danh_gia: {},
+      delete_danh_gia: {},
+      stats: {
+        total: 0,
+        avg_score: 5.0,
+        five_star_count: 0,
+        need_review: 0
+      },
+      reviews: []
     };
   },
   computed: {
     filteredReviews() {
+      const q = (this.key_search || this.searchQuery || '').toLowerCase();
       return this.reviews.filter(r => {
         const matchSearch =
-          r.customer.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          r.code.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          r.tourName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          r.comment.toLowerCase().includes(this.searchQuery.toLowerCase());
+          (r.customer || '').toLowerCase().includes(q) ||
+          (r.code || '').toLowerCase().includes(q) ||
+          (r.tourName || '').toLowerCase().includes(q) ||
+          (r.comment || '').toLowerCase().includes(q);
         const matchStar = this.filterStar ? r.stars === Number(this.filterStar) : true;
         const matchStatus = this.filterStatus ? r.status === this.filterStatus : true;
         return matchSearch && matchStar && matchStatus;
       });
     }
   },
+  mounted() {
+    this.loadData();
+  },
   methods: {
+    loadData() {
+      api.get('/api/admin/danh-gia/get-data')
+        .then(res => {
+          if (res.data.status) {
+            const list = res.data.data || [];
+            this.list_danh_gia = list;
+            this.reviews = list.map(item => ({
+              id: item.id,
+              code: 'RV' + String(item.id).padStart(3, '0'),
+              customer: item.ten_khach_hang || 'Du khách',
+              email: item.email_khach_hang || 'khachhang@gmail.com',
+              tourName: item.ten_tour || 'Tour du lịch Đà Nẵng',
+              partner: item.ten_doi_tac || 'Đối tác lữ hành',
+              stars: item.so_sao || 5,
+              comment: item.binh_luan || 'Dịch vụ tour chu đáo.',
+              status: item.trang_thai == 1 ? 'approved' : 'hidden',
+              createdAt: item.ngay_danh_gia ? item.ngay_danh_gia.slice(0, 10) : (item.created_at ? item.created_at.slice(0, 10) : '')
+            }));
+
+            if (res.data.stats) {
+              this.stats = res.data.stats;
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Lỗi khi tải danh sách đánh giá:', err);
+        });
+    },
     viewDetail(rv) {
+      this.edit_danh_gia = { ...rv };
       this.selectedReview = rv;
     },
     toggleStatus(rv) {
-      rv.status = rv.status === "approved" ? "hidden" : "approved";
+      this.edit_danh_gia = { ...rv };
+      api.post('/api/admin/danh-gia/change-status', { id: rv.id })
+        .then(res => {
+          if (res.data.status) {
+            this.$toast.success(res.data.message || 'Cập nhật trạng thái thành công!');
+            this.loadData();
+          } else {
+            this.$toast.error(res.data.message || 'Đổi trạng thái thất bại!');
+          }
+        })
+        .catch(err => {
+          const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
+          this.$toast.error(msg);
+        });
     },
     deleteReview(rv) {
+      this.delete_danh_gia = { ...rv };
       if (confirm(`Bạn có chắc muốn xóa vĩnh viễn nhận xét ${rv.code}?`)) {
-        this.reviews = this.reviews.filter(i => i.id !== rv.id);
+        api.post('/api/admin/danh-gia/delete', { id: rv.id })
+          .then(res => {
+            if (res.data.status) {
+              this.$toast.success(res.data.message || 'Xóa đánh giá thành công!');
+              this.loadData();
+            } else {
+              this.$toast.error(res.data.message || 'Xóa đánh giá thất bại!');
+            }
+          })
+          .catch(err => {
+            const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
+            this.$toast.error(msg);
+          });
       }
     },
     exportReport() {
-      alert("Đang chuẩn bị file CSV dữ liệu báo cáo chỉ số CSAT & Phản hồi du khách...");
+      if (this.reviews.length === 0) {
+        this.$toast.warning("Không có dữ liệu đánh giá để xuất!");
+        return;
+      }
+      let csvContent = "\uFEFFMã đánh giá,Khách hàng,Email,Tour,Đối tác,Số sao,Nội dung,Trạng thái,Ngày đăng\n";
+      this.reviews.forEach(r => {
+        const cleanComment = `"${(r.comment || '').replace(/"/g, '""')}"`;
+        csvContent += `${r.code},"${r.customer}","${r.email}","${r.tourName}","${r.partner}",${r.stars},${cleanComment},"${r.status === 'approved' ? 'Hiển thị' : 'Đã ẩn'}","${r.createdAt}"\n`;
+      });
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Bao_Cao_CSAT_Danh_Gia_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      this.$toast.success("Xuất file báo cáo CSAT thành công!");
     }
   }
 };

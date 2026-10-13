@@ -11,8 +11,32 @@ const routes = [
         meta: { layout: 'blank' }
     },
     {
+        path: '/dang-nhap',
+        name: 'DangNhap',
+        component: () => import('../components/login/dangky-dangnhap/index.vue'),
+        meta: { layout: 'blank' }
+    },
+    {
+        path: '/dang-ky',
+        name: 'DangKy',
+        component: () => import('../components/login/dangky-dangnhap/index.vue'),
+        meta: { layout: 'blank' }
+    },
+    {
         path: '/kich-hoat',
         name: 'KichHoat',
+        component: () => import('../components/login/makichhoat/index.vue'),
+        meta: { layout: 'blank' }
+    },
+    {
+        path: '/xac-thuc',
+        name: 'XacThuc',
+        component: () => import('../components/login/makichhoat/index.vue'),
+        meta: { layout: 'blank' }
+    },
+    {
+        path: '/ma-kich-hoat',
+        name: 'MaKichHoat',
         component: () => import('../components/login/makichhoat/index.vue'),
         meta: { layout: 'blank' }
     },
@@ -171,12 +195,12 @@ const routes = [
     // =========================================================
     {
         path: '/admin/dashboard',
-        component: () => import('../components/admin/dashboard/index.vue'),
+        component: () => import('../components/Admin/Dashboard/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/chuc-vu',
-        component: () => import('../components/admin/chuc-vu/index.vue'),
+        component: () => import('../components/Admin/ChucVu/index.vue'),
         meta: { layout: 'admin' }
     },
     {
@@ -186,62 +210,62 @@ const routes = [
     },
     {
         path: '/admin/chuc-nang',
-        component: () => import('../components/admin/chuc-nang/index.vue'),
+        component: () => import('../components/Admin/ChucNang/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/nguoi-dung',
-        component: () => import('../components/admin/nguoi-dung/index.vue'),
+        component: () => import('../components/Admin/NguoiDung/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/tai-khoan-admin',
-        component: () => import('../components/admin/tai-khoan-admin/index.vue'),
+        component: () => import('../components/Admin/TaiKhoanAdmin/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/doi-tac',
-        component: () => import('../components/admin/doi-tac/index.vue'),
+        component: () => import('../components/Admin/DoiTac/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/kiem-duyet-dia-diem',
-        component: () => import('../components/admin/kiem-duyet-dia-diem/index.vue'),
+        component: () => import('../components/Admin/KiemDuyetDiaDiem/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/tour',
-        component: () => import('../components/admin/tour/index.vue'),
+        component: () => import('../components/Admin/Tour/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/danh-gia',
-        component: () => import('../components/admin/danh-gia/index.vue'),
+        component: () => import('../components/Admin/DanhGia/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/tai-chinh',
-        component: () => import('../components/admin/tai-chinh/index.vue'),
+        component: () => import('../components/Admin/TaiChinh/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/thong-ke',
-        component: () => import('../components/admin/thong-ke/index.vue'),
+        component: () => import('../components/Admin/ThongKe/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/tag',
-        component: () => import('../components/admin/tag/index.vue'),
+        component: () => import('../components/Admin/Tag/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/voucher',
-        component: () => import('../components/admin/voucher/index.vue'),
+        component: () => import('../components/Admin/Voucher/index.vue'),
         meta: { layout: 'admin' }
     },
     {
         path: '/admin/bao-cao-loi',
-        component: () => import('../components/admin/bao-cao-loi/index.vue'),
+        component: () => import('../components/Admin/BaoCaoLoi/index.vue'),
         meta: { layout: 'admin' }
     },
 ];

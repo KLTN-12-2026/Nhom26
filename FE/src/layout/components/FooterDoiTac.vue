@@ -3,7 +3,7 @@
         <div class="footer-inner">
             <div class="footer-left">
                 <span class="copyright-text">
-                    © 2026 Smart Travel Planner Ecosystem. Đối tác <strong>Lotus Heritage Ltd</strong>.
+                    © 2026 <strong>Đà Nẵng Smart Travel</strong> — Cổng đối tác B2B. Đối tác <strong>Lotus Heritage Ltd</strong>.
                 </span>
             </div>
             <div class="footer-right">

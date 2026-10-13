@@ -26,7 +26,7 @@
       </div>
       <button class="btn btn-primary-custom d-flex align-items-center gap-2" @click="openModalAdd">
         <i class="bx bx-plus-circle font-20"></i>
-        <span>+ Thêm Tag Mới</span>
+        <span>Thêm Tag Mới</span>
       </button>
     </div>
 
@@ -36,7 +36,7 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">TỔNG SỐ TAG</span>
-            <div class="kpi-value">48</div>
+            <div class="kpi-value">{{ totalTags }}</div>
             <span class="kpi-subtext">Đồng bộ từ bảng tags</span>
           </div>
           <div class="kpi-icon icon-blue">
@@ -49,7 +49,7 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">TAG ĐỊA ĐIỂM</span>
-            <div class="kpi-value text-success">22</div>
+            <div class="kpi-value text-success">{{ countDiaDiem }}</div>
             <span class="kpi-subtext">Gắn cho danh lam & cảnh đẹp</span>
           </div>
           <div class="kpi-icon icon-green">
@@ -62,7 +62,7 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">TAG TOUR & TRẢI NGHIỆM</span>
-            <div class="kpi-value text-primary">18</div>
+            <div class="kpi-value text-primary">{{ countTour }}</div>
             <span class="kpi-subtext">Thuật toán AI Planner tối ưu</span>
           </div>
           <div class="kpi-icon icon-blue">
@@ -75,7 +75,7 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">LƯỢT GẮN TRÊN SÀN</span>
-            <div class="kpi-value text-warning">1,420</div>
+            <div class="kpi-value text-warning">{{ totalUsage.toLocaleString('vi-VN') }}</div>
             <span class="kpi-subtext">Tần suất liên kết dữ liệu</span>
           </div>
           <div class="kpi-icon icon-orange">
@@ -116,7 +116,7 @@
                 type="text" 
                 class="form-control search-input" 
                 placeholder="Tìm kiếm theo mã tag, tên nhãn..."
-                v-model="searchQuery"
+                v-model="key_search"
               >
             </div>
           </div>
@@ -264,16 +264,21 @@
 </template>
 
 <script>
+import api from '@/axios';
+
 export default {
   name: "AdminTag",
   data() {
     return {
+      key_search: "",
       searchQuery: "",
       filterCategory: "",
       filterStatus: "",
       showModal: false,
       isEdit: false,
-      formTag: {
+      list_tag: [],
+      tags: [],
+      add_tag: {
         code: "",
         name: "",
         category: "Địa điểm",
@@ -281,78 +286,90 @@ export default {
         description: "",
         status: "active"
       },
-      tags: [
-        {
-          id: 1,
-          code: "TAG001",
-          name: "bien-dao",
-          category: "Địa điểm",
-          badgeClass: "bg-primary text-white",
-          description: "Các bãi biển, vịnh, đảo san hô tại Đà Nẵng - Cù Lao Chàm",
-          usageCount: 420,
-          status: "active"
-        },
-        {
-          id: 2,
-          code: "TAG002",
-          name: "check-in-song-ao",
-          category: "Địa điểm",
-          badgeClass: "bg-success text-white",
-          description: "Địa điểm chụp hình góc đẹp, Cầu Vàng, Cầu Rồng, Tượng Cá Chép",
-          usageCount: 380,
-          status: "active"
-        },
-        {
-          id: 3,
-          code: "TAG003",
-          name: "nghi-duong-cao-cap",
-          category: "Tour",
-          badgeClass: "bg-warning text-dark",
-          description: "Tour resort 5 sao, spa chăm sóc sức khỏe, dịch vụ trọn gói",
-          usageCount: 260,
-          status: "active"
-        },
-        {
-          id: 4,
-          code: "TAG004",
-          name: "am-thuc-dia-phuong",
-          category: "Ẩm thực",
-          badgeClass: "bg-danger text-white",
-          description: "Mì Quảng, bánh tráng cuốn thịt heo, hải sản tươi sống",
-          usageCount: 210,
-          status: "active"
-        },
-        {
-          id: 5,
-          code: "TAG005",
-          name: "mao-hiem-trekking",
-          category: "Tour",
-          badgeClass: "bg-info text-white",
-          description: "Leo núi Hải Vân, chèo SUP biển, trekking rừng nguyên sinh",
-          usageCount: 150,
-          status: "inactive"
-        }
-      ]
+      edit_tag: {},
+      delete_tag: {},
+      formTag: {
+        code: "",
+        name: "",
+        category: "Địa điểm",
+        badgeClass: "bg-primary text-white",
+        description: "",
+        status: "active"
+      }
     };
   },
   computed: {
+    totalTags() {
+      return this.tags.length;
+    },
+    countDiaDiem() {
+      return this.tags.filter(t => t.category === 'Địa điểm').length;
+    },
+    countTour() {
+      return this.tags.filter(t => t.category === 'Tour').length;
+    },
+    totalUsage() {
+      return this.tags.reduce((sum, t) => sum + (Number(t.usageCount) || 0), 0);
+    },
     filteredTags() {
+      const q = (this.key_search || this.searchQuery || '').toLowerCase();
       return this.tags.filter(t => {
         const matchSearch =
-          t.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          t.code.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          t.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+          (t.name || '').toLowerCase().includes(q) ||
+          (t.code || '').toLowerCase().includes(q) ||
+          (t.description || '').toLowerCase().includes(q);
         const matchCat = this.filterCategory ? t.category === this.filterCategory : true;
         const matchStatus = this.filterStatus ? t.status === this.filterStatus : true;
         return matchSearch && matchCat && matchStatus;
       });
     }
   },
+  mounted() {
+    this.loadData();
+  },
   methods: {
+    determineCategory(name, desc) {
+      const full = (name + ' ' + (desc || '')).toLowerCase();
+      if (full.includes('ẩm thực') || full.includes('ăn')) return 'Ẩm thực';
+      if (full.includes('tour') || full.includes('nghỉ dưỡng') || full.includes('văn hóa')) return 'Tour';
+      return 'Địa điểm';
+    },
+    loadData() {
+      api.get('/api/admin/tag/get-data')
+        .then(res => {
+          if (res.data.status) {
+            const list = res.data.data || [];
+            this.list_tag = list;
+            this.tags = list.map((item, idx) => {
+              const badgeColors = [
+                'bg-primary text-white',
+                'bg-success text-white',
+                'bg-warning text-dark',
+                'bg-danger text-white',
+                'bg-info text-white'
+              ];
+              const category = this.determineCategory(item.ten_tag, item.mo_ta);
+              return {
+                id: item.ma_tag,
+                code: item.ma_tag,
+                name: item.ten_tag,
+                category: category,
+                badgeClass: badgeColors[idx % badgeColors.length],
+                description: item.mo_ta || 'Nhãn phân loại phục vụ gợi ý AI',
+                usageCount: item.usage_count !== undefined ? Number(item.usage_count) : 0,
+                status: 'active'
+              };
+            });
+          }
+        })
+        .catch(err => {
+          console.error('Lỗi khi tải danh sách tag:', err);
+        });
+    },
     openModalAdd() {
       this.isEdit = false;
       this.formTag = {
-        code: `TAG00${this.tags.length + 1}`,
+        code: '',
         name: "",
         category: "Địa điểm",
         badgeClass: "bg-primary text-white",
@@ -368,27 +385,68 @@ export default {
     },
     saveTag() {
       if (!this.formTag.name) {
-        alert("Vui lòng nhập tên tag!");
+        this.$toast.warning("Vui lòng nhập tên tag!");
         return;
       }
       if (this.isEdit) {
-        const idx = this.tags.findIndex(i => i.id === this.formTag.id);
-        if (idx !== -1) this.tags[idx] = { ...this.formTag };
+        api.post('/api/admin/tag/update', {
+          ma_tag: this.formTag.code,
+          ten_tag: this.formTag.name,
+          mo_ta: this.formTag.description
+        })
+        .then(res => {
+          if (res.data.status) {
+            this.$toast.success(res.data.message || 'Cập nhật tag thành công!');
+            this.showModal = false;
+            this.loadData();
+          } else {
+            this.$toast.error(res.data.message || 'Cập nhật tag thất bại!');
+          }
+        })
+        .catch(err => {
+          const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
+          this.$toast.error(msg);
+        });
       } else {
-        this.tags.push({
-          ...this.formTag,
-          id: Date.now(),
-          usageCount: 0
+        api.post('/api/admin/tag/store', {
+          ma_tag: this.formTag.code || null,
+          ten_tag: this.formTag.name,
+          mo_ta: this.formTag.description
+        })
+        .then(res => {
+          if (res.data.status) {
+            this.$toast.success(res.data.message || 'Thêm mới tag thành công!');
+            this.showModal = false;
+            this.loadData();
+          } else {
+            this.$toast.error(res.data.message || 'Thêm tag thất bại!');
+          }
+        })
+        .catch(err => {
+          const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
+          this.$toast.error(msg);
         });
       }
-      this.showModal = false;
     },
     toggleTag(t) {
       t.status = t.status === "active" ? "inactive" : "active";
+      this.$toast.info(`Đã ${t.status === 'active' ? 'bật' : 'tạm ẩn'} nhãn #${t.name}`);
     },
     deleteTag(t) {
       if (confirm(`Bạn có chắc muốn xóa tag: #${t.name}?`)) {
-        this.tags = this.tags.filter(i => i.id !== t.id);
+        api.post('/api/admin/tag/delete', { ma_tag: t.code })
+          .then(res => {
+            if (res.data.status) {
+              this.$toast.success(res.data.message || 'Xóa tag thành công!');
+              this.loadData();
+            } else {
+              this.$toast.error(res.data.message || 'Xóa tag thất bại!');
+            }
+          })
+          .catch(err => {
+            const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
+            this.$toast.error(msg);
+          });
       }
     }
   }

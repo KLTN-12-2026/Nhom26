@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="admin-page-container">
     <!-- ========================================================= -->
     <!-- 1. THANH ĐIỀU HƯỚNG BREADCRUMB & TRẠNG THÁI ĐỒNG BỘ DATABASE -->
@@ -276,7 +276,7 @@
                     <i class="bx bx-edit"></i>
                   </button>
                   <!-- Nút mở Modal Xác nhận xóa tour -->
-                  <button v-on:click="Object.assign(delete_Tour, tour)" class="btn btn-sm btn-action text-danger" 
+                  <button v-on:click="Object.assign(delete_tour, tour)" class="btn btn-sm btn-action text-danger" 
                     data-bs-toggle="modal" data-bs-target="#xoaTourModal" title="Xóa tour">
                     <i class="bx bx-trash"></i>
                   </button>
@@ -325,13 +325,13 @@
               <!-- Mã Tour (Tùy chọn, để trống tự động sinh) -->
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Mã Tour</label>
-                <input v-model="create_Tour.ma_tour" type="text" class="form-control form-control-sm" placeholder="VD: TR06 (Để trống tự sinh)">
+                <input v-model="add_tour.ma_tour" type="text" class="form-control form-control-sm" placeholder="VD: TR06 (Để trống tự sinh)">
               </div>
 
               <!-- Đơn vị đối tác cung ứng tour -->
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Đối Tác Cung Cấp <span class="text-danger">*</span></label>
-                <select v-model="create_Tour.ma_doi_tac" class="form-select form-select-sm">
+                <select v-model="add_tour.ma_doi_tac" class="form-select form-select-sm">
                   <option value="">-- Chọn đơn vị đối tác --</option>
                   <option v-for="(dt, idx) in list_doi_tac" :key="idx" :value="dt.ma_doi_tac">
                     {{ dt.ten_doi_tac }} ({{ dt.ma_doi_tac }})
@@ -342,37 +342,37 @@
               <!-- Tên Tour Du Lịch -->
               <div class="col-md-8">
                 <label class="form-label fw-semibold">Tên Tour Du Lịch <span class="text-danger">*</span></label>
-                <input v-model="create_Tour.ten_tour" type="text" class="form-control form-control-sm" placeholder="VD: Khám phá Vịnh Hạ Long 2N1Đ - Du thuyền 5 sao">
+                <input v-model="add_tour.ten_tour" type="text" class="form-control form-control-sm" placeholder="VD: Khám phá Vịnh Hạ Long 2N1Đ - Du thuyền 5 sao">
               </div>
 
               <!-- Ô nhập GIÁ KHỞI HÀNH (lưu vào bảng tour_khoi_hanhs) -->
               <div class="col-md-4">
                 <label class="form-label fw-semibold text-primary">Giá Khởi Hành (VNĐ) <span class="text-danger">*</span></label>
-                <input v-model.number="create_Tour.gia_tour" type="number" min="0" class="form-control form-control-sm border-primary" placeholder="VD: 2500000">
+                <input v-model.number="add_tour.gia_tour" type="number" min="0" class="form-control form-control-sm border-primary" placeholder="VD: 2500000">
               </div>
 
               <!-- Đường dẫn ảnh đại diện -->
               <div class="col-md-12">
                 <label class="form-label fw-semibold">Link Hình Ảnh Đại Diện</label>
-                <input v-model="create_Tour.hinh_anh_dai_dien" type="text" class="form-control form-control-sm" placeholder="https://domain.com/image.jpg hoặc tên file ảnh">
+                <input v-model="add_tour.hinh_anh_dai_dien" type="text" class="form-control form-control-sm" placeholder="https://domain.com/image.jpg hoặc tên file ảnh">
               </div>
 
               <!-- Thời lượng (Số ngày) -->
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Thời Lượng (Số ngày)</label>
-                <input v-model.number="create_Tour.so_ngay" type="number" min="1" class="form-control form-control-sm" placeholder="1">
+                <input v-model.number="add_tour.so_ngay" type="number" min="1" class="form-control form-control-sm" placeholder="1">
               </div>
 
               <!-- Số khách tối đa -->
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Số Khách Tối Đa</label>
-                <input v-model.number="create_Tour.so_nguoi_toi_da" type="number" min="1" class="form-control form-control-sm" placeholder="20">
+                <input v-model.number="add_tour.so_nguoi_toi_da" type="number" min="1" class="form-control form-control-sm" placeholder="20">
               </div>
 
               <!-- Trạng thái hiển thị mở bán -->
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Trạng Thái Hiển Thị</label>
-                <select v-model="create_Tour.trang_thai_hien_thi" class="form-select form-select-sm">
+                <select v-model="add_tour.trang_thai_hien_thi" class="form-select form-select-sm">
                   <option :value="1">Hiển thị mở bán</option>
                   <option :value="0">Tạm ẩn</option>
                 </select>
@@ -381,7 +381,7 @@
               <!-- Trạng thái kiểm duyệt hồ sơ tour -->
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Trạng Thái Phê Duyệt</label>
-                <select v-model="create_Tour.trang_thai_duyet" class="form-select form-select-sm">
+                <select v-model="add_tour.trang_thai_duyet" class="form-select form-select-sm">
                   <option value="DaDuyet">Đã duyệt (DaDuyet)</option>
                   <option value="ChoDuyet">Chờ duyệt (ChoDuyet)</option>
                   <option value="TuChoi">Từ chối (TuChoi)</option>
@@ -389,15 +389,15 @@
               </div>
 
               <!-- Lý do từ chối (hiển thị khi trạng thái là Từ chối) -->
-              <div class="col-md-6" v-if="create_Tour.trang_thai_duyet === 'TuChoi'">
+              <div class="col-md-6" v-if="add_tour.trang_thai_duyet === 'TuChoi'">
                 <label class="form-label fw-semibold text-danger">Lý Do Từ Chối</label>
-                <input v-model="create_Tour.ly_do_tu_choi" type="text" class="form-control form-control-sm" placeholder="Nhập lý do từ chối tour...">
+                <input v-model="add_tour.ly_do_tu_choi" type="text" class="form-control form-control-sm" placeholder="Nhập lý do từ chối tour...">
               </div>
 
               <!-- Mô tả chi tiết lộ trình tour -->
               <div class="col-12">
                 <label class="form-label fw-semibold">Mô Tả Chi Tiết Hành Trình</label>
-                <textarea v-model="create_Tour.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Giới thiệu điểm đến, dịch vụ bao gồm, trải nghiệm đặc sắc..."></textarea>
+                <textarea v-model="add_tour.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Giới thiệu điểm đến, dịch vụ bao gồm, trải nghiệm đặc sắc..."></textarea>
               </div>
             </div>
           </div>
@@ -426,13 +426,13 @@
               <!-- Mã Tour (Hiển thị không cho sửa) -->
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Mã Tour</label>
-                <input v-model="update_Tour.ma_tour" type="text" class="form-control form-control-sm bg-light" disabled>
+                <input v-model="edit_tour.ma_tour" type="text" class="form-control form-control-sm bg-light" disabled>
               </div>
 
               <!-- Đơn vị đối tác cung ứng -->
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Đối Tác Cung Cấp <span class="text-danger">*</span></label>
-                <select v-model="update_Tour.ma_doi_tac" class="form-select form-select-sm">
+                <select v-model="edit_tour.ma_doi_tac" class="form-select form-select-sm">
                   <option value="">-- Chọn đơn vị đối tác --</option>
                   <option v-for="(dt, idx) in list_doi_tac" :key="idx" :value="dt.ma_doi_tac">
                     {{ dt.ten_doi_tac }} ({{ dt.ma_doi_tac }})
@@ -443,37 +443,37 @@
               <!-- Tên Tour Du Lịch -->
               <div class="col-md-8">
                 <label class="form-label fw-semibold">Tên Tour Du Lịch <span class="text-danger">*</span></label>
-                <input v-model="update_Tour.ten_tour" type="text" class="form-control form-control-sm" placeholder="Nhập tên tour du lịch...">
+                <input v-model="edit_tour.ten_tour" type="text" class="form-control form-control-sm" placeholder="Nhập tên tour du lịch...">
               </div>
 
               <!-- Ô cập nhật GIÁ KHỞI HÀNH (đồng bộ bảng tour_khoi_hanhs) -->
               <div class="col-md-4">
                 <label class="form-label fw-semibold text-primary">Giá Khởi Hành (VNĐ) <span class="text-danger">*</span></label>
-                <input v-model.number="update_Tour.gia_tour" type="number" min="0" class="form-control form-control-sm border-primary" placeholder="VD: 2500000">
+                <input v-model.number="edit_tour.gia_tour" type="number" min="0" class="form-control form-control-sm border-primary" placeholder="VD: 2500000">
               </div>
 
               <!-- Đường dẫn ảnh đại diện tour -->
               <div class="col-md-12">
                 <label class="form-label fw-semibold">Link Hình Ảnh Đại Diện</label>
-                <input v-model="update_Tour.hinh_anh_dai_dien" type="text" class="form-control form-control-sm" placeholder="https://domain.com/image.jpg hoặc tên file">
+                <input v-model="edit_tour.hinh_anh_dai_dien" type="text" class="form-control form-control-sm" placeholder="https://domain.com/image.jpg hoặc tên file">
               </div>
 
               <!-- Thời lượng tour -->
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Thời Lượng (Số ngày)</label>
-                <input v-model.number="update_Tour.so_ngay" type="number" min="1" class="form-control form-control-sm" placeholder="1">
+                <input v-model.number="edit_tour.so_ngay" type="number" min="1" class="form-control form-control-sm" placeholder="1">
               </div>
 
               <!-- Số lượng khách tối đa -->
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Số Khách Tối Đa</label>
-                <input v-model.number="update_Tour.so_nguoi_toi_da" type="number" min="1" class="form-control form-control-sm" placeholder="20">
+                <input v-model.number="edit_tour.so_nguoi_toi_da" type="number" min="1" class="form-control form-control-sm" placeholder="20">
               </div>
 
               <!-- Trạng thái hiển thị mở bán -->
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Trạng Thái Hiển Thị</label>
-                <select v-model="update_Tour.trang_thai_hien_thi" class="form-select form-select-sm">
+                <select v-model="edit_tour.trang_thai_hien_thi" class="form-select form-select-sm">
                   <option :value="1">Hiển thị mở bán</option>
                   <option :value="0">Tạm ẩn</option>
                 </select>
@@ -482,7 +482,7 @@
               <!-- Trạng thái kiểm duyệt tour -->
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Trạng Thái Phê Duyệt</label>
-                <select v-model="update_Tour.trang_thai_duyet" class="form-select form-select-sm">
+                <select v-model="edit_tour.trang_thai_duyet" class="form-select form-select-sm">
                   <option value="DaDuyet">Đã duyệt (DaDuyet)</option>
                   <option value="ChoDuyet">Chờ duyệt (ChoDuyet)</option>
                   <option value="TuChoi">Từ chối (TuChoi)</option>
@@ -490,15 +490,15 @@
               </div>
 
               <!-- Lý do từ chối nếu có -->
-              <div class="col-md-6" v-if="update_Tour.trang_thai_duyet === 'TuChoi'">
+              <div class="col-md-6" v-if="edit_tour.trang_thai_duyet === 'TuChoi'">
                 <label class="form-label fw-semibold text-danger">Lý Do Từ Chối</label>
-                <input v-model="update_Tour.ly_do_tu_choi" type="text" class="form-control form-control-sm" placeholder="Nhập lý do từ chối tour...">
+                <input v-model="edit_tour.ly_do_tu_choi" type="text" class="form-control form-control-sm" placeholder="Nhập lý do từ chối tour...">
               </div>
 
               <!-- Mô tả chi tiết hành trình -->
               <div class="col-12">
                 <label class="form-label fw-semibold">Mô Tả Chi Tiết Hành Trình</label>
-                <textarea v-model="update_Tour.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả hành trình tour..."></textarea>
+                <textarea v-model="edit_tour.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả hành trình tour..."></textarea>
               </div>
             </div>
           </div>
@@ -626,8 +626,8 @@
           <div class="modal-body">
             <div class="alert alert-warning border-0 mb-0" role="alert">
               <i class='bx bx-error-circle me-1 fs-5 align-middle'></i>
-              Bạn có chắc chắn muốn xóa tour <strong>{{ delete_Tour.ten_tour }}</strong> 
-              (Mã: <code>{{ delete_Tour.ma_tour }}</code>) không?
+              Bạn có chắc chắn muốn xóa tour <strong>{{ delete_tour.ten_tour }}</strong> 
+              (Mã: <code>{{ delete_tour.ma_tour }}</code>) không?
             </div>
           </div>
           <div class="modal-footer bg-light">
@@ -642,7 +642,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/axios';
 
 export default {
   name: "AdminTour",
@@ -660,7 +660,7 @@ export default {
       filterHienThi: "",  // Bộ lọc theo trạng thái hiển thị mở bán (1: Mở bán, 0: Tạm ẩn)
 
       // Object binding cho form THÊM MỚI Tour (kèm giá khởi hành gia_tour)
-      create_Tour: {
+      add_tour: {
         ma_tour: "",
         ma_doi_tac: "",
         ten_tour: "",
@@ -675,7 +675,7 @@ export default {
       },
 
       // Object binding cho form CẬP NHẬT Tour (kèm giá khởi hành gia_tour)
-      update_Tour: {
+      edit_tour: {
         ma_tour: "",
         ma_doi_tac: "",
         ten_tour: "",
@@ -707,7 +707,7 @@ export default {
       },
 
       // Object lưu thông tin tour cần XÓA
-      delete_Tour: {
+      delete_tour: {
         ma_tour: "",
         ten_tour: ""
       }
@@ -818,7 +818,7 @@ export default {
 
     // 5. Gọi API GET lấy toàn bộ danh sách tour và đối tác từ Backend
     loadData() {
-      axios.get('http://127.0.0.1:8000/api/admin/tour/get-data')
+      api.get('/api/admin/tour/get-data')
         .then(response => {
           if (response.data.status) {
             this.list_tour = response.data.data || [];
@@ -834,17 +834,13 @@ export default {
 
     // 6. Gọi API POST thêm mới tour kèm giá khởi hành
     themMoiTour() {
-      axios.post('http://127.0.0.1:8000/api/admin/tour/create', this.create_Tour)
+      api.post('/api/admin/tour/store', this.add_tour)
         .then(response => {
           if (response.data.status) {
-            if (this.$toast) {
-              this.$toast.success(response.data.message);
-            } else {
-              alert(response.data.message);
-            }
+            this.$toast.success(response.data.message);
             this.loadData(); // Tải lại danh sách sau khi thêm mới thành công
             // Reset dữ liệu form thêm mới
-            this.create_Tour = {
+            this.add_tour = {
               ma_tour: "",
               ma_doi_tac: "",
               ten_tour: "",
@@ -858,20 +854,19 @@ export default {
               ly_do_tu_choi: ""
             };
           } else {
-            const msg = response.data.message || "Thêm tour thất bại!";
-            if (this.$toast) this.$toast.error(msg); else alert(msg);
+            this.$toast.error(response.data.message || "Thêm tour thất bại!");
           }
         })
         .catch(error => {
           console.error(error);
           const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-          if (this.$toast) this.$toast.error(msg); else alert(msg);
+          this.$toast.error(msg);
         });
     },
 
     // 7. Mở modal cập nhật và gán dữ liệu tour hiện tại (bao gồm giá khởi hành gia_tour)
     moModalCapNhat(t) {
-      this.update_Tour = {
+      this.edit_tour = {
         ma_tour: t.ma_tour,
         ma_doi_tac: t.ma_doi_tac,
         ten_tour: t.ten_tour,
@@ -888,24 +883,19 @@ export default {
 
     // 8. Gọi API POST cập nhật thông tin tour và giá khởi hành
     capNhatTour() {
-      axios.post('http://127.0.0.1:8000/api/admin/tour/update', this.update_Tour)
+      api.post('/api/admin/tour/update', this.edit_tour)
         .then(res => {
           if (res.data.status) {
-            if (this.$toast) {
-              this.$toast.success(res.data.message);
-            } else {
-              alert(res.data.message);
-            }
+            this.$toast.success(res.data.message);
             this.loadData(); // Tải lại bảng sau khi cập nhật
           } else {
-            const msg = res.data.message || "Cập nhật tour thất bại";
-            if (this.$toast) this.$toast.error(msg); else alert(msg);
+            this.$toast.error(res.data.message || "Cập nhật tour thất bại");
           }
         })
         .catch(error => {
           console.error(error);
           const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-          if (this.$toast) this.$toast.error(msg); else alert(msg);
+          this.$toast.error(msg);
         });
     },
 
@@ -930,76 +920,60 @@ export default {
 
     // 10. Gọi API POST lưu quyết định xét duyệt tour (DaDuyet, ChoDuyet, TuChoi)
     xacNhanDuyet() {
-      axios.post('http://127.0.0.1:8000/api/admin/tour/duyet', this.duyet_Tour)
+      api.post('/api/admin/tour/duyet', this.duyet_Tour)
         .then(res => {
           if (res.data.status) {
-            if (this.$toast) {
-              this.$toast.success(res.data.message);
-            } else {
-              alert(res.data.message);
-            }
+            this.$toast.success(res.data.message);
             this.loadData(); // Tải lại dữ liệu sau khi duyệt
           } else {
-            const msg = res.data.message || "Cập nhật duyệt thất bại";
-            if (this.$toast) this.$toast.error(msg); else alert(msg);
+            this.$toast.error(res.data.message || "Cập nhật duyệt thất bại");
           }
         })
         .catch(error => {
           console.error(error);
           const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-          if (this.$toast) this.$toast.error(msg); else alert(msg);
+          this.$toast.error(msg);
         });
     },
 
     // 11. Gọi API POST đổi trạng thái hiển thị mở bán (Bật / Tắt)
     changeStatus(tour) {
-      axios.post('http://127.0.0.1:8000/api/admin/tour/change-status', { ma_tour: tour.ma_tour })
+      api.post('/api/admin/tour/change-status', { ma_tour: tour.ma_tour })
         .then(res => {
           if (res.data.status) {
-            if (this.$toast) {
-              this.$toast.success(res.data.message);
-            } else {
-              alert(res.data.message);
-            }
-            // Đổi trực tiếp trên view và đồng bộ từ database
+            this.$toast.success(res.data.message);
             tour.trang_thai_hien_thi = tour.trang_thai_hien_thi == 1 ? 0 : 1;
             this.loadData();
           } else {
-            const msg = res.data.message || "Đổi trạng thái thất bại";
-            if (this.$toast) this.$toast.error(msg); else alert(msg);
+            this.$toast.error(res.data.message || "Đổi trạng thái thất bại");
           }
         })
         .catch(error => {
           console.error(error);
           const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-          if (this.$toast) this.$toast.error(msg); else alert(msg);
+          this.$toast.error(msg);
         });
     },
 
     // 12. Gọi API POST xóa mềm tour du lịch
     xoaTour() {
-      axios.post('http://127.0.0.1:8000/api/admin/tour/destroy', { ma_tour: this.delete_Tour.ma_tour })
+      api.post('/api/admin/tour/delete', { ma_tour: this.delete_tour.ma_tour })
         .then(res => {
           if (res.data.status) {
-            if (this.$toast) {
-              this.$toast.success(res.data.message);
-            } else {
-              alert(res.data.message);
-            }
+            this.$toast.success(res.data.message);
             this.loadData(); // Tải lại danh sách sau khi xóa
-            this.delete_Tour = {
+            this.delete_tour = {
               ma_tour: "",
               ten_tour: ""
             };
           } else {
-            const msg = res.data.message || "Xóa tour thất bại";
-            if (this.$toast) this.$toast.error(msg); else alert(msg);
+            this.$toast.error(res.data.message || "Xóa tour thất bại");
           }
         })
         .catch(error => {
           console.error(error);
           const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-          if (this.$toast) this.$toast.error(msg); else alert(msg);
+          this.$toast.error(msg);
         });
     }
   }

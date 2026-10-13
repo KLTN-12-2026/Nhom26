@@ -13,8 +13,8 @@
                     </svg>
                 </div>
                 <div class="brand-info">
-                    <h2 class="brand-title">Đà Nẵng Smart Travel...</h2>
-                    <span class="brand-subtitle">Hệ thống Lập Kế hoạch & Tour</span>
+                    <h2 class="brand-title" title="Đà Nẵng Smart Travel">Đà Nẵng Smart Travel</h2>
+                    <span class="brand-subtitle" title="Hệ thống hỗ trợ lập kế hoạch du lịch cá nhân hóa tại Đà Nẵng">Tối ưu Lịch trình AI</span>
                 </div>
             </router-link>
 
@@ -209,7 +209,10 @@ export default {
         },
         handleLogout() {
             if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi tài khoản khách hàng?')) {
+                localStorage.removeItem('xs');
                 localStorage.removeItem('token_client');
+                localStorage.removeItem('nguoi_dung_token');
+                localStorage.removeItem('nguoi_dung');
                 this.$router.push('/client/home');
             }
         }

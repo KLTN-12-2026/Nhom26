@@ -85,6 +85,13 @@
       </form>
     </div>
 
+    <!-- Footer bản quyền -->
+    <div class="activation-footer text-center mt-3">
+      <small style="color: #64748b; font-size: 12px;">
+        © 2026 <strong>Đà Nẵng Smart Travel</strong>
+      </small>
+    </div>
+
     <!-- Toast thông báo -->
     <transition name="toast-fade">
       <div v-if="toast.show" :class="['custom-toast', toast.type]">
@@ -96,6 +103,8 @@
 </template>
 
 <script>
+import api from '@/axios';
+
 export default {
   name: 'MaKichHoat',
   data() {
@@ -124,11 +133,11 @@ export default {
     }
   },
   mounted() {
-    // Nhận email từ Query String nếu có (vd: /ma-kich-hoat?email=test@gmail.com)
+    // Nhận email từ Query String nếu có (vd: /kich-hoat?email=test@gmail.com)
     if (this.$route && this.$route.query && this.$route.query.email) {
       this.email = this.$route.query.email;
     } else {
-      this.email = 'nguyenvana@gmail.com';
+      this.email = '';
     }
 
     this.startCountdown();
@@ -213,11 +222,17 @@ export default {
       const newEmail = prompt('Nhập địa chỉ email mới để nhận mã:', this.email);
       if (newEmail && newEmail.trim() !== '') {
         this.email = newEmail.trim();
-        this.showToast(`Đã đổi sang email: ${this.email}. Vui lòng gửi lại mã!`, 'info');
+        this.showToast(`Đã đổi sang email: ${this.email}. Vui lòng nhấn gửi lại mã!`, 'info');
         this.countdown = 0;
       }
     },
     showToast(message, type = 'info') {
+      if (this.$toast) {
+        if (type === 'success') this.$toast.success(message);
+        else if (type === 'error') this.$toast.error(message);
+        else if (type === 'warning') this.$toast.warning(message);
+        else this.$toast.info(message);
+      }
       if (this.toastTimer) clearTimeout(this.toastTimer);
       this.toast = { show: true, message, type };
       this.toastTimer = setTimeout(() => {
@@ -231,22 +246,54 @@ export default {
       }
 
       this.loading = true;
-      setTimeout(() => {
+      api.post('/api/xac-thuc', {
+        ma_xac_thuc: this.fullOtpCode,
+        email: this.email ? this.email.trim() : null
+      })
+      .then(res => {
+        if (res.data.status == 1) {
+          this.showToast(res.data.message || 'Kích hoạt tài khoản thành công!', 'success');
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1500);
+        } else {
+          this.showToast(res.data.message || 'Mã xác thực không đúng!', 'error');
+        }
+      })
+      .catch(err => {
+        const msg = (err.response && err.response.data && err.response.data.message) || 'Có lỗi xảy ra khi xác thực!';
+        this.showToast(msg, 'error');
+      })
+      .finally(() => {
         this.loading = false;
-        this.showToast('Kích hoạt tài khoản thành công! Đang chuyển hướng...', 'success');
-        setTimeout(() => {
-          this.$router.push('/login');
-        }, 1500);
-      }, 1000);
+      });
     },
     handleResendCode() {
       if (this.countdown > 0) return;
+      if (!this.email) {
+        this.showToast('Vui lòng nhập email trước khi gửi lại mã!', 'warning');
+        return;
+      }
+
       this.resending = true;
-      setTimeout(() => {
+      api.post('/api/gui-lai-ma', {
+        email: this.email.trim()
+      })
+      .then(res => {
+        if (res.data.status == 1) {
+          this.showToast(res.data.message || `Mã kích hoạt mới đã được gửi tới ${this.email}`, 'success');
+          this.startCountdown();
+        } else {
+          this.showToast(res.data.message || 'Không thể gửi lại mã!', 'error');
+        }
+      })
+      .catch(err => {
+        const msg = (err.response && err.response.data && err.response.data.message) || 'Có lỗi xảy ra!';
+        this.showToast(msg, 'error');
+      })
+      .finally(() => {
         this.resending = false;
-        this.startCountdown();
-        this.showToast(`Mã kích hoạt mới đã được gửi tới ${this.email}`, 'success');
-      }, 800);
+      });
     }
   }
 };
@@ -263,6 +310,7 @@ export default {
 .activation-page-wrapper {
   background: radial-gradient(circle at center, #e0f2fe 0%, #bae6fd 45%, #7dd3fc 100%);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;

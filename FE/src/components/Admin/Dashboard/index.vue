@@ -34,7 +34,7 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">TỔNG GMV THÁNG</span>
-            <div class="kpi-value text-dark">1.45<span style="font-size: 1.1rem; font-weight: 600;"> Tỷ</span></div>
+            <div class="kpi-value text-dark">{{ formatShortMoney(kpis.gmv) }}</div>
             <span class="kpi-subtext text-success"><i class="bx bx-trending-up me-1"></i>+18.4% tăng trưởng</span>
           </div>
           <div class="kpi-icon icon-blue">
@@ -47,8 +47,8 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">ĐỐI TÁC HOẠT ĐỘNG</span>
-            <div class="kpi-value text-success">48</div>
-            <span class="kpi-subtext">5 đối tác mới chờ duyệt</span>
+            <div class="kpi-value text-success">{{ kpis.active_partners }}</div>
+            <span class="kpi-subtext">{{ kpis.pending_partners }} đối tác mới chờ duyệt</span>
           </div>
           <div class="kpi-icon icon-green">
             <i class="bx bx-buildings"></i>
@@ -60,8 +60,8 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">KHÁCH HÀNG / USERS</span>
-            <div class="kpi-value text-primary">3,240</div>
-            <span class="kpi-subtext">Đồng bộ từ bảng nguoi_dungs</span>
+            <div class="kpi-value text-primary">{{ formatMoney(kpis.total_users) }}</div>
+            <span class="kpi-subtext">Đồng bộ từ bảng khach_hangs</span>
           </div>
           <div class="kpi-icon icon-blue">
             <i class="bx bx-user-check"></i>
@@ -73,7 +73,7 @@
         <div class="kpi-card">
           <div class="kpi-content">
             <span class="kpi-label">SỰ CỐ CẦN XỬ LÝ</span>
-            <div class="kpi-value text-danger">05</div>
+            <div class="kpi-value text-danger">{{ kpis.pending_tickets < 10 ? '0' + kpis.pending_tickets : kpis.pending_tickets }}</div>
             <span class="kpi-subtext">Ticket ưu tiên cần phản hồi</span>
           </div>
           <div class="kpi-icon icon-red">
@@ -142,28 +142,10 @@
         <div class="card border-0 shadow-sm p-4 rounded-3 h-100">
           <h6 class="fw-bold text-dark mb-3"><i class="bx bx-bell text-warning me-2"></i>Nhật Ký Quản Trị Hệ Thống Gần Nhất</h6>
           <div class="timeline-wrap small">
-            <div class="d-flex gap-3 mb-3">
-              <span class="text-muted" style="min-width: 60px;">17:45</span>
+            <div class="d-flex gap-3 mb-3" v-for="(act, idx) in activities" :key="idx">
+              <span class="text-muted" style="min-width: 60px;">{{ act.time }}</span>
               <div>
-                <strong>Super Admin (Root)</strong> vừa phê duyệt tài khoản đối tác <em>Da Nang Sea Travel Ltd.</em>
-              </div>
-            </div>
-            <div class="d-flex gap-3 mb-3">
-              <span class="text-muted" style="min-width: 60px;">16:20</span>
-              <div>
-                <strong>Hệ thống</strong> hoàn tất giải ngân quyết toán công nợ chu kỳ 1 tháng 02/2025.
-              </div>
-            </div>
-            <div class="d-flex gap-3 mb-3">
-              <span class="text-muted" style="min-width: 60px;">14:10</span>
-              <div>
-                <strong>Content Manager</strong> vừa duyệt 04 địa điểm du lịch mới tại Bán Đảo Sơn Trà.
-              </div>
-            </div>
-            <div class="d-flex gap-3">
-              <span class="text-muted" style="min-width: 60px;">11:05</span>
-              <div>
-                <strong>Support Admin</strong> đã tiếp nhận và phản hồi Ticket lỗi thanh toán #TCK001.
+                <strong>{{ act.actor }}</strong> {{ act.content }}
               </div>
             </div>
           </div>
@@ -174,10 +156,46 @@
 </template>
 
 <script>
+import api from '@/axios';
+
 export default {
   name: "AdminDashboard",
   data() {
     return {
+      key_search: "",
+      list_dashboard: [],
+      add_dashboard: {},
+      edit_dashboard: {},
+      delete_dashboard: {},
+      kpis: {
+        gmv: 1450000000,
+        active_partners: 48,
+        pending_partners: 5,
+        total_users: 3240,
+        pending_tickets: 5
+      },
+      activities: [
+        {
+          time: '17:45',
+          actor: 'Super Admin (Root)',
+          content: 'vừa phê duyệt hồ sơ đối tác du lịch mới.'
+        },
+        {
+          time: '16:20',
+          actor: 'Hệ thống',
+          content: 'hoàn tất giải ngân quyết toán công nợ chu kỳ đối soát gần nhất.'
+        },
+        {
+          time: '14:10',
+          actor: 'Content Manager',
+          content: 'vừa duyệt 04 địa điểm du lịch mới tại Bán Đảo Sơn Trà.'
+        },
+        {
+          time: '11:05',
+          actor: 'Support Admin',
+          content: 'đã tiếp nhận và phản hồi Ticket hỗ trợ du khách.'
+        }
+      ],
       modules: [
         { name: "Quản lý Chức vụ", desc: "Phân cấp vai trò quản trị", icon: "bx bx-id-card", iconClass: "icon-blue", link: "/admin/chuc-vu" },
         { name: "Phân quyền", desc: "Ma trận quyền hạn RBAC", icon: "bx bx-shield-quarter", iconClass: "icon-green", link: "/admin/phan-quyen" },
@@ -195,6 +213,40 @@ export default {
         { name: "Quản lý Báo cáo lỗi", desc: "Tiếp nhận sự cố kỹ thuật", icon: "bx bx-bug", iconClass: "icon-red", link: "/admin/bao-cao-loi" }
       ]
     };
+  },
+  mounted() {
+    this.loadData();
+  },
+  methods: {
+    formatMoney(val) {
+      return Number(val || 0).toLocaleString("vi-VN");
+    },
+    formatShortMoney(val) {
+      const num = Number(val || 0);
+      if (num >= 1000000000) {
+        return (num / 1000000000).toFixed(2) + " Tỷ";
+      }
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + " Tr";
+      }
+      return num.toLocaleString("vi-VN") + " đ";
+    },
+    loadData() {
+      api.get('/api/admin/dashboard/get-data')
+        .then(res => {
+          if (res.data.status) {
+            if (res.data.kpis) {
+              this.kpis = res.data.kpis;
+            }
+            if (res.data.activities && res.data.activities.length > 0) {
+              this.activities = res.data.activities;
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Lỗi khi tải dữ liệu dashboard:', err);
+        });
+    }
   }
 };
 </script>

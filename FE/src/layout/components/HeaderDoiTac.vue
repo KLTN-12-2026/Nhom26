@@ -184,6 +184,7 @@ export default {
     methods: {
         dangXuat() {
             if (confirm('Bạn có muốn đăng xuất khỏi kênh đối tác không?')) {
+                localStorage.removeItem('xs');
                 localStorage.removeItem('token_doitac');
                 this.$router.push('/doitac/login');
             }

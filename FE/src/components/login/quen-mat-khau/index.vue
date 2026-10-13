@@ -66,6 +66,13 @@
             </form>
         </div>
 
+        <!-- Footer bản quyền -->
+        <div class="auth-footer text-center mt-3">
+            <small style="color: #64748b; font-size: 12px;">
+                © 2026 <strong>Đà Nẵng Smart Travel</strong>
+            </small>
+        </div>
+
         <!-- Toast thông báo -->
         <transition name="toast-fade">
             <div v-if="toast.show" :class="['custom-toast', toast.type]">
@@ -157,6 +164,7 @@ export default {
 .auth-page-wrapper {
     background: radial-gradient(circle at center, #e0f2fe 0%, #bae6fd 45%, #7dd3fc 100%);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;

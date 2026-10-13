@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="admin-page-container">
         <!-- 1. Thanh điều hướng Breadcrumb & Trạng thái đồng bộ Database -->
         <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
@@ -205,12 +205,12 @@
                             <td class="text-center align-middle">
                                 <div class="d-inline-flex gap-1">
                                     <!-- Nút Cập nhật mở modal -->
-                                    <button v-on:click="Object.assign(update_KhachHang, kh)" class="btn btn-sm btn-action text-primary" 
+                                    <button v-on:click="Object.assign(edit_khach_hang, kh)" class="btn btn-sm btn-action text-primary" 
                                         data-bs-toggle="modal" data-bs-target="#capNhatModal" title="Cập nhật">
                                         <i class="bx bx-edit"></i>
                                     </button>
                                     <!-- Nút Xóa mở modal -->
-                                    <button v-on:click="Object.assign(delete_KhachHang, kh)" class="btn btn-sm btn-action text-danger" 
+                                    <button v-on:click="Object.assign(delete_khach_hang, kh)" class="btn btn-sm btn-action text-danger" 
                                         data-bs-toggle="modal" data-bs-target="#xoaModal" title="Xóa">
                                         <i class="bx bx-trash"></i>
                                     </button>
@@ -255,28 +255,28 @@
                     <div class="modal-body">
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mã Khách Hàng</label>
-                            <input v-model="create_KhachHang.ma_khach_hang" type="text" class="form-control form-control-sm" placeholder="VD: KH01 (Để trống để tự sinh)">
+                            <input v-model="add_khach_hang.ma_khach_hang" type="text" class="form-control form-control-sm" placeholder="VD: KH01 (Để trống để tự sinh)">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
-                            <input v-model="create_KhachHang.ho_va_ten" type="text" class="form-control form-control-sm" placeholder="Nhập họ và tên...">
+                            <input v-model="add_khach_hang.ho_va_ten" type="text" class="form-control form-control-sm" placeholder="Nhập họ và tên...">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
-                            <input v-model="create_KhachHang.email" type="email" autocomplete="off" class="form-control form-control-sm" placeholder="example@gmail.com">
+                            <input v-model="add_khach_hang.email" type="email" autocomplete="off" class="form-control form-control-sm" placeholder="example@gmail.com">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mật khẩu</label>
-                            <input v-model="create_KhachHang.mat_khau" type="password" autocomplete="new-password" class="form-control form-control-sm" placeholder="Mặc định: 123456">
+                            <input v-model="add_khach_hang.mat_khau" type="password" autocomplete="new-password" class="form-control form-control-sm" placeholder="Mặc định: 123456">
                         </div>
                         <div class="row g-2 mb-2">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Số điện thoại</label>
-                                <input v-model="create_KhachHang.so_dien_thoai" type="text" class="form-control form-control-sm" placeholder="09xxxxxxxx">
+                                <input v-model="add_khach_hang.so_dien_thoai" type="text" class="form-control form-control-sm" placeholder="09xxxxxxxx">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Giới tính</label>
-                                <select v-model="create_KhachHang.gioi_tinh" class="form-select form-select-sm">
+                                <select v-model="add_khach_hang.gioi_tinh" class="form-select form-select-sm">
                                     <option :value="1">Nam</option>
                                     <option :value="0">Nữ</option>
                                 </select>
@@ -285,11 +285,11 @@
                         <div class="row g-2 mb-2">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Ngày sinh</label>
-                                <input v-model="create_KhachHang.ngay_sinh" type="date" class="form-control form-control-sm">
+                                <input v-model="add_khach_hang.ngay_sinh" type="date" class="form-control form-control-sm">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Trạng thái</label>
-                                <select v-model="create_KhachHang.is_block" class="form-select form-select-sm">
+                                <select v-model="add_khach_hang.is_block" class="form-select form-select-sm">
                                     <option :value="0">Hoạt động</option>
                                     <option :value="1">Khóa tài khoản</option>
                                 </select>
@@ -317,28 +317,28 @@
                     <div class="modal-body">
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mã Khách Hàng</label>
-                            <input v-model="update_KhachHang.ma_khach_hang" type="text" class="form-control form-control-sm bg-light" disabled>
+                            <input v-model="edit_khach_hang.ma_khach_hang" type="text" class="form-control form-control-sm bg-light" disabled>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
-                            <input v-model="update_KhachHang.ho_va_ten" type="text" class="form-control form-control-sm" placeholder="Nhập họ và tên...">
+                            <input v-model="edit_khach_hang.ho_va_ten" type="text" class="form-control form-control-sm" placeholder="Nhập họ và tên...">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
-                            <input v-model="update_KhachHang.email" type="email" autocomplete="off" class="form-control form-control-sm" placeholder="example@gmail.com">
+                            <input v-model="edit_khach_hang.email" type="email" autocomplete="off" class="form-control form-control-sm" placeholder="example@gmail.com">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Mật khẩu mới</label>
-                            <input v-model="update_KhachHang.mat_khau" type="password" autocomplete="new-password" class="form-control form-control-sm" placeholder="Để trống nếu không đổi">
+                            <input v-model="edit_khach_hang.mat_khau" type="password" autocomplete="new-password" class="form-control form-control-sm" placeholder="Để trống nếu không đổi">
                         </div>
                         <div class="row g-2 mb-2">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Số điện thoại</label>
-                                <input v-model="update_KhachHang.so_dien_thoai" type="text" class="form-control form-control-sm" placeholder="09xxxxxxxx">
+                                <input v-model="edit_khach_hang.so_dien_thoai" type="text" class="form-control form-control-sm" placeholder="09xxxxxxxx">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Giới tính</label>
-                                <select v-model="update_KhachHang.gioi_tinh" class="form-select form-select-sm">
+                                <select v-model="edit_khach_hang.gioi_tinh" class="form-select form-select-sm">
                                     <option :value="1">Nam</option>
                                     <option :value="0">Nữ</option>
                                 </select>
@@ -347,11 +347,11 @@
                         <div class="row g-2 mb-2">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Ngày sinh</label>
-                                <input v-model="update_KhachHang.ngay_sinh" type="date" class="form-control form-control-sm">
+                                <input v-model="edit_khach_hang.ngay_sinh" type="date" class="form-control form-control-sm">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Trạng thái</label>
-                                <select v-model="update_KhachHang.is_block" class="form-select form-select-sm">
+                                <select v-model="edit_khach_hang.is_block" class="form-select form-select-sm">
                                     <option :value="0">Hoạt động</option>
                                     <option :value="1">Khóa tài khoản</option>
                                 </select>
@@ -379,8 +379,8 @@
                     <div class="modal-body">
                         <div class="alert alert-warning border-0 mb-0" role="alert">
                             <i class='bx bx-error-circle me-1 fs-5 align-middle'></i>
-                            Bạn có chắc chắn muốn xóa khách hàng <strong>{{ delete_KhachHang.ho_va_ten }}</strong> 
-                            (Mã: <code>{{ delete_KhachHang.ma_khach_hang }}</code>) không?
+                            Bạn có chắc chắn muốn xóa khách hàng <strong>{{ delete_khach_hang.ho_va_ten }}</strong> 
+                            (Mã: <code>{{ delete_khach_hang.ma_khach_hang }}</code>) không?
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -395,7 +395,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/axios';
 
 export default {
     name: 'AdminNguoiDung',
@@ -407,7 +407,7 @@ export default {
             filterStatus: '',    // Trạng thái lọc: '' (tất cả), '0' (hoạt động), '1' (đã khóa)
 
             // Dữ liệu form thêm mới khách hàng
-            create_KhachHang: {
+            add_khach_hang: {
                 ma_khach_hang: '',
                 ho_va_ten: '',
                 email: '',
@@ -419,7 +419,7 @@ export default {
             },
 
             // Dữ liệu form cập nhật khách hàng
-            update_KhachHang: {
+            edit_khach_hang: {
                 ma_khach_hang: '',
                 ho_va_ten: '',
                 email: '',
@@ -431,7 +431,7 @@ export default {
             },
 
             // Dữ liệu phục vụ modal xóa khách hàng
-            delete_KhachHang: {
+            delete_khach_hang: {
                 ma_khach_hang: '',
                 ho_va_ten: ''
             },
@@ -537,7 +537,7 @@ export default {
 
         // Gọi API lấy danh sách toàn bộ khách hàng từ máy chủ
         loadData() {
-            axios.get('http://127.0.0.1:8000/api/admin/khach-hang/get-data')
+            api.get('/api/admin/khach-hang/get-data')
                 .then(response => {
                     this.list_khach_hang = response.data.data;
                 })
@@ -548,120 +548,77 @@ export default {
 
         // Gọi API thêm mới khách hàng
         themMoiKhachHang() {
-            axios.post('http://127.0.0.1:8000/api/admin/khach-hang/create', this.create_KhachHang)
+            api.post('/api/admin/khach-hang/store', this.add_khach_hang)
                 .then(response => {
                     if (response.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(response.data.message);
-                        } else {
-                            alert(response.data.message);
-                        }
-                        this.loadData(); // Tải lại dữ liệu sau khi thêm mới
-                        // Reset lại form thêm mới
-                        this.create_KhachHang = {
-                            ma_khach_hang: '',
-                            ho_va_ten: '',
-                            email: '',
-                            mat_khau: '',
-                            ngay_sinh: '',
-                            gioi_tinh: 1,
-                            so_dien_thoai: '',
-                            is_block: 0
-                        };
+                        this.$toast.success(response.data.message);
+                        this.loadData();
+                        this.add_khach_hang = { ma_khach_hang: '', ho_va_ten: '', email: '', mat_khau: '', ngay_sinh: '', gioi_tinh: 1, so_dien_thoai: '', is_block: 0 };
                     } else {
-                        const msg = response.data.message || "Thêm khách hàng thất bại!";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(response.data.message || 'Thêm khách hàng thất bại!');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API cập nhật thông tin khách hàng
         capNhatKhachHang() {
-            axios.post('http://127.0.0.1:8000/api/admin/khach-hang/update', this.update_KhachHang)
+            api.post('/api/admin/khach-hang/update', this.edit_khach_hang)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        this.loadData(); // Tải lại dữ liệu sau khi cập nhật
-                        this.update_KhachHang = {
-                            ma_khach_hang: '',
-                            ho_va_ten: '',
-                            email: '',
-                            mat_khau: '',
-                            ngay_sinh: '',
-                            gioi_tinh: 1,
-                            so_dien_thoai: '',
-                            is_block: 0
-                        };
+                        this.$toast.success(res.data.message);
+                        this.loadData();
+                        this.edit_khach_hang = { ma_khach_hang: '', ho_va_ten: '', email: '', mat_khau: '', ngay_sinh: '', gioi_tinh: 1, so_dien_thoai: '', is_block: 0 };
                     } else {
-                        const msg = res.data.message || "Cập nhật khách hàng thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Cập nhật khách hàng thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API xóa mềm khách hàng
         xoaKhachHang() {
-            axios.post('http://127.0.0.1:8000/api/admin/khach-hang/destroy', this.delete_KhachHang)
+            api.post('/api/admin/khach-hang/delete', this.delete_khach_hang)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        this.loadData(); // Tải lại bảng dữ liệu sau khi xóa
-                        this.delete_KhachHang = {
-                            ma_khach_hang: '',
-                            ho_va_ten: '',
-                        };
+                        this.$toast.success(res.data.message);
+                        this.loadData();
+                        this.delete_khach_hang = { ma_khach_hang: '', ho_va_ten: '' };
                     } else {
-                        const msg = res.data.message || "Xóa khách hàng thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Xóa khách hàng thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
 
         // Gọi API thay đổi trạng thái khóa/mở khóa tài khoản khách hàng
         changeStatus(khachHang) {
-            axios.post('http://127.0.0.1:8000/api/admin/khach-hang/change-status', khachHang)
+            api.post('/api/admin/khach-hang/change-status', khachHang)
                 .then(res => {
                     if (res.data.status) {
-                        if (this.$toast) {
-                            this.$toast.success(res.data.message);
-                        } else {
-                            alert(res.data.message);
-                        }
-                        // Cập nhật ngay trên view và đồng bộ từ database
+                        this.$toast.success(res.data.message);
                         khachHang.is_block = khachHang.is_block == 1 ? 0 : 1;
                         this.loadData();
                     } else {
-                        const msg = res.data.message || "Đổi trạng thái thất bại";
-                        if (this.$toast) this.$toast.error(msg); else alert(msg);
+                        this.$toast.error(res.data.message || 'Đổi trạng thái thất bại');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-                    if (this.$toast) this.$toast.error(msg); else alert(msg);
+                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
+                    this.$toast.error(msg);
                 });
         },
     }

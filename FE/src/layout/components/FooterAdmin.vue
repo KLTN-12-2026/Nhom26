@@ -9,12 +9,12 @@
                             <i class="bx bxs-map-pin"></i>
                         </div>
                         <div>
-                            <h6 class="mb-0 fw-bold text-white">Da Nang Smart Travel</h6>
-                            <small class="text-cyan font-11 fw-semibold">Hệ Thống Lập Kế Hoạch Du Lịch Thông Minh</small>
+                            <h6 class="mb-0 fw-bold text-white">Đà Nẵng Smart Travel</h6>
+                            <small class="text-cyan font-11 fw-semibold">Hệ Thống Lập Kế Hoạch Du Lịch Cá Nhân Hóa</small>
                         </div>
                     </div>
                     <p class="text-secondary small pe-lg-3 mb-3 leading-relaxed">
-                        Ứng dụng công nghệ Trí tuệ Nhân tạo và tối ưu hóa thu nhập để mang đến cho mỗi du khách một hành trình Đà Nẵng trọn vẹn, đúng ngân sách và đậm đà bản sắc.
+                        Hệ thống hỗ trợ lập kế hoạch du lịch cá nhân hóa tại Đà Nẵng ứng dụng thuật toán tối ưu lịch trình, giúp du khách tối ưu thời gian, chi phí và trải nghiệm trọn vẹn điểm đến Đà Nẵng.
                     </p>
                     <ul class="list-unstyled small text-secondary mb-0">
                         <li class="mb-2"><i class="bx bx-map-pin text-cyan me-2"></i>Trung tâm Khởi nghiệp Đổi mới Sáng tạo TP. Đà Nẵng</li>
@@ -63,7 +63,7 @@
             <!-- Bottom Copyright & Server Status -->
             <div class="d-flex flex-wrap align-items-center justify-content-between py-3 small text-secondary">
                 <div>
-                    © 2026 Da Nang Smart Travel AI – Sở Du Lịch & Công nghệ số TP. Đà Nẵng
+                    © 2026 Đà Nẵng Smart Travel. Hệ thống Quản trị Du lịch Thông minh Đà Nẵng.
                 </div>
                 <div class="d-flex flex-wrap align-items-center gap-3 mt-2 mt-md-0">
                     <span class="text-success fw-bold d-flex align-items-center gap-1">
