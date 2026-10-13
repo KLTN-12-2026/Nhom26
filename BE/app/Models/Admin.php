@@ -12,6 +12,8 @@ class Admin extends Authenticatable
 {
     use SoftDeletes, HasApiTokens, HasFactory, Notifiable;
 
+    public const TRANG_THAI_TAM_TAT   = 0;
+    public const TRANG_THAI_HOAT_DONG = 1;
 
     protected $table = 'admins';
 
@@ -25,6 +27,26 @@ class Admin extends Authenticatable
         'email',
         'mat_khau',
         'ma_chuc_vu',
-        'is_block'
+        'is_block',
+        'is_master',
     ];
+
+    protected $hidden = [
+        'mat_khau',
+    ];
+
+    public function getAuthPassword()
+    {
+        return $this->mat_khau;
+    }
+
+    public function getIdChucVuAttribute()
+    {
+        return $this->ma_chuc_vu;
+    }
+
+    public function getTrangThaiAttribute()
+    {
+        return $this->is_block == 1 ? 0 : 1;
+    }
 }

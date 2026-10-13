@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateDoiTacRequest extends FormRequest
+class ThemMoiDoiTacRequest extends FormRequest
 {
     public function authorize(): bool
     {

@@ -12,6 +12,8 @@ class DoiTac extends Authenticatable
 {
     use SoftDeletes, HasApiTokens, HasFactory, Notifiable;
 
+    public const TRANG_THAI_TAM_TAT   = 0;
+    public const TRANG_THAI_HOAT_DONG = 1;
 
     protected $table = 'doi_tacs';
 
@@ -30,6 +32,15 @@ class DoiTac extends Authenticatable
         'dia_chi',
         'is_block',
         'trang_thai_duyet',
-        'ly_do_tu_choi'
+        'ly_do_tu_choi',
     ];
+
+    protected $hidden = [
+        'mat_khau',
+    ];
+
+    public function getAuthPassword()
+    {
+        return $this->mat_khau;
+    }
 }

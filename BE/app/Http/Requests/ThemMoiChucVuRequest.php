@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateChucVuRequest extends FormRequest
+class ThemMoiChucVuRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -21,7 +21,7 @@ class CreateChucVuRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ma_chuc_vu'  => 'required|string|max:50|unique:chuc_vus,ma_chuc_vu',
+            'ma_chuc_vu'  => 'nullable|string|max:50|unique:chuc_vus,ma_chuc_vu',
             'ten_chuc_vu' => 'required|string|max:255',
             'mo_ta'       => 'nullable|string',
             'trang_thai'  => 'nullable|integer',
@@ -35,6 +35,7 @@ class CreateChucVuRequest extends FormRequest
             'string'   => ':attribute phải là chuỗi ký tự.',
             'max'      => ':attribute không được vượt quá :max ký tự.',
             'unique'   => ':attribute đã tồn tại trong hệ thống.',
+            'integer'  => ':attribute phải là số nguyên.',
         ];
     }
 

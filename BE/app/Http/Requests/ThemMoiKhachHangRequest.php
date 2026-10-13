@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateKhachHangRequest extends FormRequest
+class ThemMoiKhachHangRequest extends FormRequest
 {
     public function authorize(): bool
     {

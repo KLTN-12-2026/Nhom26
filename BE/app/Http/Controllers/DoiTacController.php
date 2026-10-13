@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\DoiTac;
-use App\Http\Requests\CreateDoiTacRequest;
+use App\Http\Requests\ThemMoiDoiTacRequest;
 use App\Http\Requests\UpdateDoiTacRequest;
-use App\Http\Requests\DeleteDoiTacRequest;
-use App\Http\Requests\ChangeStatusDoiTacRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -51,11 +49,11 @@ class DoiTacController extends Controller
 
         return response()->json([
             'status' => 1,
-            'data'   => $data
+            'data'   => $data,
         ]);
     }
 
-    public function create(CreateDoiTacRequest $request)
+    public function store(ThemMoiDoiTacRequest $request)
     {
         $ma_doi_tac = $request->ma_doi_tac ?? $request->id;
         if (!$ma_doi_tac) {
@@ -83,12 +81,25 @@ class DoiTacController extends Controller
         return response()->json([
             'status'  => 1,
             'message' => 'Tạo đối tác thành công',
-        ], 201);
+        ]);
     }
 
-    public function capNhat(UpdateDoiTacRequest $request)
+    // Alias cho store
+    public function create(ThemMoiDoiTacRequest $request)
+    {
+        return $this->store($request);
+    }
+
+    public function update(UpdateDoiTacRequest $request)
     {
         $id = $request->ma_doi_tac ?? $request->id;
+        $doiTac = DoiTac::where('ma_doi_tac', $id)->first();
+        if (!$doiTac) {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Không tìm thấy dữ liệu!',
+            ]);
+        }
 
         $dataUpdate = [
             'ten_doi_tac'        => $request->ten_doi_tac,
@@ -112,7 +123,7 @@ class DoiTacController extends Controller
             $dataUpdate['mat_khau'] = bcrypt($request->mat_khau);
         }
 
-        DoiTac::where('ma_doi_tac', $id)->update($dataUpdate);
+        $doiTac->update($dataUpdate);
 
         return response()->json([
             'status'  => 1,
@@ -120,25 +131,39 @@ class DoiTacController extends Controller
         ]);
     }
 
-    public function destroy(DeleteDoiTacRequest $request)
-    {
-        $id = $request->ma_doi_tac ?? $request->id;
-
-        DoiTac::where('ma_doi_tac', $id)->delete();
-
-        return response()->json([
-            'status'  => 1,
-            'message' => 'Xóa đối tác thành công',
-        ]);
-    }
-
-    public function doiTrangThai(ChangeStatusDoiTacRequest $request)
+    public function destroy(Request $request)
     {
         $id = $request->ma_doi_tac ?? $request->id;
         $doiTac = DoiTac::where('ma_doi_tac', $id)->first();
 
         if ($doiTac) {
-            $doiTac->is_block = !$doiTac->is_block;
+            $doiTac->delete();
+
+            return response()->json([
+                'status'  => 1,
+                'message' => 'Xóa đối tác thành công',
+            ]);
+        }
+
+        return response()->json([
+            'status'  => 0,
+            'message' => 'Không tìm thấy dữ liệu!',
+        ]);
+    }
+
+    // Alias cho destroy
+    public function delete(Request $request)
+    {
+        return $this->destroy($request);
+    }
+
+    public function changeStatus(Request $request)
+    {
+        $id = $request->ma_doi_tac ?? $request->id;
+        $doiTac = DoiTac::where('ma_doi_tac', $id)->first();
+
+        if ($doiTac) {
+            $doiTac->is_block = $doiTac->is_block == 1 ? 0 : 1;
             $doiTac->save();
 
             return response()->json([
@@ -149,8 +174,14 @@ class DoiTacController extends Controller
 
         return response()->json([
             'status'  => 0,
-            'message' => 'Không tìm thấy đối tác',
+            'message' => 'Không tìm thấy dữ liệu!',
         ]);
+    }
+
+    // Alias cho changeStatus
+    public function doiTrangThai(Request $request)
+    {
+        return $this->changeStatus($request);
     }
 
     public function duyetDoiTac(Request $request)
@@ -173,7 +204,7 @@ class DoiTacController extends Controller
 
         return response()->json([
             'status'  => 0,
-            'message' => 'Không tìm thấy đối tác',
+            'message' => 'Không tìm thấy dữ liệu!',
         ]);
     }
 }

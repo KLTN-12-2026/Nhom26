@@ -12,6 +12,8 @@ class KhachHang extends Authenticatable
 {
     use SoftDeletes, HasApiTokens, HasFactory, Notifiable;
 
+    public const TRANG_THAI_TAM_TAT   = 0;
+    public const TRANG_THAI_HOAT_DONG = 1;
 
     protected $table = 'khach_hangs';
 
@@ -28,6 +30,17 @@ class KhachHang extends Authenticatable
         'gioi_tinh',
         'so_dien_thoai',
         'is_block',
-        'hash_reset'
+        'is_xac_thuc',
+        'ma_xac_thuc',
+        'hash_reset',
     ];
+
+    protected $hidden = [
+        'mat_khau',
+    ];
+
+    public function getAuthPassword()
+    {
+        return $this->mat_khau;
+    }
 }

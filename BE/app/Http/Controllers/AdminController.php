@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\ChucVu;
-use App\Http\Requests\CreateAdminRequest;
+use App\Http\Requests\ThemMoiAdminRequest;
 use App\Http\Requests\UpdateAdminRequest;
-use App\Http\Requests\DeleteAdminRequest;
-use App\Http\Requests\ChangeStatusAdminRequest;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -20,6 +19,7 @@ class AdminController extends Controller
                 'admins.email',
                 'admins.ma_chuc_vu',
                 'admins.is_block',
+                'admins.is_master',
                 'admins.created_at',
                 'chuc_vus.ten_chuc_vu'
             )
@@ -27,11 +27,11 @@ class AdminController extends Controller
 
         return response()->json([
             'status' => 1,
-            'data'   => $data
+            'data'   => $data,
         ]);
     }
 
-    public function create(CreateAdminRequest $request)
+    public function store(ThemMoiAdminRequest $request)
     {
         $ma_admin = $request->ma_admin;
         if (!$ma_admin) {
@@ -49,16 +49,40 @@ class AdminController extends Controller
             'mat_khau'   => bcrypt($request->mat_khau ?? '123456'),
             'ma_chuc_vu' => $request->ma_chuc_vu,
             'is_block'   => $request->is_block ?? 0,
+            'is_master'  => $request->is_master ?? 0,
         ]);
 
         return response()->json([
             'status'  => 1,
             'message' => 'Tạo tài khoản Admin thành công',
-        ], 201);
+        ]);
     }
 
-    public function capNhat(UpdateAdminRequest $request)
+    // Alias cho store
+    public function create(ThemMoiAdminRequest $request)
     {
+        return $this->store($request);
+    }
+
+    public function update(UpdateAdminRequest $request)
+    {
+        $id = $request->ma_admin ?? $request->id;
+        $admin = Admin::where('ma_admin', $id)->first();
+        if (!$admin) {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Không tìm thấy dữ liệu!',
+            ]);
+        }
+
+        // Bảo vệ tài khoản Quản trị tối cao
+        if (($admin->is_master ?? 0) == 1 || $admin->ma_admin === 'AD01') {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Không thể cập nhật thông tin của tài khoản Quản trị viên tối cao (is_master)!',
+            ]);
+        }
+
         $dataUpdate = [
             'ho_va_ten'  => $request->ho_va_ten,
             'email'      => $request->email,
@@ -70,7 +94,7 @@ class AdminController extends Controller
             $dataUpdate['mat_khau'] = bcrypt($request->mat_khau);
         }
 
-        Admin::where('ma_admin', $request->ma_admin)->update($dataUpdate);
+        $admin->update($dataUpdate);
 
         return response()->json([
             'status'  => 1,
@@ -78,9 +102,27 @@ class AdminController extends Controller
         ]);
     }
 
-    public function destroy(DeleteAdminRequest $request)
+    public function destroy(Request $request)
     {
-        Admin::where('ma_admin', $request->ma_admin)->delete();
+        $id = $request->ma_admin ?? $request->id;
+        $admin = Admin::where('ma_admin', $id)->first();
+
+        if (!$admin) {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Không tìm thấy dữ liệu!',
+            ]);
+        }
+
+        // Bảo vệ tài khoản Quản trị tối cao
+        if (($admin->is_master ?? 0) == 1 || $admin->ma_admin === 'AD01') {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Không thể xóa tài khoản Quản trị viên tối cao (is_master)!',
+            ]);
+        }
+
+        $admin->delete();
 
         return response()->json([
             'status'  => 1,
@@ -88,17 +130,44 @@ class AdminController extends Controller
         ]);
     }
 
-    public function doiTrangThai(ChangeStatusAdminRequest $request)
+    // Alias cho destroy
+    public function delete(Request $request)
     {
-        $admin = Admin::where('ma_admin', $request->ma_admin)->first();
-        if ($admin) {
-            $admin->is_block = !$admin->is_block;
-            $admin->save();
+        return $this->destroy($request);
+    }
+
+    public function changeStatus(Request $request)
+    {
+        $id = $request->ma_admin ?? $request->id;
+        $admin = Admin::where('ma_admin', $id)->first();
+
+        if (!$admin) {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Không tìm thấy dữ liệu!',
+            ]);
         }
+
+        // Bảo vệ tài khoản Quản trị tối cao
+        if (($admin->is_master ?? 0) == 1 || $admin->ma_admin === 'AD01') {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Không thể khóa tài khoản Quản trị viên tối cao (is_master)!',
+            ]);
+        }
+
+        $admin->is_block = $admin->is_block == 1 ? 0 : 1;
+        $admin->save();
 
         return response()->json([
             'status'  => 1,
             'message' => 'Đổi trạng thái thành công',
         ]);
+    }
+
+    // Alias cho changeStatus
+    public function doiTrangThai(Request $request)
+    {
+        return $this->changeStatus($request);
     }
 }

@@ -11,23 +11,26 @@ class UpdateAdminRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
-    {
-        return [
-            'ma_admin'   => 'required|string|exists:admins,ma_admin',
-            'ho_va_ten'  => 'required|string|max:255',
-            'email'      => 'required|email|unique:admins,email,' . $this->ma_admin . ',ma_admin',
-            'mat_khau'   => 'nullable|string|min:6',
-            'ma_chuc_vu' => 'required|string|exists:chuc_vus,ma_chuc_vu',
-            'is_block'   => 'nullable|boolean',
-        ];
-    }
-
     protected function prepareForValidation(): void
     {
         if ($this->mat_khau === '' || $this->mat_khau === null) {
             $this->request->remove('mat_khau');
         }
+    }
+
+    public function rules(): array
+    {
+        $id = $this->ma_admin ?? $this->id;
+
+        return [
+            'ma_admin'   => 'nullable|string|exists:admins,ma_admin',
+            'id'         => 'nullable|string',
+            'ho_va_ten'  => 'required|string|max:255',
+            'email'      => 'required|email|unique:admins,email,' . $id . ',ma_admin',
+            'mat_khau'   => 'nullable|string|min:6',
+            'ma_chuc_vu' => 'required|string|exists:chuc_vus,ma_chuc_vu',
+            'is_block'   => 'nullable|integer',
+        ];
     }
 
     public function messages(): array
@@ -42,7 +45,7 @@ class UpdateAdminRequest extends FormRequest
             'max'               => ':attribute không được vượt quá :max ký tự.',
             'min'               => ':attribute phải tối thiểu :min ký tự.',
             'unique'            => ':attribute đã tồn tại trong hệ thống.',
-            'boolean'           => ':attribute phải là true hoặc false.',
+            'integer'           => ':attribute phải là số nguyên.',
         ];
     }
 
@@ -58,4 +61,3 @@ class UpdateAdminRequest extends FormRequest
         ];
     }
 }
-

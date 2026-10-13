@@ -9,6 +9,8 @@ class ChucNang extends Model
 {
     use SoftDeletes;
 
+    public const TRANG_THAI_TAM_TAT   = 0;
+    public const TRANG_THAI_HOAT_DONG = 1;
 
     protected $table = 'chuc_nangs';
 
@@ -21,6 +23,6 @@ class ChucNang extends Model
         'ten_chuc_nang',
         'duong_dan',
         'trang_thai',
-        'mo_ta'
+        'mo_ta',
     ];
 }

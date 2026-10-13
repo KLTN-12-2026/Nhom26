@@ -9,6 +9,8 @@ class ChucVu extends Model
 {
     use SoftDeletes;
 
+    public const TRANG_THAI_TAM_TAT   = 0;
+    public const TRANG_THAI_HOAT_DONG = 1;
 
     protected $table = 'chuc_vus';
 
@@ -20,6 +22,6 @@ class ChucVu extends Model
         'ma_chuc_vu',
         'ten_chuc_vu',
         'mo_ta',
-        'trang_thai'
+        'trang_thai',
     ];
 }

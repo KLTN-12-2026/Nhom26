@@ -30,6 +30,7 @@ class UpdateChucNangRequest extends FormRequest
             'required' => ':attribute không được để trống.',
             'string'   => ':attribute phải là chuỗi ký tự.',
             'max'      => ':attribute không được vượt quá :max ký tự.',
+            'integer'  => ':attribute phải là số nguyên.',
         ];
     }
 
@@ -38,6 +39,8 @@ class UpdateChucNangRequest extends FormRequest
         return [
             'ma_chuc_nang'  => 'Mã chức năng',
             'ten_chuc_nang' => 'Tên chức năng',
+            'duong_dan'     => 'Đường dẫn',
+            'path'          => 'Đường dẫn',
             'mo_ta'         => 'Mô tả chức năng',
             'trang_thai'    => 'Trạng thái',
         ];

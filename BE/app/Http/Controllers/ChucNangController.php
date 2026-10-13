@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChucNang;
-use App\Http\Requests\CreateChucNangRequest;
+use App\Http\Requests\ThemMoiChucNangRequest;
 use App\Http\Requests\UpdateChucNangRequest;
-use App\Http\Requests\DeleteChucNangRequest;
-use App\Http\Requests\ChangeStatusChucNangRequest;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Http\Request;
 
 class ChucNangController extends Controller
 {
@@ -19,11 +17,11 @@ class ChucNangController extends Controller
 
         return response()->json([
             'status' => 1,
-            'data'   => $data
+            'data'   => $data,
         ]);
     }
 
-    public function create(CreateChucNangRequest $request)
+    public function store(ThemMoiChucNangRequest $request)
     {
         $ma_chuc_nang = $request->ma_chuc_nang ?? $request->id;
         if (!$ma_chuc_nang) {
@@ -47,12 +45,25 @@ class ChucNangController extends Controller
         return response()->json([
             'status'  => 1,
             'message' => 'Tạo chức năng thành công',
-        ], 201);
+        ]);
     }
 
-    public function capNhat(UpdateChucNangRequest $request)
+    // Alias cho store
+    public function create(ThemMoiChucNangRequest $request)
+    {
+        return $this->store($request);
+    }
+
+    public function update(UpdateChucNangRequest $request)
     {
         $id = $request->ma_chuc_nang ?? $request->id;
+        $chucNang = ChucNang::where('ma_chuc_nang', $id)->first();
+        if (!$chucNang) {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Không tìm thấy dữ liệu!',
+            ]);
+        }
 
         $dataUpdate = [
             'ten_chuc_nang' => $request->ten_chuc_nang,
@@ -64,7 +75,7 @@ class ChucNangController extends Controller
             $dataUpdate['trang_thai'] = $request->trang_thai;
         }
 
-        ChucNang::where('ma_chuc_nang', $id)->update($dataUpdate);
+        $chucNang->update($dataUpdate);
 
         return response()->json([
             'status'  => 1,
@@ -72,19 +83,33 @@ class ChucNangController extends Controller
         ]);
     }
 
-    public function destroy(DeleteChucNangRequest $request)
+    public function destroy(Request $request)
     {
         $id = $request->ma_chuc_nang ?? $request->id;
+        $chucNang = ChucNang::where('ma_chuc_nang', $id)->first();
 
-        ChucNang::where('ma_chuc_nang', $id)->delete();
+        if ($chucNang) {
+            $chucNang->delete();
+
+            return response()->json([
+                'status'  => 1,
+                'message' => 'Xóa chức năng thành công',
+            ]);
+        }
 
         return response()->json([
-            'status'  => 1,
-            'message' => 'Xóa chức năng thành công',
+            'status'  => 0,
+            'message' => 'Không tìm thấy dữ liệu!',
         ]);
     }
 
-    public function doiTrangThai(ChangeStatusChucNangRequest $request)
+    // Alias cho destroy
+    public function delete(Request $request)
+    {
+        return $this->destroy($request);
+    }
+
+    public function changeStatus(Request $request)
     {
         $id = $request->ma_chuc_nang ?? $request->id;
         $chucNang = ChucNang::where('ma_chuc_nang', $id)->first();
@@ -101,7 +126,13 @@ class ChucNangController extends Controller
 
         return response()->json([
             'status'  => 0,
-            'message' => 'Không tìm thấy chức năng',
+            'message' => 'Không tìm thấy dữ liệu!',
         ]);
+    }
+
+    // Alias cho changeStatus
+    public function doiTrangThai(Request $request)
+    {
+        return $this->changeStatus($request);
     }
 }

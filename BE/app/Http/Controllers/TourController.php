@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Tour;
 use App\Models\DoiTac;
 use App\Models\TourKhoiHanh;
-use App\Http\Requests\CreateTourRequest;
+use App\Http\Requests\ThemMoiTourRequest;
 use App\Http\Requests\UpdateTourRequest;
-use App\Http\Requests\DeleteTourRequest;
-use App\Http\Requests\ChangeStatusTourRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,8 +14,6 @@ class TourController extends Controller
 {
     /**
      * Lấy toàn bộ danh sách Tour du lịch
-     * - Liên kết với bảng doi_tacs để lấy thông tin đơn vị lữ hành
-     * - Liên kết với bảng tour_khoi_hanhs để lấy giá khởi hành (gia_tour) và số lượng lịch khởi hành
      */
     public function getData()
     {
@@ -45,7 +41,6 @@ class TourController extends Controller
                 'doi_tacs.so_dien_thoai as so_dien_thoai_doi_tac',
                 'doi_tacs.dia_chi as dia_chi_doi_tac',
                 'doi_tacs.ma_so_thue as ma_so_thue_doi_tac',
-                // Giá khởi hành lấy từ bảng tour_khoi_hanhs (lấy mức giá tối thiểu của các lịch khởi hành)
                 DB::raw('COALESCE(MIN(tour_khoi_hanhs.gia_tour), 0) as gia_khoi_diem'),
                 DB::raw('COALESCE(MIN(tour_khoi_hanhs.gia_tour), 0) as gia_khoi_hanh'),
                 DB::raw('COALESCE(MIN(tour_khoi_hanhs.gia_tour), 0) as gia_tour'),
@@ -81,17 +76,14 @@ class TourController extends Controller
         return response()->json([
             'status'   => 1,
             'data'     => $data,
-            'doi_tac'  => $doiTacList
+            'doi_tac'  => $doiTacList,
         ]);
     }
 
     /**
      * Thêm mới tour du lịch
-     * - Tự động tạo mã tour nếu người dùng để trống
-     * - Lưu thông tin tour vào bảng tours
-     * - Đồng thời tạo lịch khởi hành mẫu kèm giá khởi hành (gia_tour) trong bảng tour_khoi_hanhs
      */
-    public function create(CreateTourRequest $request)
+    public function store(ThemMoiTourRequest $request)
     {
         // 1. Xử lý mã tour: nếu để trống thì tự sinh mã dạng TR01, TR02...
         $ma_tour = $request->ma_tour ?? $request->id;
@@ -140,17 +132,28 @@ class TourController extends Controller
         return response()->json([
             'status'  => 1,
             'message' => 'Thêm mới tour thành công',
-        ], 201);
+        ]);
+    }
+
+    // Alias cho store
+    public function create(ThemMoiTourRequest $request)
+    {
+        return $this->store($request);
     }
 
     /**
      * Cập nhật thông tin tour du lịch
-     * - Cập nhật dữ liệu bảng tours
-     * - Cập nhật hoặc tạo mới giá khởi hành (gia_tour) trong bảng tour_khoi_hanhs
      */
-    public function capNhat(UpdateTourRequest $request)
+    public function update(UpdateTourRequest $request)
     {
         $id = $request->ma_tour ?? $request->id;
+        $tour = Tour::where('ma_tour', $id)->first();
+        if (!$tour) {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Không tìm thấy dữ liệu!',
+            ]);
+        }
 
         // 1. Chuẩn bị mảng dữ liệu cập nhật cho bảng tours
         $dataUpdate = [
@@ -171,21 +174,19 @@ class TourController extends Controller
             $dataUpdate['ly_do_tu_choi'] = $request->ly_do_tu_choi;
         }
 
-        Tour::where('ma_tour', $id)->update($dataUpdate);
+        $tour->update($dataUpdate);
 
         // 2. Cập nhật giá khởi hành trong bảng tour_khoi_hanhs
         $giaTour = $request->gia_tour ?? $request->gia_khoi_hanh;
         if ($giaTour !== null && $giaTour !== '') {
             $khoiHanh = TourKhoiHanh::where('ma_tour', $id)->first();
             if ($khoiHanh) {
-                // Đã có lịch khởi hành thì cập nhật lại giá tour
                 $khoiHanh->gia_tour = $giaTour;
                 if ($request->filled('so_nguoi_toi_da')) {
                     $khoiHanh->so_cho = $request->so_nguoi_toi_da;
                 }
                 $khoiHanh->save();
             } else {
-                // Nếu chưa có lịch khởi hành thì tạo mới 1 lịch khởi hành cho tour
                 $numTKT = TourKhoiHanh::withTrashed()->count() + 1;
                 do {
                     $maTKT = 'TKT' . str_pad($numTKT, 3, '0', STR_PAD_LEFT);
@@ -213,32 +214,43 @@ class TourController extends Controller
     /**
      * Xóa mềm tour du lịch
      */
-    public function destroy(DeleteTourRequest $request)
-    {
-        $id = $request->ma_tour ?? $request->id;
-
-        // Xóa tour trong bảng tours
-        Tour::where('ma_tour', $id)->delete();
-
-        // Xóa các lịch khởi hành liên quan trong bảng tour_khoi_hanhs
-        TourKhoiHanh::where('ma_tour', $id)->delete();
-
-        return response()->json([
-            'status'  => 1,
-            'message' => 'Xóa tour thành công',
-        ]);
-    }
-
-    /**
-     * Bật/tắt trạng thái hiển thị mở bán của tour
-     */
-    public function doiTrangThai(ChangeStatusTourRequest $request)
+    public function destroy(Request $request)
     {
         $id = $request->ma_tour ?? $request->id;
         $tour = Tour::where('ma_tour', $id)->first();
 
         if ($tour) {
-            $tour->trang_thai_hien_thi = !$tour->trang_thai_hien_thi;
+            $tour->delete();
+            TourKhoiHanh::where('ma_tour', $id)->delete();
+
+            return response()->json([
+                'status'  => 1,
+                'message' => 'Xóa tour thành công',
+            ]);
+        }
+
+        return response()->json([
+            'status'  => 0,
+            'message' => 'Không tìm thấy dữ liệu!',
+        ]);
+    }
+
+    // Alias cho destroy
+    public function delete(Request $request)
+    {
+        return $this->destroy($request);
+    }
+
+    /**
+     * Bật/tắt trạng thái hiển thị mở bán của tour
+     */
+    public function changeStatus(Request $request)
+    {
+        $id = $request->ma_tour ?? $request->id;
+        $tour = Tour::where('ma_tour', $id)->first();
+
+        if ($tour) {
+            $tour->trang_thai_hien_thi = $tour->trang_thai_hien_thi == 1 ? 0 : 1;
             $tour->save();
 
             return response()->json([
@@ -249,8 +261,14 @@ class TourController extends Controller
 
         return response()->json([
             'status'  => 0,
-            'message' => 'Không tìm thấy tour',
+            'message' => 'Không tìm thấy dữ liệu!',
         ]);
+    }
+
+    // Alias cho changeStatus
+    public function doiTrangThai(Request $request)
+    {
+        return $this->changeStatus($request);
     }
 
     /**
@@ -276,7 +294,7 @@ class TourController extends Controller
 
         return response()->json([
             'status'  => 0,
-            'message' => 'Không tìm thấy tour',
+            'message' => 'Không tìm thấy dữ liệu!',
         ]);
     }
 }

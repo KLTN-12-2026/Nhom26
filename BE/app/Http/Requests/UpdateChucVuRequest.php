@@ -13,8 +13,6 @@ class UpdateChucVuRequest extends FormRequest
 
     public function rules(): array
     {
-        $id = $this->ma_chuc_vu ?? $this->id;
-
         return [
             'ma_chuc_vu'  => 'nullable|string',
             'id'          => 'nullable|string',
@@ -30,6 +28,7 @@ class UpdateChucVuRequest extends FormRequest
             'required' => ':attribute không được để trống.',
             'string'   => ':attribute phải là chuỗi ký tự.',
             'max'      => ':attribute không được vượt quá :max ký tự.',
+            'integer'  => ':attribute phải là số nguyên.',
         ];
     }
 

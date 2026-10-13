@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateChucNangRequest extends FormRequest
+class ThemMoiChucNangRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -21,12 +21,12 @@ class CreateChucNangRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ma_chuc_nang'  => 'required|string|max:50|unique:chuc_nangs,ma_chuc_nang',
+            'ma_chuc_nang'  => 'nullable|string|max:50|unique:chuc_nangs,ma_chuc_nang',
             'ten_chuc_nang' => 'required|string|max:255',
-            'duong_dan'     => 'required|string|max:255',
-            'path'          => 'required|string|max:255',
-            'mo_ta'         => 'required|string',
-            'trang_thai'    => 'required|integer',
+            'duong_dan'     => 'nullable|string|max:255',
+            'path'          => 'nullable|string|max:255',
+            'mo_ta'         => 'nullable|string',
+            'trang_thai'    => 'nullable|integer',
         ];
     }
 
@@ -37,6 +37,7 @@ class CreateChucNangRequest extends FormRequest
             'string'   => ':attribute phải là chuỗi ký tự.',
             'max'      => ':attribute không được vượt quá :max ký tự.',
             'unique'   => ':attribute đã tồn tại trong hệ thống.',
+            'integer'  => ':attribute phải là số nguyên.',
         ];
     }
 
@@ -45,6 +46,8 @@ class CreateChucNangRequest extends FormRequest
         return [
             'ma_chuc_nang'  => 'Mã chức năng',
             'ten_chuc_nang' => 'Tên chức năng',
+            'duong_dan'     => 'Đường dẫn',
+            'path'          => 'Đường dẫn',
             'mo_ta'         => 'Mô tả chức năng',
             'trang_thai'    => 'Trạng thái',
         ];

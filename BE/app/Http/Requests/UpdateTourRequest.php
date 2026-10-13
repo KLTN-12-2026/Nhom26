@@ -6,50 +6,30 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateTourRequest extends FormRequest
 {
-    /**
-     * Xác định quyền thực thi request
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Quy tắc kiểm tra tính hợp lệ của dữ liệu đầu vào khi cập nhật tour
-     */
     public function rules(): array
     {
         return [
-            // Mã tour để xác định bản ghi cập nhật
             'ma_tour'             => 'nullable|string',
             'id'                  => 'nullable|string',
-            // Đối tác cung cấp tour
             'ma_doi_tac'          => 'required|string|exists:doi_tacs,ma_doi_tac',
-            // Tên tour du lịch
             'ten_tour'            => 'required|string|max:255',
-            // Giá khởi hành / giá tour trong bảng tour_khoi_hanhs
             'gia_tour'            => 'nullable|numeric|min:0',
             'gia_khoi_hanh'       => 'nullable|numeric|min:0',
-            // Mô tả chi tiết lộ trình
             'mo_ta'               => 'nullable|string',
-            // Link ảnh đại diện tour
             'hinh_anh_dai_dien'   => 'nullable|string',
-            // Số ngày tour
             'so_ngay'             => 'nullable|integer|min:1',
-            // Số lượng khách tối đa
             'so_nguoi_toi_da'     => 'nullable|integer|min:1',
-            // Trạng thái kiểm duyệt
             'trang_thai_duyet'    => 'nullable|string|max:50',
-            // Trạng thái hiển thị mở bán (1: hiển thị, 0: tạm ẩn)
             'trang_thai_hien_thi' => 'nullable|integer',
-            // Lý do từ chối (nếu có)
             'ly_do_tu_choi'       => 'nullable|string',
         ];
     }
 
-    /**
-     * Tùy biến thông báo lỗi xác thực
-     */
     public function messages(): array
     {
         return [
@@ -63,9 +43,6 @@ class UpdateTourRequest extends FormRequest
         ];
     }
 
-    /**
-     * Tên hiển thị tiếng Việt của các thuộc tính
-     */
     public function attributes(): array
     {
         return [
