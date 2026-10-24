@@ -1,20 +1,24 @@
 <template>
     <aside class="client-sidebar" :class="{ 'sidebar-mobile-open': isOpen }">
-        <!-- 1. Top Brand Logo -->
+        <!-- 1. Top Brand Logo (Giống y hệt hình: Da Nang SmartTrip AI / ĐÀ NẴNG TRIP OPTIMIZER) -->
         <div class="sidebar-header">
-            <router-link to="/client/home" class="brand-wrapper" @click="handleItemClick">
-                <div class="brand-logo-icon">
-                    <svg viewBox="0 0 32 32" fill="none" class="brand-svg">
-                        <rect width="32" height="32" rx="8" fill="#0284C7" />
-                        <!-- Globe / Compass lines -->
-                        <circle cx="16" cy="16" r="9" stroke="#FFFFFF" stroke-width="2" />
-                        <ellipse cx="16" cy="16" rx="4.5" ry="9" stroke="#FFFFFF" stroke-width="1.6" />
-                        <path d="M7 16H25" stroke="#FFFFFF" stroke-width="1.6" />
+            <router-link to="/client/ai-travel-planner" class="brand-wrapper" @click="handleItemClick">
+                <div class="brand-sparkle-icon">
+                    <svg viewBox="0 0 24 24" fill="none" class="sparkle-svg">
+                        <circle cx="12" cy="12" r="10" fill="url(#pinkGrad)" />
+                        <!-- 8-point AI sparkle star -->
+                        <path d="M12 5V19M5 12H19M7.05 7.05L16.95 16.95M7.05 16.95L16.95 7.05" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+                        <defs>
+                            <linearGradient id="pinkGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#ec4899" />
+                                <stop offset="1" stop-color="#be185d" />
+                            </linearGradient>
+                        </defs>
                     </svg>
                 </div>
                 <div class="brand-info">
-                    <h2 class="brand-title" title="Đà Nẵng Smart Travel">Đà Nẵng Smart Travel</h2>
-                    <span class="brand-subtitle" title="Hệ thống hỗ trợ lập kế hoạch du lịch cá nhân hóa tại Đà Nẵng">Tối ưu Lịch trình AI</span>
+                    <h2 class="brand-title">Da Nang SmartTrip AI</h2>
+                    <span class="brand-subtitle">ĐÀ NẴNG TRIP OPTIMIZER</span>
                 </div>
             </router-link>
 
@@ -24,151 +28,136 @@
             </button>
         </div>
 
-        <!-- 2. Scrollable Navigation Menu (Đầy đủ các chức năng theo yêu cầu & hình ảnh) -->
+        <!-- 2. Scrollable Navigation Menu (4 nhóm chức năng giống y hệt hình) -->
         <div class="sidebar-scrollable">
             <nav class="sidebar-menu">
-                <ul class="menu-list">
-                    <!-- 1. Trang chủ -->
-                    <li class="menu-item">
-                        <router-link to="/client/home" class="menu-link" active-class="active" @click="handleItemClick">
-                            <span class="menu-icon"><i class="bx bx-home-alt"></i></span>
-                            <span class="menu-text">Trang chủ</span>
-                        </router-link>
-                    </li>
+                <!-- NHÓM 1: KHÁM PHÁ & BẢN ĐỒ -->
+                <div class="menu-section">
+                    <div class="section-label">KHÁM PHÁ & BẢN ĐỒ</div>
+                    <ul class="menu-list">
+                        <li class="menu-item">
+                            <router-link to="/client/kham-pha-dia-diem" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-compass"></i></span>
+                                <span class="menu-text">Khám Phá Địa Điểm OSM</span>
+                            </router-link>
+                        </li>
+                        <li class="menu-item">
+                            <router-link to="/client/ban-do-tuong-tac" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-map-alt"></i></span>
+                                <span class="menu-text">Bản Đồ Tương Tác OSM</span>
+                            </router-link>
+                        </li>
+                        <li class="menu-item">
+                            <router-link to="/client/danh-muc-tour" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-layer"></i></span>
+                                <span class="menu-text">Danh Mục Tour & So Sánh</span>
+                            </router-link>
+                        </li>
+                    </ul>
+                </div>
 
-                    <!-- 2. Khám phá (Tìm kiếm & lọc địa điểm / Xem chi tiết địa điểm) -->
-                    <li class="menu-item has-sub" :class="{ 'open': expandedMenus.khamPha }">
-                        <div class="menu-link" :class="{ 'active': isRouteActive(['/client/tim-kiem-dia-diem', '/client/chi-tiet-dia-diem']) }" @click="toggleSubMenu('khamPha')">
-                            <span class="menu-icon"><i class="bx bx-compass"></i></span>
-                            <span class="menu-text">Khám phá</span>
-                            <i class="bx bx-chevron-down sub-arrow"></i>
-                        </div>
-                        <ul class="submenu-list" v-show="expandedMenus.khamPha">
-                            <li>
-                                <router-link to="/client/tim-kiem-dia-diem" class="submenu-link" active-class="active" @click="handleItemClick">
-                                    <i class="bx bx-search-alt-2 me-2"></i>Tìm kiếm & lọc địa điểm
-                                </router-link>
-                            </li>
-                            <li>
-                                <router-link to="/client/chi-tiet-dia-diem" class="submenu-link" active-class="active" @click="handleItemClick">
-                                    <i class="bx bx-info-circle me-2"></i>Xem chi tiết địa điểm
-                                </router-link>
-                            </li>
-                        </ul>
-                    </li>
+                <!-- NHÓM 2: LẬP KẾ HOẠCH AI (CÓ BADGE TRỌNG TÂM) -->
+                <div class="menu-section">
+                    <div class="section-label d-flex align-items-center justify-content-between">
+                        <span>LẬP KẾ HOẠCH AI</span>
+                        <span class="badge-trong-tam">TRỌNG TÂM</span>
+                    </div>
+                    <ul class="menu-list">
+                        <li class="menu-item">
+                            <router-link to="/client/ai-travel-planner" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-bot"></i></span>
+                                <span class="menu-text">AI Travel Planner</span>
+                            </router-link>
+                        </li>
+                        <li class="menu-item">
+                            <router-link to="/client/lich-trinh-toi-uu" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-directions"></i></span>
+                                <span class="menu-text">Lịch Trình Tối Ưu</span>
+                            </router-link>
+                        </li>
+                        <li class="menu-item">
+                            <router-link to="/client/lich-su-ke-hoach" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-history"></i></span>
+                                <span class="menu-text">Lịch Sử Kế Hoạch</span>
+                            </router-link>
+                        </li>
+                    </ul>
+                </div>
 
-                    <!-- 3. Lập kế hoạch AI -->
-                    <li class="menu-item">
-                        <router-link to="/client/lap-ke-hoach-ai" class="menu-link" active-class="active" @click="handleItemClick">
-                            <span class="menu-icon"><i class="bx bx-bot"></i></span>
-                            <span class="menu-text">Lập kế hoạch AI</span>
-                            <span class="badge-mini-ai">AI</span>
-                        </router-link>
-                    </li>
+                <!-- NHÓM 3: TRẢI NGHIỆM & GIAO DỊCH -->
+                <div class="menu-section">
+                    <div class="section-label">TRẢI NGHIỆM & GIAO DỊCH</div>
+                    <ul class="menu-list">
+                        <li class="menu-item">
+                            <router-link to="/client/don-dat-thanh-toan" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-receipt"></i></span>
+                                <span class="menu-text">Đơn Đặt & Thanh Toán</span>
+                            </router-link>
+                        </li>
+                        <li class="menu-item">
+                            <router-link to="/client/diem-den-yeu-thich" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-heart"></i></span>
+                                <span class="menu-text">Điểm Đến Yêu Thích</span>
+                            </router-link>
+                        </li>
+                        <li class="menu-item">
+                            <router-link to="/client/danh-gia-gop-y" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-star"></i></span>
+                                <span class="menu-text">Đánh Giá & Góp Ý</span>
+                            </router-link>
+                        </li>
+                        <li class="menu-item">
+                            <router-link to="/client/bao-cao-su-co" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-error-alt"></i></span>
+                                <span class="menu-text">Báo Cáo Sự Cố</span>
+                            </router-link>
+                        </li>
+                    </ul>
+                </div>
 
-                    <!-- 4. Kế hoạch của tôi (Quản lý kế hoạch, Quản lý nhóm du lịch, Quản lý hoạt động) -->
-                    <li class="menu-item has-sub" :class="{ 'open': expandedMenus.keHoach }">
-                        <div class="menu-link" :class="{ 'active': isRouteActive(['/client/ke-hoach', '/client/nhom-du-lich', '/client/hoat-dong']) }" @click="toggleSubMenu('keHoach')">
-                            <span class="menu-icon"><i class="bx bx-calendar-event"></i></span>
-                            <span class="menu-text">Kế hoạch của tôi</span>
-                            <i class="bx bx-chevron-down sub-arrow"></i>
-                        </div>
-                        <ul class="submenu-list" v-show="expandedMenus.keHoach">
-                            <li>
-                                <router-link to="/client/ke-hoach" class="submenu-link" active-class="active" @click="handleItemClick">
-                                    <i class="bx bx-folder me-2"></i>Quản lý kế hoạch
-                                </router-link>
-                            </li>
-                            <li>
-                                <router-link to="/client/nhom-du-lich" class="submenu-link" active-class="active" @click="handleItemClick">
-                                    <i class="bx bx-group me-2"></i>Quản lý nhóm du lịch
-                                </router-link>
-                            </li>
-                            <li>
-                                <router-link to="/client/hoat-dong" class="submenu-link" active-class="active" @click="handleItemClick">
-                                    <i class="bx bx-task me-2"></i>Quản lý hoạt động
-                                </router-link>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <!-- 5. Tour du lịch (Xem tour & lịch khởi hành, Đặt tour & thanh toán) -->
-                    <li class="menu-item has-sub" :class="{ 'open': expandedMenus.tour }">
-                        <div class="menu-link" :class="{ 'active': isRouteActive(['/client/tour', '/client/dat-tour']) }" @click="toggleSubMenu('tour')">
-                            <span class="menu-icon"><i class="bx bx-map-alt"></i></span>
-                            <span class="menu-text">Tour du lịch</span>
-                            <i class="bx bx-chevron-down sub-arrow"></i>
-                        </div>
-                        <ul class="submenu-list" v-show="expandedMenus.tour">
-                            <li>
-                                <router-link to="/client/tour" class="submenu-link" active-class="active" @click="handleItemClick">
-                                    <i class="bx bx-calendar-star me-2"></i>Xem tour & lịch khởi hành
-                                </router-link>
-                            </li>
-                            <li>
-                                <router-link to="/client/dat-tour" class="submenu-link" active-class="active" @click="handleItemClick">
-                                    <i class="bx bx-credit-card-front me-2"></i>Đặt tour & thanh toán
-                                </router-link>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <!-- 6. Đơn hàng (Lịch sử du lịch & đơn đặt) -->
-                    <li class="menu-item">
-                        <router-link to="/client/lich-su" class="menu-link" active-class="active" @click="handleItemClick">
-                            <span class="menu-icon"><i class="bx bx-receipt"></i></span>
-                            <span class="menu-text">Đơn hàng / Lịch sử</span>
-                        </router-link>
-                    </li>
-
-                    <!-- 7. Yêu thích (Địa điểm yêu thích) -->
-                    <li class="menu-item">
-                        <router-link to="/client/yeu-thich" class="menu-link" active-class="active" @click="handleItemClick">
-                            <span class="menu-icon"><i class="bx bx-heart"></i></span>
-                            <span class="menu-text">Địa điểm yêu thích</span>
-                        </router-link>
-                    </li>
-
-                    <!-- 8. Đánh giá -->
-                    <li class="menu-item">
-                        <router-link to="/client/danh-gia" class="menu-link" active-class="active" @click="handleItemClick">
-                            <span class="menu-icon"><i class="bx bx-star"></i></span>
-                            <span class="menu-text">Đánh giá</span>
-                        </router-link>
-                    </li>
-
-                    <!-- 9. Phản hồi / Báo cáo lỗi -->
-                    <li class="menu-item">
-                        <router-link to="/client/bao-cao-loi" class="menu-link" active-class="active" @click="handleItemClick">
-                            <span class="menu-icon"><i class="bx bx-message-square-error"></i></span>
-                            <span class="menu-text">Gửi báo cáo lỗi</span>
-                        </router-link>
-                    </li>
-
-                    <!-- 10. Tài khoản khách hàng -->
-                    <li class="menu-item">
-                        <router-link to="/client/profile" class="menu-link" active-class="active" @click="handleItemClick">
-                            <span class="menu-icon"><i class="bx bx-user-circle"></i></span>
-                            <span class="menu-text">Tài khoản khách hàng</span>
-                        </router-link>
-                    </li>
-                </ul>
+                <!-- NHÓM 4: CÁ NHÂN -->
+                <div class="menu-section mb-2">
+                    <div class="section-label">CÁ NHÂN</div>
+                    <ul class="menu-list">
+                        <li class="menu-item">
+                            <router-link to="/client/ho-so-so-thich" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-user-pin"></i></span>
+                                <span class="menu-text">Hồ Sơ & Sở Thích</span>
+                            </router-link>
+                        </li>
+                        <li class="menu-item">
+                            <router-link to="/client/bao-mat-tai-khoan" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-shield-quarter"></i></span>
+                                <span class="menu-text">Bảo Mật Tài Khoản</span>
+                            </router-link>
+                        </li>
+                    </ul>
+                </div>
             </nav>
         </div>
 
-        <!-- 3. Bottom User Footer Card (Giống hệt hình: avatar xanh, tên Nguyễn Văn An, mã KH-2025-0834 & Đăng xuất) -->
+        <!-- 3. Bottom User Footer Card & Hotline (Giống y hệt hình: avatar hồng, Trần Minh Anh, VIP Explorer ♦, Hotline ĐN) -->
         <div class="sidebar-user-footer">
             <div class="user-card-wrapper">
-                <div class="user-avatar-circle">
+                <div class="user-avatar-pink">
                     <i class="bx bx-user"></i>
                 </div>
                 <div class="user-meta-info">
-                    <div class="user-display-name">Nguyễn Văn An</div>
-                    <div class="user-sub-code">KH-2025-0834</div>
+                    <div class="user-display-name">Trần Minh Anh</div>
+                    <div class="user-sub-badge">VIP Explorer ♦</div>
                 </div>
                 <button type="button" class="btn-logout-sidebar" title="Đăng xuất" @click="handleLogout">
                     <i class="bx bx-log-out"></i>
                 </button>
+            </div>
+
+            <!-- Hotline Bar -->
+            <div class="hotline-bar">
+                <div class="d-flex align-items-center gap-1">
+                    <i class="bx bx-phone-call text-primary font-14"></i>
+                    <span class="hotline-title">Hotline ĐN:</span>
+                </div>
+                <a href="tel:02363650111" class="hotline-number">0236 3650 111</a>
             </div>
         </div>
     </aside>
@@ -183,22 +172,7 @@ export default {
             default: false
         }
     },
-    data() {
-        return {
-            expandedMenus: {
-                khamPha: true,
-                keHoach: true,
-                tour: true
-            }
-        }
-    },
     methods: {
-        toggleSubMenu(key) {
-            this.expandedMenus[key] = !this.expandedMenus[key];
-        },
-        isRouteActive(paths) {
-            return paths.some(path => this.$route.path.startsWith(path));
-        },
         closeSidebar() {
             this.$emit('close');
         },
@@ -213,11 +187,11 @@ export default {
                 localStorage.removeItem('token_client');
                 localStorage.removeItem('nguoi_dung_token');
                 localStorage.removeItem('nguoi_dung');
-                this.$router.push('/client/home');
+                this.$router.push('/login');
             }
         }
     }
-}
+};
 </script>
 
 <style scoped>
@@ -257,13 +231,13 @@ export default {
     min-width: 0;
 }
 
-.brand-logo-icon {
-    width: 34px;
-    height: 34px;
+.brand-sparkle-icon {
+    width: 32px;
+    height: 32px;
     flex-shrink: 0;
 }
 
-.brand-svg {
+.sparkle-svg {
     width: 100%;
     height: 100%;
     display: block;
@@ -287,10 +261,12 @@ export default {
 }
 
 .brand-subtitle {
-    font-size: 0.68rem;
-    color: #64748b;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #db2777;
     margin-top: 2px;
     line-height: 1.1;
+    letter-spacing: 0.6px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -322,6 +298,30 @@ export default {
     border-radius: 4px;
 }
 
+/* Section Header */
+.menu-section {
+    margin-bottom: 14px;
+}
+
+.section-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.6px;
+    padding: 4px 10px 6px;
+}
+
+.badge-trong-tam {
+    font-size: 0.58rem;
+    font-weight: 700;
+    background-color: #fdf2f8;
+    color: #db2777;
+    border: 1px solid #fbcfe8;
+    padding: 1px 6px;
+    border-radius: 999px;
+    line-height: 1.2;
+}
+
 .menu-list {
     list-style: none;
     padding: 0;
@@ -329,18 +329,18 @@ export default {
 }
 
 .menu-item {
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 
-/* Menu Link - Exact replica of the screenshot active & inactive state */
+/* Menu Link */
 .menu-link {
     display: flex;
     align-items: center;
-    padding: 9px 12px;
+    padding: 8px 10px;
     color: #334155;
     text-decoration: none;
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 500;
     transition: all 0.15s ease;
     cursor: pointer;
@@ -349,31 +349,31 @@ export default {
 
 .menu-link:hover {
     background-color: #f8fafc;
-    color: #0284c7;
+    color: #db2777;
 }
 
 .menu-link:hover .menu-icon {
-    color: #0284c7;
+    color: #db2777;
 }
 
-/* Active Link State: Exactly like "Tour du lịch" in the image */
+/* Active Link State */
 .menu-link.active,
-.menu-link.router-link-exact-active {
-    background-color: #0369a1 !important;
-    color: #ffffff !important;
+.menu-link.router-link-active {
+    background-color: #fdf2f8 !important;
+    color: #be185d !important;
     font-weight: 600;
 }
 
 .menu-link.active .menu-icon,
-.menu-link.router-link-exact-active .menu-icon {
-    color: #ffffff !important;
+.menu-link.router-link-active .menu-icon {
+    color: #be185d !important;
 }
 
 .menu-icon {
     font-size: 1.15rem;
-    width: 24px;
-    margin-right: 10px;
-    color: #475569;
+    width: 22px;
+    margin-right: 9px;
+    color: #64748b;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -387,93 +387,35 @@ export default {
     text-overflow: ellipsis;
 }
 
-.badge-mini-ai {
-    font-size: 0.65rem;
-    font-weight: 700;
-    background: #e0f2fe;
-    color: #0284c7;
-    padding: 2px 6px;
-    border-radius: 999px;
-    line-height: 1;
-}
-
-.menu-link.active .badge-mini-ai {
-    background: rgba(255, 255, 255, 0.25);
-    color: #ffffff;
-}
-
-.sub-arrow {
-    font-size: 1rem;
-    transition: transform 0.2s;
-    color: #94a3b8;
-}
-
-.menu-item.open .sub-arrow {
-    transform: rotate(180deg);
-}
-
-.menu-link.active .sub-arrow {
-    color: #ffffff;
-}
-
-/* Submenu */
-.submenu-list {
-    list-style: none;
-    padding: 4px 0 4px 28px;
-    margin: 0;
-}
-
-.submenu-link {
-    display: flex;
-    align-items: center;
-    padding: 6px 10px;
-    color: #64748b;
-    text-decoration: none;
-    font-size: 0.8rem;
-    font-weight: 500;
-    border-radius: 6px;
-    transition: all 0.15s ease;
-}
-
-.submenu-link:hover {
-    color: #0284c7;
-    background-color: #f0f9ff;
-}
-
-.submenu-link.active {
-    color: #0284c7;
-    font-weight: 700;
-    background-color: #e0f2fe;
-}
-
-/* 3. Bottom User Card */
+/* 3. Bottom User Card & Hotline */
 .sidebar-user-footer {
-    padding: 12px 14px;
+    padding: 12px;
     border-top: 1px solid #f1f5f9;
-    background: #fafafa;
+    background: #ffffff;
     flex-shrink: 0;
 }
 
 .user-card-wrapper {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    background: #ffffff;
+    gap: 9px;
+    padding: 7px 9px;
+    background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
+    margin-bottom: 8px;
 }
 
-.user-avatar-circle {
-    width: 34px;
-    height: 34px;
+.user-avatar-pink {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background-color: #0284c7;
+    background: linear-gradient(135deg, #ec4899, #db2777);
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     flex-shrink: 0;
 }
 
@@ -483,18 +425,21 @@ export default {
 }
 
 .user-display-name {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #0f172a;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.2;
 }
 
-.user-sub-code {
-    font-size: 0.68rem;
-    color: #64748b;
+.user-sub-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #8b5cf6;
     line-height: 1.1;
+    margin-top: 1px;
 }
 
 .btn-logout-sidebar {
@@ -503,7 +448,7 @@ export default {
     color: #94a3b8;
     font-size: 1.15rem;
     cursor: pointer;
-    padding: 4px;
+    padding: 3px;
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -514,6 +459,36 @@ export default {
 .btn-logout-sidebar:hover {
     color: #ef4444;
     background: #fee2e2;
+}
+
+/* Hotline Bar */
+.hotline-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 6px;
+    background: #f8fafc;
+    border-radius: 6px;
+    font-size: 0.72rem;
+}
+
+.hotline-title {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.hotline-number {
+    font-weight: 700;
+    color: #0284c7;
+    text-decoration: none;
+}
+
+.hotline-number:hover {
+    text-decoration: underline;
+}
+
+.font-14 {
+    font-size: 14px;
 }
 
 /* Mobile drawer behavior */

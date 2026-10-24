@@ -60,76 +60,88 @@ const routes = [
         component: () => import('../components/client/home/index.vue'),
         meta: { layout: 'blank' }
     },
+
+    // 1.1 — Khám Phá & Bản Đồ
     {
-        path: '/client/tim-kiem-dia-diem',
-        component: () => import('../components/client/tim-kiem-dia-diem/index.vue'),
+        path: '/client/kham-pha-dia-diem',
+        component: () => import('../components/client/KhamPhaDiaDiem/index.vue'),
         meta: { layout: 'client' }
     },
     {
-        path: '/client/tour',
-        component: () => import('../components/client/tour/index.vue'),
+        path: '/client/ban-do-tuong-tac',
+        component: () => import('../components/client/BanDoTuongTac/index.vue'),
         meta: { layout: 'client' }
     },
     {
-        path: '/client/dat-tour',
-        component: () => import('../components/client/dat-tour/index.vue'),
+        path: '/client/danh-muc-tour',
+        component: () => import('../components/client/DanhMucTour/index.vue'),
+        meta: { layout: 'client' }
+    },
+
+    // 1.2 — Lập Kế Hoạch AI (Trọng tâm)
+    {
+        path: '/client/ai-travel-planner',
+        component: () => import('../components/client/AiTravelPlanner/index.vue'),
         meta: { layout: 'client' }
     },
     {
-        path: '/client/lich-su',
-        component: () => import('../components/client/lich-su/index.vue'),
+        path: '/client/lich-trinh-toi-uu',
+        component: () => import('../components/client/LichTrinhToiUu/index.vue'),
         meta: { layout: 'client' }
     },
     {
-        path: '/client/yeu-thich',
-        component: () => import('../components/client/yeu-thich/index.vue'),
+        path: '/client/lich-su-ke-hoach',
+        component: () => import('../components/client/LichSuKeHoach/index.vue'),
+        meta: { layout: 'client' }
+    },
+
+    // 1.3 — Trải Nghiệm & Giao Dịch
+    {
+        path: '/client/don-dat-thanh-toan',
+        component: () => import('../components/client/DonDatThanhToan/index.vue'),
         meta: { layout: 'client' }
     },
     {
-        path: '/client/profile',
-        component: () => import('../components/client/profile/index.vue'),
+        path: '/client/diem-den-yeu-thich',
+        component: () => import('../components/client/DiemDenYeuThich/index.vue'),
         meta: { layout: 'client' }
     },
     {
-        path: '/client/tai-khoan',
-        component: () => import('../components/client/profile/index.vue'),
+        path: '/client/danh-gia-gop-y',
+        component: () => import('../components/client/DanhGiaGopY/index.vue'),
         meta: { layout: 'client' }
     },
     {
-        path: '/client/lap-ke-hoach-ai',
-        component: () => import('../components/client/lap-ke-hoach-ai/index.vue'),
+        path: '/client/bao-cao-su-co',
+        component: () => import('../components/client/BaoCaoSuCo/index.vue'),
+        meta: { layout: 'client' }
+    },
+
+    // 1.4 — Cá Nhân
+    {
+        path: '/client/ho-so-so-thich',
+        component: () => import('../components/client/HoSoSoThich/index.vue'),
         meta: { layout: 'client' }
     },
     {
-        path: '/client/ke-hoach',
-        component: () => import('../components/client/ke-hoach/index.vue'),
+        path: '/client/bao-mat-tai-khoan',
+        component: () => import('../components/client/BaoMatTaiKhoan/index.vue'),
         meta: { layout: 'client' }
     },
-    {
-        path: '/client/nhom-du-lich',
-        component: () => import('../components/client/nhom-du-lich/index.vue'),
-        meta: { layout: 'client' }
-    },
-    {
-        path: '/client/hoat-dong',
-        component: () => import('../components/client/hoat-dong/index.vue'),
-        meta: { layout: 'client' }
-    },
-    {
-        path: '/client/danh-gia',
-        component: () => import('../components/client/danh-gia/index.vue'),
-        meta: { layout: 'client' }
-    },
-    {
-        path: '/client/bao-cao-loi',
-        component: () => import('../components/client/bao-cao-loi/index.vue'),
-        meta: { layout: 'client' }
-    },
-    {
-        path: '/client/chi-tiet-dia-diem',
-        component: () => import('../components/client/chi-tiet-dia-diem/index.vue'),
-        meta: { layout: 'client' }
-    },
+
+    // Aliases & Fallbacks
+    { path: '/client/tim-kiem-dia-diem', redirect: '/client/kham-pha-dia-diem' },
+    { path: '/client/chi-tiet-dia-diem', redirect: '/client/kham-pha-dia-diem' },
+    { path: '/client/lap-ke-hoach-ai', redirect: '/client/ai-travel-planner' },
+    { path: '/client/ke-hoach', redirect: '/client/lich-su-ke-hoach' },
+    { path: '/client/tour', redirect: '/client/danh-muc-tour' },
+    { path: '/client/dat-tour', redirect: '/client/don-dat-thanh-toan' },
+    { path: '/client/lich-su', redirect: '/client/don-dat-thanh-toan' },
+    { path: '/client/yeu-thich', redirect: '/client/diem-den-yeu-thich' },
+    { path: '/client/danh-gia', redirect: '/client/danh-gia-gop-y' },
+    { path: '/client/bao-cao-loi', redirect: '/client/bao-cao-su-co' },
+    { path: '/client/profile', redirect: '/client/ho-so-so-thich' },
+    { path: '/client/tai-khoan', redirect: '/client/ho-so-so-thich' },
 
     // =========================================================
     // 2. TÁC NHÂN: DOITAC (ĐỐI TÁC) — Layout 'doitac'

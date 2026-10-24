@@ -7,7 +7,7 @@
                     <i class="bx bx-menu"></i>
                 </button>
                 <nav class="header-breadcrumb d-none d-md-flex align-items-center" aria-label="breadcrumb">
-                    <router-link to="/client/home" class="breadcrumb-link">Trang chủ</router-link>
+                    <router-link to="/client/ai-travel-planner" class="breadcrumb-link">Kênh Khách Hàng</router-link>
                     <i class="bx bx-chevron-right breadcrumb-separator"></i>
                     
                     <router-link :to="parentRoute.to" class="breadcrumb-link">{{ parentRoute.name }}</router-link>
@@ -17,93 +17,99 @@
                 </nav>
             </div>
 
-            <!-- Center: Omnibar Search Box (Giống trong hình: Tìm kiếm điểm đến, tour, vé...) -->
+            <!-- Center: Omnibar Search Box (Giống trong hình: Tìm danh lam, ẩm thực, lịch trình... (Ctrl+K)) -->
             <div class="header-center">
                 <div class="omnibar-search">
                     <i class="bx bx-search search-icon"></i>
                     <input 
                         type="text" 
                         class="search-input" 
-                        placeholder="Tìm kiếm điểm đến, tour, vé..." 
+                        placeholder="Tìm danh lam, ẩm thực, lịch trình... (Ctrl+K)" 
                         v-model="searchQuery"
                         @keyup.enter="handleSearch"
                     />
+                    <span class="search-kbd-badge">⌘K</span>
                 </div>
             </div>
 
             <!-- Right: Language, Notifications & User Info -->
             <div class="header-right">
-                <!-- Language switcher: VI | EN -->
+                <!-- Language switcher: VN | EN -->
                 <div class="lang-switch-capsule d-none d-sm-flex">
-                    <button type="button" class="lang-pill" :class="{ 'active': currentLang === 'VI' }" @click="currentLang = 'VI'">VI</button>
+                    <button type="button" class="lang-pill" :class="{ 'active': currentLang === 'VN' }" @click="currentLang = 'VN'">VN</button>
                     <span class="lang-divider">|</span>
                     <button type="button" class="lang-pill" :class="{ 'active': currentLang === 'EN' }" @click="currentLang = 'EN'">EN</button>
                 </div>
 
-                <!-- Notifications with red badge '1' -->
+                <!-- Notifications with red dot badge -->
                 <div class="dropdown">
                     <button class="icon-notif-btn position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo">
                         <i class="bx bx-bell"></i>
-                        <span class="badge-dot-red">1</span>
+                        <span class="badge-dot-pink"></span>
                     </button>
                     <div class="dropdown-menu dropdown-menu-end notif-dropdown shadow-lg border-0">
                         <div class="notif-header d-flex align-items-center justify-content-between p-3 border-bottom">
                             <h6 class="mb-0 fw-bold text-dark">Thông Báo Của Bạn</h6>
-                            <span class="badge bg-primary-subtle text-primary font-11">1 mới</span>
+                            <span class="badge bg-danger-subtle text-danger font-11">1 mới</span>
                         </div>
                         <div class="notif-body">
-                            <a class="dropdown-item p-3 border-bottom d-flex gap-2 align-items-start" href="javascript:;">
-                                <div class="notif-icon bg-info-subtle text-info"><i class="bx bx-calendar-check"></i></div>
+                            <router-link to="/client/lich-trinh-toi-uu" class="dropdown-item p-3 border-bottom d-flex gap-2 align-items-start">
+                                <div class="notif-icon bg-danger-subtle text-danger"><i class="bx bx-atom"></i></div>
                                 <div>
-                                    <div class="fw-bold text-dark small">Nhắc nhở lịch khởi hành ngày mai</div>
-                                    <div class="text-muted smaller">Tour Bà Nà Hills - Cầu Vàng bắt đầu lúc 08:00 sáng.</div>
-                                    <div class="text-muted smaller mt-1">10 phút trước</div>
+                                    <div class="fw-bold text-dark small">AI đã tối ưu xong lịch trình 3N2Đ</div>
+                                    <div class="text-muted smaller">Lộ trình Biển Mỹ Khê - Bà Nà Hills sẵn sàng xem.</div>
+                                    <div class="text-muted smaller mt-1">Vừa xong</div>
                                 </div>
-                            </a>
+                            </router-link>
                         </div>
                         <div class="p-2 text-center bg-light">
-                            <router-link to="/client/lich-su" class="small text-primary text-decoration-none fw-bold">Xem tất cả thông báo</router-link>
+                            <router-link to="/client/lich-su-ke-hoach" class="small text-danger text-decoration-none fw-bold">Xem tất cả lịch trình</router-link>
                         </div>
                     </div>
                 </div>
 
-                <!-- User Profile Pill: Nguyễn Văn An / Thành viên VIP (Giống hệt góc trên bên phải hình) -->
+                <!-- User Profile Pill: Trần Minh Anh / VIP Explorer ♦ (Giống y hệt hình) -->
                 <div class="dropdown">
                     <button class="user-header-pill" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="user-header-avatar">
+                        <div class="user-header-avatar-pink">
                             <i class="bx bx-user"></i>
                         </div>
                         <div class="user-header-text d-none d-lg-flex flex-column text-start">
-                            <span class="user-name">Nguyễn Văn An</span>
-                            <span class="user-role">Thành viên VIP</span>
+                            <span class="user-name">Trần Minh Anh</span>
+                            <span class="user-role">VIP Explorer ♦</span>
                         </div>
                         <i class="bx bx-chevron-down ms-1 text-muted d-none d-lg-inline"></i>
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 user-dropdown-menu">
                         <li class="px-3 py-2 border-bottom">
-                            <div class="fw-bold text-dark">Nguyễn Văn An</div>
-                            <small class="text-muted">an.nguyen@smarttravel.vn</small>
-                            <div class="mt-1"><span class="badge bg-primary text-white font-10">VIP Silver Tier</span></div>
+                            <div class="fw-bold text-dark">Trần Minh Anh</div>
+                            <small class="text-muted">tranminhanh@gmail.com</small>
+                            <div class="mt-1"><span class="badge bg-danger text-white font-10">VIP Explorer</span></div>
                         </li>
                         <li>
-                            <router-link class="dropdown-item py-2" to="/client/profile">
-                                <i class="bx bx-user-circle me-2 text-primary"></i>Tài khoản khách hàng
+                            <router-link class="dropdown-item py-2" to="/client/ho-so-so-thich">
+                                <i class="bx bx-user-pin me-2 text-primary"></i>Hồ Sơ & Sở Thích
                             </router-link>
                         </li>
                         <li>
-                            <router-link class="dropdown-item py-2" to="/client/lich-su">
-                                <i class="bx bx-receipt me-2 text-primary"></i>Đơn hàng & Lịch sử
+                            <router-link class="dropdown-item py-2" to="/client/don-dat-thanh-toan">
+                                <i class="bx bx-receipt me-2 text-primary"></i>Đơn Đặt & Thanh Toán
                             </router-link>
                         </li>
                         <li>
-                            <router-link class="dropdown-item py-2" to="/client/yeu-thich">
-                                <i class="bx bx-heart me-2 text-danger"></i>Địa điểm yêu thích
+                            <router-link class="dropdown-item py-2" to="/client/diem-den-yeu-thich">
+                                <i class="bx bx-heart me-2 text-danger"></i>Điểm Đến Yêu Thích
                             </router-link>
                         </li>
                         <li>
-                            <router-link class="dropdown-item py-2" to="/client/bao-cao-loi">
-                                <i class="bx bx-message-square-error me-2 text-warning"></i>Gửi báo cáo lỗi
+                            <router-link class="dropdown-item py-2" to="/client/bao-mat-tai-khoan">
+                                <i class="bx bx-shield-quarter me-2 text-success"></i>Bảo Mật Tài Khoản
+                            </router-link>
+                        </li>
+                        <li>
+                            <router-link class="dropdown-item py-2" to="/client/bao-cao-su-co">
+                                <i class="bx bx-error-alt me-2 text-warning"></i>Báo Cáo Sự Cố
                             </router-link>
                         </li>
                         <li><hr class="dropdown-divider my-1"></li>
@@ -125,45 +131,44 @@ export default {
     data() {
         return {
             searchQuery: '',
-            currentLang: 'VI'
-        }
+            currentLang: 'VN'
+        };
     },
     computed: {
         parentRoute() {
             const path = this.$route.path;
-            if (path.includes('tour') || path.includes('dat-tour')) {
-                return { name: 'Tour du lịch', to: '/client/tour' };
+            if (path.includes('kham-pha') || path.includes('ban-do') || path.includes('danh-muc-tour')) {
+                return { name: 'Khám Phá & Bản Đồ', to: '/client/kham-pha-dia-diem' };
             }
-            if (path.includes('dia-diem')) {
-                return { name: 'Khám phá điểm đến', to: '/client/tim-kiem-dia-diem' };
+            if (path.includes('ai-travel-planner') || path.includes('lich-trinh') || path.includes('ke-hoach')) {
+                return { name: 'Lập Kế Hoạch AI', to: '/client/ai-travel-planner' };
             }
-            if (path.includes('ke-hoach') || path.includes('nhom-du-lich') || path.includes('hoat-dong') || path.includes('lap-ke-hoach-ai')) {
-                return { name: 'Kế hoạch du lịch', to: '/client/ke-hoach' };
+            if (path.includes('don-dat') || path.includes('yeu-thich') || path.includes('danh-gia') || path.includes('su-co')) {
+                return { name: 'Trải Nghiệm & Giao Dịch', to: '/client/don-dat-thanh-toan' };
             }
-            return { name: 'Kênh khách hàng', to: '/client/home' };
+            return { name: 'Cá Nhân', to: '/client/ho-so-so-thich' };
         },
         currentRouteName() {
             const path = this.$route.path;
-            if (path.includes('dat-tour')) return 'Dịch vụ & Voucher';
-            if (path.includes('tour')) return 'Khám phá Bà Nà Hills';
-            if (path.includes('tim-kiem-dia-diem')) return 'Tìm kiếm & lọc địa điểm';
-            if (path.includes('chi-tiet-dia-diem')) return 'Chi tiết địa điểm';
-            if (path.includes('lap-ke-hoach-ai')) return 'Lập kế hoạch AI';
-            if (path.includes('ke-hoach')) return 'Quản lý kế hoạch';
-            if (path.includes('nhom-du-lich')) return 'Quản lý nhóm du lịch';
-            if (path.includes('hoat-dong')) return 'Quản lý hoạt động';
-            if (path.includes('lich-su')) return 'Đơn hàng / Lịch sử du lịch';
-            if (path.includes('yeu-thich')) return 'Địa điểm yêu thích';
-            if (path.includes('danh-gia')) return 'Đánh giá dịch vụ';
-            if (path.includes('bao-cao-loi')) return 'Gửi báo cáo lỗi';
-            if (path.includes('profile')) return 'Tài khoản khách hàng';
-            return 'Lộ trình khám phá';
+            if (path.includes('kham-pha-dia-diem')) return 'Khám Phá Địa Điểm OSM';
+            if (path.includes('ban-do-tuong-tac')) return 'Bản Đồ Tương Tác OSM';
+            if (path.includes('danh-muc-tour')) return 'Danh Mục Tour & So Sánh';
+            if (path.includes('ai-travel-planner')) return 'AI Travel Planner';
+            if (path.includes('lich-trinh-toi-uu')) return 'Lịch Trình Tối Ưu';
+            if (path.includes('lich-su-ke-hoach')) return 'Lịch Sử Kế Hoạch';
+            if (path.includes('don-dat-thanh-toan')) return 'Đơn Đặt & Thanh Toán';
+            if (path.includes('diem-den-yeu-thich')) return 'Điểm Đến Yêu Thích';
+            if (path.includes('danh-gia-gop-y')) return 'Đánh Giá & Góp Ý';
+            if (path.includes('bao-cao-su-co')) return 'Báo Cáo Sự Cố';
+            if (path.includes('ho-so-so-thich')) return 'Hồ Sơ & Sở Thích';
+            if (path.includes('bao-mat-tai-khoan')) return 'Bảo Mật Tài Khoản';
+            return 'Khởi Tạo Lịch Trình';
         }
     },
     methods: {
         handleSearch() {
             if (this.searchQuery.trim()) {
-                this.$router.push({ path: '/client/tim-kiem-dia-diem', query: { q: this.searchQuery } });
+                this.$router.push({ path: '/client/kham-pha-dia-diem', query: { q: this.searchQuery } });
             }
         },
         handleLogout() {
@@ -172,11 +177,11 @@ export default {
                 localStorage.removeItem('token_client');
                 localStorage.removeItem('nguoi_dung_token');
                 localStorage.removeItem('nguoi_dung');
-                this.$router.push('/client/home');
+                this.$router.push('/login');
             }
         }
     }
-}
+};
 </script>
 
 <style scoped>
@@ -225,7 +230,7 @@ export default {
 }
 
 .header-breadcrumb {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     white-space: nowrap;
     gap: 6px;
 }
@@ -237,7 +242,7 @@ export default {
 }
 
 .breadcrumb-link:hover {
-    color: #0284c7;
+    color: #db2777;
     text-decoration: underline;
 }
 
@@ -251,10 +256,10 @@ export default {
     font-weight: 700;
 }
 
-/* Center Omnibar Search */
+/* Center Omnibar Search (giống trong hình) */
 .header-center {
-    flex: 1 1 360px;
-    max-width: 400px;
+    flex: 1 1 380px;
+    max-width: 440px;
 }
 
 .omnibar-search {
@@ -278,17 +283,28 @@ export default {
     background-color: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 999px;
-    padding: 0 16px 0 38px;
-    font-size: 0.82rem;
+    padding: 0 45px 0 38px;
+    font-size: 0.8rem;
     color: #1e293b;
     transition: all 0.2s ease;
 }
 
 .search-input:focus {
     background-color: #ffffff;
-    border-color: #0284c7;
+    border-color: #db2777;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.12);
+}
+
+.search-kbd-badge {
+    position: absolute;
+    right: 12px;
+    font-size: 0.65rem;
+    background: #e2e8f0;
+    color: #64748b;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-weight: 600;
 }
 
 /* Right Area */
@@ -299,14 +315,14 @@ export default {
     flex-shrink: 0;
 }
 
-/* Language capsule VI | EN */
+/* Language capsule VN | EN */
 .lang-switch-capsule {
     display: flex;
     align-items: center;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: #fdf2f8;
+    border: 1px solid #fbcfe8;
     border-radius: 999px;
-    padding: 3px 8px;
+    padding: 2px 6px;
     gap: 4px;
 }
 
@@ -315,14 +331,16 @@ export default {
     background: transparent;
     font-size: 0.72rem;
     font-weight: 700;
-    color: #64748b;
-    padding: 1px 4px;
-    border-radius: 4px;
+    color: #94a3b8;
+    padding: 2px 6px;
+    border-radius: 999px;
     cursor: pointer;
+    transition: all 0.15s;
 }
 
 .lang-pill.active {
-    color: #0284c7;
+    background-color: #db2777;
+    color: #ffffff;
 }
 
 .lang-divider {
@@ -347,24 +365,20 @@ export default {
 }
 
 .icon-notif-btn:hover {
-    background-color: #f0f9ff;
-    color: #0284c7;
-    border-color: #bae6fd;
+    background-color: #fdf2f8;
+    color: #db2777;
+    border-color: #fbcfe8;
 }
 
-.badge-dot-red {
+.badge-dot-pink {
     position: absolute;
-    top: -2px;
-    right: -2px;
-    background: #ef4444;
-    color: #ffffff;
-    font-size: 0.65rem;
-    font-weight: 700;
-    min-width: 16px;
-    height: 16px;
-    line-height: 16px;
-    border-radius: 999px;
-    text-align: center;
+    top: 6px;
+    right: 6px;
+    background: #db2777;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
 }
 
 .notif-dropdown {
@@ -384,7 +398,7 @@ export default {
     flex-shrink: 0;
 }
 
-/* User Pill: Nguyễn Văn An / Thành viên VIP */
+/* User Pill */
 .user-header-pill {
     display: flex;
     align-items: center;
@@ -402,16 +416,16 @@ export default {
     border-color: #cbd5e1;
 }
 
-.user-header-avatar {
-    width: 32px;
-    height: 32px;
+.user-header-avatar-pink {
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    background-color: #0284c7;
+    background: linear-gradient(135deg, #ec4899, #db2777);
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1rem;
     flex-shrink: 0;
 }
 
@@ -423,8 +437,8 @@ export default {
 }
 
 .user-role {
-    font-size: 0.68rem;
-    color: #64748b;
+    font-size: 0.65rem;
+    color: #8b5cf6;
     line-height: 1;
 }
 
@@ -432,6 +446,14 @@ export default {
     border-radius: 12px;
     margin-top: 8px !important;
     min-width: 220px;
+}
+
+.font-10 {
+    font-size: 10px;
+}
+
+.font-11 {
+    font-size: 11px;
 }
 
 @media (max-width: 767.98px) {

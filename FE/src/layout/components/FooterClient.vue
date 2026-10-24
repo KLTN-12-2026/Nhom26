@@ -9,12 +9,12 @@
                             <i class="bx bx-paper-plane text-white"></i>
                         </div>
                         <div>
-                            <h6 class="mb-0 fw-bold text-dark">Đà Nẵng Smart Travel</h6>
-                            <small class="text-primary fw-semibold">Hệ Thống Lập Kế Hoạch Du Lịch Cá Nhân Hóa</small>
+                            <h6 class="mb-0 fw-bold text-dark">Da Nang SmartTrip AI</h6>
+                            <small class="text-danger fw-semibold">Hệ Thống Tối Ưu Hóa Tuyến Điểm Du Lịch Đa Mục Tiêu</small>
                         </div>
                     </div>
                     <p class="text-muted small mt-2 mb-3 pe-lg-4">
-                        Nền tảng hỗ trợ lập kế hoạch du lịch cá nhân hóa tại Đà Nẵng ứng dụng thuật toán tối ưu lịch trình, giúp du khách tối ưu thời gian, chi phí và trải nghiệm trọn vẹn điểm đến Đà Nẵng.
+                        Nền tảng hỗ trợ lập kế hoạch du lịch cá nhân hóa tại Đà Nẵng ứng dụng thuật toán di truyền (GA) và ma trận khoảng cách OSRM, giúp du khách tối ưu thời gian di chuyển và ngân sách.
                     </p>
                     <div class="d-flex gap-2">
                         <a href="javascript:;" class="social-circle-btn" title="Facebook"><i class="bx bxl-facebook"></i></a>
@@ -24,61 +24,61 @@
                     </div>
                 </div>
 
-                <!-- Column 1: Lập Kế Hoạch & Tour -->
-                <div class="col-lg-2 col-md-3 col-6">
-                    <h6 class="footer-col-title mb-3">Lộ Trình & Tour</h6>
+                <!-- Column 1: Lập Kế Hoạch AI & Bản Đồ -->
+                <div class="col-lg-3 col-md-3 col-6">
+                    <h6 class="footer-col-title mb-3">Khám Phá & Lập Kế Hoạch AI</h6>
                     <ul class="list-unstyled footer-link-list mb-0 small">
-                        <li><router-link to="/client/lap-ke-hoach-ai">Lập kế hoạch AI</router-link></li>
-                        <li><router-link to="/client/ke-hoach">Quản lý kế hoạch</router-link></li>
-                        <li><router-link to="/client/nhom-du-lich">Quản lý nhóm du lịch</router-link></li>
-                        <li><router-link to="/client/hoat-dong">Quản lý hoạt động</router-link></li>
-                        <li><router-link to="/client/tour">Xem tour & lịch khởi hành</router-link></li>
-                        <li><router-link to="/client/dat-tour">Đặt tour & thanh toán</router-link></li>
+                        <li><router-link to="/client/kham-pha-dia-diem">Khám Phá Địa Điểm OSM</router-link></li>
+                        <li><router-link to="/client/ban-do-tuong-tac">Bản Đồ Tương Tác OSM</router-link></li>
+                        <li><router-link to="/client/danh-muc-tour">Danh Mục Tour & So Sánh</router-link></li>
+                        <li><router-link to="/client/ai-travel-planner">AI Travel Planner</router-link></li>
+                        <li><router-link to="/client/lich-trinh-toi-uu">Lịch Trình Tối Ưu</router-link></li>
+                        <li><router-link to="/client/lich-su-ke-hoach">Lịch Sử Kế Hoạch</router-link></li>
                     </ul>
                 </div>
 
-                <!-- Column 2: Khám Phá & Tiện Ích -->
-                <div class="col-lg-3 col-md-3 col-6">
-                    <h6 class="footer-col-title mb-3">Khám Phá & Cá Nhân</h6>
+                <!-- Column 2: Trải Nghiệm & Cá Nhân -->
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h6 class="footer-col-title mb-3">Trải Nghiệm & Cá Nhân</h6>
                     <ul class="list-unstyled footer-link-list mb-0 small">
-                        <li><router-link to="/client/tim-kiem-dia-diem">Tìm kiếm & lọc địa điểm</router-link></li>
-                        <li><router-link to="/client/chi-tiet-dia-diem">Xem chi tiết địa điểm</router-link></li>
-                        <li><router-link to="/client/yeu-thich">Địa điểm yêu thích</router-link></li>
-                        <li><router-link to="/client/lich-su">Lịch sử du lịch</router-link></li>
-                        <li><router-link to="/client/danh-gia">Đánh giá & phản hồi</router-link></li>
-                        <li><router-link to="/client/profile">Tài khoản khách hàng</router-link></li>
+                        <li><router-link to="/client/don-dat-thanh-toan">Đơn Đặt & Thanh Toán</router-link></li>
+                        <li><router-link to="/client/diem-den-yeu-thich">Điểm Đến Yêu Thích</router-link></li>
+                        <li><router-link to="/client/danh-gia-gop-y">Đánh Giá & Góp Ý</router-link></li>
+                        <li><router-link to="/client/bao-cao-su-co">Báo Cáo Sự Cố</router-link></li>
+                        <li><router-link to="/client/ho-so-so-thich">Hồ Sơ & Sở Thích</router-link></li>
+                        <li><router-link to="/client/bao-mat-tai-khoan">Bảo Mật Tài Khoản</router-link></li>
                     </ul>
                 </div>
 
                 <!-- Column 3: Hỗ Trợ 24/7 -->
                 <div class="col-lg-3 col-md-12">
-                    <h6 class="footer-col-title mb-3">Hỗ Trợ & Khiếu Nại</h6>
+                    <h6 class="footer-col-title mb-3">Trung Tâm Hỗ Trợ Khách Hàng</h6>
                     <div class="support-hotline-box p-3 rounded-3 mb-3">
                         <div class="d-flex align-items-center gap-3">
                             <div class="hotline-icon-circle">
-                                <i class="bx bx-headphone text-primary fs-4"></i>
+                                <i class="bx bx-headphone text-danger fs-4"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block">Hotline tư vấn du khách 24/7</small>
-                                <a href="tel:19006868" class="fw-bold text-primary fs-5 text-decoration-none">1900 6868</a>
+                                <small class="text-muted d-block">Hotline Đà Nẵng 24/7</small>
+                                <a href="tel:02363650111" class="fw-bold text-danger fs-5 text-decoration-none">0236 3650 111</a>
                             </div>
                         </div>
                     </div>
-                    <router-link to="/client/bao-cao-loi" class="btn btn-outline-danger btn-sm w-100 rounded-3">
-                        <i class="bx bx-bug me-1"></i> Gửi Báo Cáo Lỗi & Góp Ý
+                    <router-link to="/client/bao-cao-su-co" class="btn btn-outline-danger btn-sm w-100 rounded-pill">
+                        <i class="bx bx-error-alt me-1"></i> Báo Cáo Sự Cố & Góp Ý
                     </router-link>
                 </div>
             </div>
 
-            <!-- Bottom Copyright & SSL Badge -->
+            <!-- Bottom Copyright -->
             <div class="d-flex flex-wrap align-items-center justify-content-between py-3 small text-muted">
                 <div>
-                    © 2026 <strong>Đà Nẵng Smart Travel</strong>. Bản quyền thuộc về hệ thống Đà Nẵng Smart Travel.
+                    © 2026 <strong>Da Nang SmartTrip AI</strong>. Tối ưu hóa hành trình du lịch thông minh.
                 </div>
                 <div class="d-flex align-items-center gap-3 mt-2 mt-md-0">
-                    <span><i class="bx bx-shield-check text-success me-1"></i>Bảo mật SSL 256-bit</span>
+                    <span><i class="bx bx-shield-check text-success me-1"></i>OSRM Engine GIS</span>
                     <span class="text-secondary">·</span>
-                    <span class="text-primary fw-bold">v3.2.0-client</span>
+                    <span class="text-danger fw-bold">v3.5 Optimizer</span>
                 </div>
             </div>
         </div>
@@ -88,7 +88,7 @@
 <script>
 export default {
     name: 'FooterClient'
-}
+};
 </script>
 
 <style scoped>
@@ -108,7 +108,7 @@ export default {
 .footer-logo-box {
     width: 32px;
     height: 32px;
-    background-color: #0284c7;
+    background: linear-gradient(135deg, #ec4899, #db2777);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -133,7 +133,7 @@ export default {
 }
 
 .footer-link-list a:hover {
-    color: #0284c7;
+    color: #db2777;
     text-decoration: underline;
 }
 
@@ -151,13 +151,13 @@ export default {
 }
 
 .social-circle-btn:hover {
-    background-color: #0284c7;
+    background-color: #db2777;
     color: #ffffff;
 }
 
 .support-hotline-box {
-    background-color: #f0f9ff;
-    border: 1px solid #bae6fd;
+    background-color: #fdf2f8;
+    border: 1px solid #fbcfe8;
 }
 
 .hotline-icon-circle {
