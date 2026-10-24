@@ -61,8 +61,7 @@
                                 <i class="bx bx-calendar text-danger me-1"></i>NGÀY KHỞI HÀNH
                             </label>
                             <div class="input-date-wrap">
-                                <input type="text" class="form-control date-input" v-model="form.ngay_khoi_hanh">
-                                <i class="bx bx-calendar-event date-icon"></i>
+                                <input type="date" class="form-control date-input" v-model="form.ngay_khoi_hanh">
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -70,8 +69,7 @@
                                 <i class="bx bx-calendar text-danger me-1"></i>NGÀY KẾT THÚC
                             </label>
                             <div class="input-date-wrap">
-                                <input type="text" class="form-control date-input" v-model="form.ngay_ket_thuc">
-                                <i class="bx bx-calendar-event date-icon"></i>
+                                <input type="date" class="form-control date-input" v-model="form.ngay_ket_thuc">
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -146,7 +144,7 @@
                         <span class="step-badge-code">Tham số ràng buộc hàm mục tiêu</span>
                     </div>
 
-                    <!-- Budget slider -->
+                    <!-- Budget slider có nấc (notches) -->
                     <div class="budget-section mb-4">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
@@ -154,15 +152,48 @@
                                 <div class="field-sub">Vé tham quan, ăn uống đặc sản, dịch vụ vui chơi</div>
                             </div>
                             <div class="text-end">
-                                <div class="budget-big-number">5.000.000 đ</div>
-                                <div class="budget-tier-tag">MỨC TRUNG BÌNH KHÁ</div>
+                                <div class="budget-big-number">{{ formatVND(form.ngan_sach) }}</div>
+                                <div class="budget-tier-tag">{{ budgetTierLabel }}</div>
                             </div>
                         </div>
                         
-                        <div class="slider-wrapper my-3">
-                            <input type="range" class="custom-range-slider" min="1000000" max="15000000" step="500000" v-model="form.ngan_sach">
+                        <div class="stepped-slider-container my-3">
+                            <div class="slider-track-wrap">
+                                <input 
+                                    type="range" 
+                                    class="custom-stepped-slider" 
+                                    min="1000000" 
+                                    max="15000000" 
+                                    step="500000" 
+                                    v-model.number="form.ngan_sach"
+                                    list="budget-notches"
+                                >
+                                <datalist id="budget-notches">
+                                    <option v-for="n in budget_notches" :key="n.val" :value="n.val"></option>
+                                </datalist>
+
+                                <!-- Các vạch nấc tròn (notch marks) có thể click trực tiếp -->
+                                <div class="slider-notch-marks">
+                                    <div 
+                                        v-for="n in budget_notches" 
+                                        :key="n.val" 
+                                        class="notch-item"
+                                        :class="{ 
+                                            'active': Number(form.ngan_sach) >= n.val, 
+                                            'current': Number(form.ngan_sach) === n.val 
+                                        }"
+                                        :style="{ left: ((n.val - 1000000) / 14000000 * 100) + '%' }"
+                                        @click="form.ngan_sach = n.val"
+                                        :title="n.label + ' (' + n.tier + ')'"
+                                    >
+                                        <div class="notch-pin"></div>
+                                        <span class="notch-label">{{ n.label }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="d-flex justify-content-between slider-labels">
+
+                        <div class="d-flex justify-content-between slider-labels mt-4 pt-2">
                             <span>Tiết kiệm (1.000.000đ)</span>
                             <span class="fw-bold text-dark">Tiêu chuẩn (5.000.000đ)</span>
                             <span>Sang trọng (15.000.000đ)</span>
@@ -465,10 +496,33 @@ export default {
                 { id: 7, label: 'Cafe Check-in View Sông Hàn / Hoàng Hôn', colorClass: 'chip-outline-pink' },
                 { id: 8, label: 'Danh Thắng Ngũ Hành Sơn', colorClass: 'chip-outline-violet' },
                 { id: 9, label: 'Du Thuyền Ngắm Cầu Rồng Phun Lửa', colorClass: 'chip-outline-cyan' }
+            ],
+            budget_notches: [
+                { val: 1000000, label: '1.000.000đ', tier: 'Tiết kiệm' },
+                { val: 3000000, label: '3.000.000đ', tier: 'Kinh tế' },
+                { val: 5000000, label: '5.000.000đ', tier: 'Tiêu chuẩn' },
+                { val: 7500000, label: '7.500.000đ', tier: 'Phổ biến' },
+                { val: 10000000, label: '10.000.000đ', tier: 'Cao cấp' },
+                { val: 12500000, label: '12.500.000đ', tier: 'Thượng hạng' },
+                { val: 15000000, label: '15.000.000đ', tier: 'Sang trọng' }
             ]
         };
     },
+    computed: {
+        budgetTierLabel() {
+            const val = Number(this.form.ngan_sach);
+            if (val <= 2000000) return 'MỨC TIẾT KIỆM';
+            if (val <= 4000000) return 'MỨC KINH TẾ';
+            if (val <= 7000000) return 'MỨC TRUNG BÌNH KHÁ';
+            if (val <= 11000000) return 'MỨC TIÊU CHUẨN CAO';
+            return 'MỨC SANG TRỌNG / VIP';
+        }
+    },
     methods: {
+        formatVND(value) {
+            if (!value) return '0 đ';
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+        },
         isTagSelected(id) {
             return this.selected_tag_ids.includes(id);
         },
@@ -800,11 +854,122 @@ export default {
     color: #94a3b8;
 }
 
-.custom-range-slider {
+/* Stepped Budget Slider with Notches */
+.stepped-slider-container {
+    position: relative;
+    padding: 10px 0 20px;
+}
+
+.slider-track-wrap {
+    position: relative;
     width: 100%;
-    accent-color: #db2777;
-    height: 6px;
-    border-radius: 4px;
+}
+
+.custom-stepped-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(to right, #db2777 0%, #f472b6 50%, #e2e8f0 50%, #e2e8f0 100%);
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    margin: 0;
+}
+
+.custom-stepped-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #db2777;
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(219, 39, 119, 0.5);
+    cursor: grab;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.custom-stepped-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.18);
+    box-shadow: 0 4px 14px rgba(219, 39, 119, 0.7);
+}
+
+.custom-stepped-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #db2777;
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(219, 39, 119, 0.5);
+    cursor: grab;
+}
+
+/* Notch marks container */
+.slider-notch-marks {
+    position: absolute;
+    top: 4px;
+    left: 0;
+    right: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.notch-item {
+    position: absolute;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.notch-pin {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    border: 2.5px solid #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.notch-item:hover .notch-pin {
+    transform: scale(1.3);
+    background: #ec4899;
+}
+
+.notch-item.active .notch-pin {
+    background: #db2777;
+}
+
+.notch-item.current .notch-pin {
+    transform: scale(1.4);
+    background: #be185d;
+    box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.3);
+}
+
+.notch-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-top: 10px;
+    white-space: nowrap;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.notch-item.active .notch-label {
+    color: #475569;
+}
+
+.notch-item.current .notch-label {
+    color: #db2777;
+    font-weight: 800;
 }
 
 .slider-labels {
