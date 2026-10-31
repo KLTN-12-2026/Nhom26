@@ -34,12 +34,6 @@
 
             <!-- Right: Language, Notifications & User Info -->
             <div class="header-right">
-                <!-- Language switcher: VN | EN -->
-                <div class="lang-switch-capsule d-none d-sm-flex">
-                    <button type="button" class="lang-pill" :class="{ 'active': currentLang === 'VN' }" @click="currentLang = 'VN'">VN</button>
-                    <span class="lang-divider">|</span>
-                    <button type="button" class="lang-pill" :class="{ 'active': currentLang === 'EN' }" @click="currentLang = 'EN'">EN</button>
-                </div>
 
                 <!-- Notifications with red dot badge -->
                 <div class="dropdown">
@@ -137,7 +131,7 @@ export default {
     computed: {
         parentRoute() {
             const path = this.$route.path;
-            if (path.includes('kham-pha') || path.includes('ban-do') || path.includes('danh-muc-tour')) {
+            if (path.includes('kham-pha') || path.includes('ban-do') || path.includes('chi-tiet') || path.includes('danh-muc-tour')) {
                 return { name: 'Khám Phá & Bản Đồ', to: '/client/kham-pha-dia-diem' };
             }
             if (path.includes('ai-travel-planner') || path.includes('lich-trinh') || path.includes('ke-hoach')) {
@@ -151,14 +145,14 @@ export default {
         currentRouteName() {
             const path = this.$route.path;
             if (path.includes('kham-pha-dia-diem')) return 'Khám Phá Địa Điểm OSM';
-            if (path.includes('ban-do-tuong-tac')) return 'Bản Đồ Tương Tác OSM';
+            if (path.includes('chi-tiet') || path.includes('ban-do-tuong-tac')) return 'Chi Tiết & Đánh Giá';
             if (path.includes('danh-muc-tour')) return 'Danh Mục Tour & So Sánh';
             if (path.includes('ai-travel-planner')) return 'AI Travel Planner';
             if (path.includes('lich-trinh-toi-uu')) return 'Lịch Trình Tối Ưu';
             if (path.includes('lich-su-ke-hoach')) return 'Lịch Sử Kế Hoạch';
             if (path.includes('don-dat-thanh-toan')) return 'Đơn Đặt & Thanh Toán';
             if (path.includes('diem-den-yeu-thich')) return 'Điểm Đến Yêu Thích';
-            if (path.includes('danh-gia-gop-y')) return 'Đánh Giá & Góp Ý';
+            if (path.includes('quan-ly-don') || path.includes('danh-gia-gop-y')) return 'Quản Lý Đơn Đặt Tour';
             if (path.includes('bao-cao-su-co')) return 'Báo Cáo Sự Cố';
             if (path.includes('ho-so-so-thich')) return 'Hồ Sơ & Sở Thích';
             if (path.includes('bao-mat-tai-khoan')) return 'Bảo Mật Tài Khoản';

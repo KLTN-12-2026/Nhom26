@@ -1,1036 +1,954 @@
-﻿<template>
-  <div class="admin-page-container">
-    <!-- ========================================================= -->
-    <!-- 1. THANH ĐIỀU HƯỚNG BREADCRUMB & TRẠNG THÁI ĐỒNG BỘ DATABASE -->
-    <!-- ========================================================= -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
-      <!-- Breadcrumb điều hướng các cấp trang quản trị -->
-      <nav class="breadcrumb-admin d-flex align-items-center small text-muted">
-        <router-link to="/admin/dashboard" class="text-secondary text-decoration-none">Trang chủ</router-link>
-        <i class="bx bx-chevron-right mx-1"></i>
-        <span class="text-secondary">Phân hệ Quản trị</span>
-        <i class="bx bx-chevron-right mx-1"></i>
-        <span class="text-primary fw-bold">Quản lý Tour</span>
-      </nav>
-
-      <!-- Badge báo hiệu trạng thái kết nối và đồng bộ dữ liệu thời gian thực -->
-      <div class="sync-pill d-flex align-items-center gap-1">
-        <span class="dot-green"></span>
-        <span class="font-11 text-success fw-semibold">Cơ sở dữ liệu: Hoạt động đồng bộ</span>
-      </div>
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- 2. TIÊU ĐỀ TRANG & NÚT HÀNH ĐỘNG MỞ MODAL THÊM MỚI -->
-    <!-- ========================================================= -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
-      <div>
-        <div class="d-flex align-items-center gap-2">
-          <h3 class="fw-bold text-dark mb-0">Quản lý Tour Du Lịch</h3>
-          <span class="badge bg-light text-secondary border font-11">Table: tours & tour_khoi_hanhs</span>
-        </div>
-        <p class="text-muted small mb-0 mt-1">
-          Giám sát, kiểm duyệt, phân loại và quản lý toàn bộ tour cùng giá khởi hành niêm yết trên nền tảng.
-        </p>
-      </div>
-      <div>
-        <!-- Nút mở Modal Thêm mới Tour -->
-        <button class="btn btn-primary rounded-3 px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1"
-          data-bs-toggle="modal" data-bs-target="#themMoiTourModal">
-          <i class="bx bx-plus font-18"></i>Thêm Tour Mới
-        </button>
-      </div>
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- 3. 4 THẺ KPI THỐNG KÊ TỔNG QUAN TỪ DATABASE -->
-    <!-- ========================================================= -->
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
-      <!-- Thẻ 1: Tổng số lượng tour trong hệ thống -->
-      <div class="col">
-        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-          <div class="d-flex justify-content-between align-items-start">
+<template>
+    <div class="tour-moderation-page p-3 p-lg-4">
+        <!-- Top Pill Tag & Title Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
             <div>
-              <span class="font-11 fw-bold text-muted text-uppercase">TỔNG SỐ TOUR</span>
-              <h2 class="fw-bold text-dark my-1">{{ list_tour.length < 10 ? '0' + list_tour.length : list_tour.length }}</h2>
-              <small class="text-primary font-11">Đồng bộ từ bảng tours</small>
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2 border border-pink-subtle" style="background-color: #FDF2F8;">
+                    <span class="pulse-dot-pink"></span>
+                    <span class="font-11 fw-bold text-uppercase tracking-wider" style="color: #E11D48;">TOUR QUALITY CONTROL & PRICING VERIFICATION</span>
+                </div>
+                <h2 class="page-title fw-bold text-dark mb-1 font-24">Kiểm Duyệt Nội Dung & Biểu Giá Tour Du Lịch</h2>
+                <p class="text-muted font-13 mb-0" style="max-width: 820px;">
+                    Thẩm định lộ trình di chuyển OSRM, tính an toàn các điểm đến, biểu giá minh bạch và chính sách hoàn hủy tour trước khi công khai lên sàn SmartTrip AI Đà Nẵng.
+                </p>
             </div>
-            <div class="kpi-icon-box bg-light-primary text-primary"><i class="bx bx-map-alt"></i></div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Thẻ 2: Số lượng tour đang mở bán (trang_thai_hien_thi = 1) -->
-      <div class="col">
-        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <span class="font-11 fw-bold text-muted text-uppercase">ĐANG MỞ BÁN</span>
-              <h2 class="fw-bold text-success my-1">{{ countActive < 10 ? '0' + countActive : countActive }}</h2>
-              <small class="text-muted font-11">Hiển thị trực tuyến</small>
+            <!-- Top Action Buttons -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button class="btn btn-outline-secondary bg-white rounded-pill px-3 py-2 font-12 fw-semibold shadow-sm d-flex align-items-center gap-2" @click="openModalQuyChuan">
+                    <i class="bx bx-book-content text-primary font-16"></i>
+                    <span>Quy Chuẩn Duyệt Tour</span>
+                </button>
+                <button class="btn btn-outline-secondary bg-white rounded-pill px-3 py-2 font-12 fw-semibold shadow-sm d-flex align-items-center gap-2" @click="xuatDanhSach">
+                    <i class="bx bx-download text-primary font-16"></i>
+                    <span>Xuất Danh Sách</span>
+                </button>
+                <button class="btn btn-pink-gradient text-white rounded-pill px-3 py-2 font-12 fw-bold shadow-sm d-flex align-items-center gap-1" @click="duyetNhanhHangLoat">
+                    <i class="bx bx-check-double font-16"></i>
+                    <span>Duyệt Nhanh Hàng Loạt</span>
+                </button>
             </div>
-            <div class="kpi-icon-box bg-light-success text-success"><i class="bx bx-check-circle"></i></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Thẻ 3: Số lượng tour đang chờ admin kiểm duyệt hồ sơ -->
-      <div class="col">
-        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <span class="font-11 fw-bold text-muted text-uppercase">CHỜ KIỂM DUYỆT</span>
-              <h2 class="fw-bold text-warning my-1">{{ countPending < 10 ? '0' + countPending : countPending }}</h2>
-              <small class="text-warning font-11">Cần admin duyệt hồ sơ</small>
-            </div>
-            <div class="kpi-icon-box bg-light-warning text-warning"><i class="bx bx-time-five"></i></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Thẻ 4: Số lượng tour đã được phê duyệt hợp lệ -->
-      <div class="col">
-        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <span class="font-11 fw-bold text-muted text-uppercase">ĐÃ PHÊ DUYỆT</span>
-              <h2 class="fw-bold text-info my-1">{{ countApproved < 10 ? '0' + countApproved : countApproved }}</h2>
-              <small class="text-info font-11">Hồ sơ đạt tiêu chuẩn</small>
-            </div>
-            <div class="kpi-icon-box bg-light-info text-info"><i class="bx bx-shield-check"></i></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- 4. FILTER BAR: THANH TÌM KIẾM VÀ BỘ LỌC ĐA TIÊU CHÍ -->
-    <!-- ========================================================= -->
-    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
-      <div class="row g-2 align-items-center">
-        <!-- Ô tìm kiếm kèm nút kính lúp -->
-        <div class="col-md-5">
-          <div class="input-group input-group-sm">
-            <input 
-              type="search" 
-              name="search_tour_keyword" 
-              autocomplete="off" 
-              class="form-control shadow-none" 
-              v-model="key_search" 
-              placeholder="Tìm theo mã tour, tên hành trình, đối tác...">
-            <button class="btn btn-primary px-3" type="button" title="Tìm kiếm">
-              <i class="bx bx-search"></i>
-            </button>
-          </div>
         </div>
 
-        <!-- Bộ lọc dropdown theo đối tác cung cấp -->
-        <div class="col-md-2">
-          <select class="form-select form-select-sm" v-model="filterDoiTac">
-            <option value="">Tất cả đối tác</option>
-            <option v-for="(dt, idx) in list_doi_tac" :key="idx" :value="dt.ma_doi_tac">
-              {{ dt.ten_doi_tac }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Bộ lọc dropdown theo trạng thái kiểm duyệt -->
-        <div class="col-md-2">
-          <select class="form-select form-select-sm" v-model="filterDuyet">
-            <option value="">Tất cả kiểm duyệt</option>
-            <option value="DaDuyet">Đã duyệt</option>
-            <option value="ChoDuyet">Chờ duyệt</option>
-            <option value="TuChoi">Từ chối</option>
-          </select>
-        </div>
-
-        <!-- Bộ lọc dropdown theo trạng thái hiển thị mở bán -->
-        <div class="col-md-1">
-          <select class="form-select form-select-sm" v-model="filterHienThi">
-            <option value="">Hiển thị</option>
-            <option value="1">Mở bán</option>
-            <option value="0">Tạm ẩn</option>
-          </select>
-        </div>
-
-        <!-- Thống kê số lượng tour khớp tiêu chí lọc -->
-        <div class="col-md-2 text-end">
-          <span class="small text-muted">Hiển thị <strong class="text-primary">{{ list_tour_loc.length }}</strong> tour</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- 5. DATA TABLE: BẢNG DANH SÁCH TOUR DU LỊCH & GIÁ KHỞI HÀNH -->
-    <!-- ========================================================= -->
-    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light small text-uppercase text-center align-middle">
-            <tr>
-              <th width="4%">#</th>
-              <th width="10%">MÃ TOUR</th>
-              <th width="26%" class="text-start">TÊN TOUR & THỜI LƯỢNG</th>
-              <th width="17%" class="text-start">ĐỐI TÁC CUNG CẤP</th>
-              <th width="12%">GIÁ KHỞI HÀNH</th>
-              <th width="11%">DUYỆT TOUR</th>
-              <th width="10%">HIỂN THỊ</th>
-              <th width="10%">ACTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(tour, index) in list_tour_loc" :key="tour.ma_tour || index">
-              <!-- Cột 1: Số thứ tự (#) -->
-              <td class="text-center align-middle fw-bold">{{ index + 1 }}</td>
-
-              <!-- Cột 2: Mã Tour -->
-              <td class="text-center align-middle">
-                <strong class="text-primary font-13 font-monospace">{{ tour.ma_tour }}</strong>
-              </td>
-
-              <!-- Cột 3: Hình ảnh, tên tour và thời lượng -->
-              <td class="align-middle text-start">
-                <div class="d-flex align-items-center gap-3">
-                  <img 
-                    :src="getImageUrl(tour.hinh_anh_dai_dien)" 
-                    class="rounded-3 object-fit-cover border shadow-xs" 
-                    width="56" 
-                    height="44" 
-                    alt="Ảnh tour"
-                    @error="onImageError"
-                  >
-                  <div>
-                    <div class="fw-bold text-dark font-14">{{ tour.ten_tour }}</div>
-                    <div class="d-flex align-items-center gap-2 mt-1">
-                      <span class="badge bg-light text-dark border font-11">
-                        <i class="bx bx-calendar-event me-1 text-primary"></i>{{ tour.so_ngay ? tour.so_ngay + ' ngày' : '1 ngày' }}
-                      </span>
-                      <span class="badge bg-light text-muted border font-11">
-                        <i class="bx bx-user me-1 text-info"></i>Tối đa {{ tour.so_nguoi_toi_da || 20 }} khách
-                      </span>
+        <!-- 4 KPI Metrics Cards -->
+        <div class="row g-3 mb-4">
+            <!-- KPI 1: Hàng đợi chờ duyệt -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="text-muted font-11 fw-bold text-uppercase tracking-wider">HÀNG ĐỢI CHỜ DUYỆT</div>
+                            <div class="d-flex align-items-baseline gap-2 mt-1">
+                                <span class="font-28 fw-bold text-dark">15</span>
+                                <span class="badge rounded-pill font-11 fw-semibold px-2 py-0-5" style="background-color: #FDF2F8; color: #E11D48;">
+                                    +3 tour mới trong ngày
+                                </span>
+                            </div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #FDF2F8; width: 42px; height: 42px;">
+                            <i class="bx bx-folder-open font-20" style="color: #E11D48;"></i>
+                        </div>
                     </div>
-                  </div>
+                    <div class="pt-2 border-top">
+                        <small class="text-muted font-11">Hồ sơ kiểm định an toàn OSRM & giấy phép</small>
+                    </div>
                 </div>
-              </td>
-
-              <!-- Cột 4: Tên đối tác cung ứng tour & thông tin liên hệ -->
-              <td class="align-middle text-start">
-                <div class="fw-semibold text-dark font-13">
-                  <i class="bx bx-buildings text-primary me-1"></i>{{ tour.ten_doi_tac || tour.ma_doi_tac }}
-                </div>
-                <small class="text-muted d-block font-11 mt-1" v-if="tour.so_dien_thoai_doi_tac || tour.email_doi_tac">
-                  {{ tour.so_dien_thoai_doi_tac || tour.email_doi_tac }}
-                </small>
-              </td>
-
-              <!-- Cột 5: Giá khởi hành (lấy từ bảng tour_khoi_hanhs) -->
-              <td class="text-center align-middle">
-                <div class="fw-bold text-primary font-13" v-if="tour.gia_tour && parseFloat(tour.gia_tour) > 0">
-                  {{ formatPrice(tour.gia_tour) }}đ
-                </div>
-                <div class="text-muted small fst-italic" v-else>
-                  Chưa có giá
-                </div>
-                <small class="text-muted font-11 d-block mt-1">
-                  {{ tour.so_lich_khoi_hanh || 0 }} lịch khởi hành
-                </small>
-              </td>
-
-              <!-- Cột 6: Trạng thái kiểm duyệt hồ sơ tour -->
-              <td class="text-center align-middle">
-                <span v-if="tour.trang_thai_duyet === 'DaDuyet'" class="badge bg-success-subtle text-success px-2 py-1 rounded-pill font-11">
-                  ● Đã duyệt
-                </span>
-                <span v-else-if="tour.trang_thai_duyet === 'ChoDuyet'" class="badge bg-warning-subtle text-warning px-2 py-1 rounded-pill font-11">
-                  ● Chờ duyệt
-                </span>
-                <span v-else-if="tour.trang_thai_duyet === 'TuChoi'" class="badge bg-danger-subtle text-danger px-2 py-1 rounded-pill font-11" :title="tour.ly_do_tu_choi">
-                  ● Từ chối
-                </span>
-                <span v-else class="badge bg-light text-secondary px-2 py-1 rounded-pill font-11">
-                  Chưa duyệt
-                </span>
-              </td>
-
-              <!-- Cột 7: Nút đổi trạng thái hiển thị mở bán (Bật / Tắt) -->
-              <td class="text-center align-middle">
-                <button v-on:click="changeStatus(tour)" v-if="tour.trang_thai_hien_thi == 1" class="btn btn-sm btn-success">
-                  Hiển thị
-                </button>
-                <button v-on:click="changeStatus(tour)" v-else class="btn btn-sm btn-danger">
-                  Tạm ẩn
-                </button>
-              </td>
-
-              <!-- Cột 8: Action thao tác (Duyệt hồ sơ / Sửa / Xóa) -->
-              <td class="text-center align-middle">
-                <div class="d-inline-flex gap-1">
-                  <!-- Nút mở Modal Xét duyệt tour -->
-                  <button v-on:click="moModalDuyet(tour)" class="btn btn-sm btn-action text-warning" 
-                    data-bs-toggle="modal" data-bs-target="#duyetTourModal" title="Xét duyệt tour">
-                    <i class="bx bx-shield-quarter"></i>
-                  </button>
-                  <!-- Nút mở Modal Cập nhật tour -->
-                  <button v-on:click="moModalCapNhat(tour)" class="btn btn-sm btn-action text-primary" 
-                    data-bs-toggle="modal" data-bs-target="#capNhatTourModal" title="Chỉnh sửa tour">
-                    <i class="bx bx-edit"></i>
-                  </button>
-                  <!-- Nút mở Modal Xác nhận xóa tour -->
-                  <button v-on:click="Object.assign(delete_tour, tour)" class="btn btn-sm btn-action text-danger" 
-                    data-bs-toggle="modal" data-bs-target="#xoaTourModal" title="Xóa tour">
-                    <i class="bx bx-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-
-            <!-- Dòng thông báo khi không có bản ghi nào khớp bộ lọc -->
-            <tr v-if="list_tour_loc.length === 0">
-              <td colspan="8" class="text-center py-4 text-muted">
-                <i class="bx bx-map-pin fs-3 d-block mb-1"></i>
-                Không tìm thấy tour du lịch phù hợp.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Phân trang danh sách tour -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between pt-4 border-top mt-3 gap-2">
-        <span class="small text-muted">Trang 1 trên 1 (Dữ liệu đồng bộ Database)</span>
-        <nav>
-          <ul class="pagination pagination-sm mb-0">
-            <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
-            <li class="page-item active"><a class="page-link bg-primary border-primary" href="#">1</a></li>
-            <li class="page-item disabled"><a class="page-link" href="#">Sau</a></li>
-          </ul>
-        </nav>
-      </div>
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- 6. MODAL 1: THÊM MỚI TOUR DU LỊCH (CÓ GIÁ KHỞI HÀNH) -->
-    <!-- ========================================================= -->
-    <div class="modal fade" id="themMoiTourModal" tabindex="-1" aria-labelledby="themMoiTourModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h1 class="modal-title fs-5 text-white" id="themMoiTourModalLabel">
-              <i class="bx bx-map-pin me-1"></i>Thêm Mới Tour Du Lịch
-            </h1>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="row g-3">
-              <!-- Mã Tour (Tùy chọn, để trống tự động sinh) -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">Mã Tour</label>
-                <input v-model="add_tour.ma_tour" type="text" class="form-control form-control-sm" placeholder="VD: TR06 (Để trống tự sinh)">
-              </div>
-
-              <!-- Đơn vị đối tác cung ứng tour -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">Đối Tác Cung Cấp <span class="text-danger">*</span></label>
-                <select v-model="add_tour.ma_doi_tac" class="form-select form-select-sm">
-                  <option value="">-- Chọn đơn vị đối tác --</option>
-                  <option v-for="(dt, idx) in list_doi_tac" :key="idx" :value="dt.ma_doi_tac">
-                    {{ dt.ten_doi_tac }} ({{ dt.ma_doi_tac }})
-                  </option>
-                </select>
-              </div>
-
-              <!-- Tên Tour Du Lịch -->
-              <div class="col-md-8">
-                <label class="form-label fw-semibold">Tên Tour Du Lịch <span class="text-danger">*</span></label>
-                <input v-model="add_tour.ten_tour" type="text" class="form-control form-control-sm" placeholder="VD: Khám phá Vịnh Hạ Long 2N1Đ - Du thuyền 5 sao">
-              </div>
-
-              <!-- Ô nhập GIÁ KHỞI HÀNH (lưu vào bảng tour_khoi_hanhs) -->
-              <div class="col-md-4">
-                <label class="form-label fw-semibold text-primary">Giá Khởi Hành (VNĐ) <span class="text-danger">*</span></label>
-                <input v-model.number="add_tour.gia_tour" type="number" min="0" class="form-control form-control-sm border-primary" placeholder="VD: 2500000">
-              </div>
-
-              <!-- Đường dẫn ảnh đại diện -->
-              <div class="col-md-12">
-                <label class="form-label fw-semibold">Link Hình Ảnh Đại Diện</label>
-                <input v-model="add_tour.hinh_anh_dai_dien" type="text" class="form-control form-control-sm" placeholder="https://domain.com/image.jpg hoặc tên file ảnh">
-              </div>
-
-              <!-- Thời lượng (Số ngày) -->
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Thời Lượng (Số ngày)</label>
-                <input v-model.number="add_tour.so_ngay" type="number" min="1" class="form-control form-control-sm" placeholder="1">
-              </div>
-
-              <!-- Số khách tối đa -->
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Số Khách Tối Đa</label>
-                <input v-model.number="add_tour.so_nguoi_toi_da" type="number" min="1" class="form-control form-control-sm" placeholder="20">
-              </div>
-
-              <!-- Trạng thái hiển thị mở bán -->
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Trạng Thái Hiển Thị</label>
-                <select v-model="add_tour.trang_thai_hien_thi" class="form-select form-select-sm">
-                  <option :value="1">Hiển thị mở bán</option>
-                  <option :value="0">Tạm ẩn</option>
-                </select>
-              </div>
-
-              <!-- Trạng thái kiểm duyệt hồ sơ tour -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">Trạng Thái Phê Duyệt</label>
-                <select v-model="add_tour.trang_thai_duyet" class="form-select form-select-sm">
-                  <option value="DaDuyet">Đã duyệt (DaDuyet)</option>
-                  <option value="ChoDuyet">Chờ duyệt (ChoDuyet)</option>
-                  <option value="TuChoi">Từ chối (TuChoi)</option>
-                </select>
-              </div>
-
-              <!-- Lý do từ chối (hiển thị khi trạng thái là Từ chối) -->
-              <div class="col-md-6" v-if="add_tour.trang_thai_duyet === 'TuChoi'">
-                <label class="form-label fw-semibold text-danger">Lý Do Từ Chối</label>
-                <input v-model="add_tour.ly_do_tu_choi" type="text" class="form-control form-control-sm" placeholder="Nhập lý do từ chối tour...">
-              </div>
-
-              <!-- Mô tả chi tiết lộ trình tour -->
-              <div class="col-12">
-                <label class="form-label fw-semibold">Mô Tả Chi Tiết Hành Trình</label>
-                <textarea v-model="add_tour.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Giới thiệu điểm đến, dịch vụ bao gồm, trải nghiệm đặc sắc..."></textarea>
-              </div>
             </div>
-          </div>
-          <div class="modal-footer bg-light">
-            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
-            <button v-on:click="themMoiTour()" type="button" class="btn btn-primary btn-sm px-3" data-bs-dismiss="modal">Thêm Mới Tour</button>
-          </div>
+
+            <!-- KPI 2: Đạt chuẩn lần 1 -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="text-muted font-11 fw-bold text-uppercase tracking-wider">ĐẠT CHUẨN LẦN 1</div>
+                            <div class="d-flex align-items-baseline gap-2 mt-1">
+                                <span class="font-28 fw-bold text-dark">94.2%</span>
+                                <span class="font-12 fw-semibold text-success">↗ +1.8%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #F5F3FF; width: 42px; height: 42px;">
+                            <i class="bx bx-check-shield font-20" style="color: #7C3AED;"></i>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-top">
+                        <small class="text-muted font-11">Đối tác tuân thủ chuẩn biểu giá & bảo hiểm</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI 3: Tour đang bán an toàn -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="text-muted font-11 fw-bold text-uppercase tracking-wider">TOUR ĐANG BÁN AN TOÀN</div>
+                            <div class="d-flex align-items-baseline gap-2 mt-1">
+                                <span class="font-28 fw-bold text-dark">1.840</span>
+                                <span class="text-muted font-12 fw-medium">tour kích hoạt</span>
+                            </div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #E0F2FE; width: 42px; height: 42px;">
+                            <i class="bx bx-shield font-20" style="color: #0284C7;"></i>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-top">
+                        <small class="text-muted font-11">Toàn vẹn dữ liệu Đà Nẵng & lân cận</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI 4: Điểm chất lượng sàn -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="text-muted font-11 fw-bold text-uppercase tracking-wider">ĐIỂM CHẤT LƯỢNG SÀN</div>
+                            <div class="d-flex align-items-baseline gap-2 mt-1">
+                                <span class="font-28 fw-bold text-dark">4.85</span>
+                                <span class="text-muted font-12 fw-medium">/ 5.0</span>
+                            </div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #FDF2F8; width: 42px; height: 42px;">
+                            <i class="bx bx-star font-20" style="color: #E11D48;"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                        <small class="text-muted font-11">Dựa trên 24.650 đánh giá du khách thực tế</small>
+                        <div class="text-warning font-11">
+                            <i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ========================================================= -->
-    <!-- 7. MODAL 2: CẬP NHẬT TOUR DU LỊCH (CÓ GIÁ KHỞI HÀNH) -->
-    <!-- ========================================================= -->
-    <div class="modal fade" id="capNhatTourModal" tabindex="-1" aria-labelledby="capNhatTourModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h1 class="modal-title fs-5 text-white" id="capNhatTourModalLabel">
-              <i class="bx bx-edit me-1"></i>Cập Nhật Tour Du Lịch
-            </h1>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="row g-3">
-              <!-- Mã Tour (Hiển thị không cho sửa) -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">Mã Tour</label>
-                <input v-model="edit_tour.ma_tour" type="text" class="form-control form-control-sm bg-light" disabled>
-              </div>
+        <!-- 2 Columns Main Layout: Left Tour Queue & Right Active Tour Detail -->
+        <div class="row g-4 mb-4">
+            <!-- LEFT COLUMN: DANH SÁCH CHỜ DUYỆT -->
+            <div class="col-12 col-lg-4 col-xl-4">
+                <div class="card border-0 shadow-xs rounded-4 bg-white p-3 p-lg-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Header & Dropdown Filter -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="dot-pink"></span>
+                                <h5 class="fw-bold text-dark mb-0 font-15">Danh Sách Chờ Duyệt</h5>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light rounded-pill px-3 py-1 font-11 fw-bold dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    {{ activeSortLabel }}
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end font-12 shadow-sm border-0">
+                                    <li><a class="dropdown-item cursor-pointer" @click="activeSortLabel = 'Tất cả (15)'">Tất cả (15)</a></li>
+                                    <li><a class="dropdown-item cursor-pointer" @click="activeSortLabel = 'Mới nhất'">Mới nhất</a></li>
+                                    <li><a class="dropdown-item cursor-pointer" @click="activeSortLabel = 'Ưu tiên DIFF'">Ưu tiên DIFF</a></li>
+                                </ul>
+                            </div>
+                        </div>
 
-              <!-- Đơn vị đối tác cung ứng -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">Đối Tác Cung Cấp <span class="text-danger">*</span></label>
-                <select v-model="edit_tour.ma_doi_tac" class="form-select form-select-sm">
-                  <option value="">-- Chọn đơn vị đối tác --</option>
-                  <option v-for="(dt, idx) in list_doi_tac" :key="idx" :value="dt.ma_doi_tac">
-                    {{ dt.ten_doi_tac }} ({{ dt.ma_doi_tac }})
-                  </option>
-                </select>
-              </div>
+                        <!-- Filter Status Tabs -->
+                        <div class="d-flex align-items-center gap-1-5 mb-3 flex-wrap">
+                            <button 
+                                class="btn btn-sm rounded-pill px-3 py-1 font-11 fw-bold transition-all"
+                                :class="filterStatus === 'all' ? 'btn-pink-gradient text-white shadow-xs' : 'btn-light text-muted'"
+                                @click="filterStatus = 'all'"
+                            >
+                                Tất cả (15)
+                            </button>
+                            <button 
+                                class="btn btn-sm rounded-pill px-3 py-1 font-11 fw-bold transition-all"
+                                :class="filterStatus === 'urgent' ? 'btn-pink-gradient text-white shadow-xs' : 'btn-light text-muted'"
+                                @click="filterStatus = 'urgent'"
+                            >
+                                Khẩn cấp (3)
+                            </button>
+                            <button 
+                                class="btn btn-sm rounded-pill px-3 py-1 font-11 fw-bold transition-all"
+                                :class="filterStatus === 'revised' ? 'btn-pink-gradient text-white shadow-xs' : 'btn-light text-muted'"
+                                @click="filterStatus = 'revised'"
+                            >
+                                Đã sửa
+                            </button>
+                        </div>
 
-              <!-- Tên Tour Du Lịch -->
-              <div class="col-md-8">
-                <label class="form-label fw-semibold">Tên Tour Du Lịch <span class="text-danger">*</span></label>
-                <input v-model="edit_tour.ten_tour" type="text" class="form-control form-control-sm" placeholder="Nhập tên tour du lịch...">
-              </div>
+                        <!-- Tour Cards List -->
+                        <div class="tour-queue-list d-flex flex-column gap-2-5">
+                            <div 
+                                v-for="tour in filteredTours" 
+                                :key="tour.id"
+                                class="tour-queue-card p-3 rounded-4 transition-all cursor-pointer border"
+                                :class="selectedTour.id === tour.id ? 'active-tour-card' : 'bg-white hover-shadow'"
+                                @click="selectTour(tour)"
+                            >
+                                <!-- Top Badges -->
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge rounded-pill font-9 fw-bold px-2 py-0-5" :style="{ backgroundColor: tour.tagBg, color: tour.tagColor }">
+                                        {{ tour.tagText }}
+                                    </span>
+                                    <span class="font-10 text-muted d-flex align-items-center gap-1">
+                                        <i class="bx bx-time-five font-12"></i>
+                                        <span>{{ tour.timeAgo }}</span>
+                                    </span>
+                                </div>
 
-              <!-- Ô cập nhật GIÁ KHỞI HÀNH (đồng bộ bảng tour_khoi_hanhs) -->
-              <div class="col-md-4">
-                <label class="form-label fw-semibold text-primary">Giá Khởi Hành (VNĐ) <span class="text-danger">*</span></label>
-                <input v-model.number="edit_tour.gia_tour" type="number" min="0" class="form-control form-control-sm border-primary" placeholder="VD: 2500000">
-              </div>
+                                <!-- Middle Content: Thumbnail + Info -->
+                                <div class="d-flex gap-2-5 align-items-center">
+                                    <div class="position-relative flex-shrink-0" style="width: 54px; height: 54px;">
+                                        <img :src="tour.image" :alt="tour.name" class="w-100 h-100 rounded-3 object-fit-cover border" />
+                                        <span v-if="tour.has360" class="badge-360-sm position-absolute font-8 fw-bold">360°</span>
+                                    </div>
+                                    <div class="overflow-hidden flex-grow-1">
+                                        <h6 class="font-12 fw-bold text-dark text-truncate mb-1" :title="tour.name">
+                                            {{ tour.name }}
+                                        </h6>
+                                        <div class="d-flex align-items-center justify-content-between font-11">
+                                            <span class="text-muted text-truncate" style="max-width: 130px;">
+                                                {{ tour.partnerName }}
+                                            </span>
+                                            <span class="fw-bold font-12" style="color: #E11D48;">
+                                                {{ tour.adultPriceStr }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
 
-              <!-- Đường dẫn ảnh đại diện tour -->
-              <div class="col-md-12">
-                <label class="form-label fw-semibold">Link Hình Ảnh Đại Diện</label>
-                <input v-model="edit_tour.hinh_anh_dai_dien" type="text" class="form-control form-control-sm" placeholder="https://domain.com/image.jpg hoặc tên file">
-              </div>
+                                <!-- Card Footer: Status indicator -->
+                                <div class="d-flex align-items-center justify-content-between pt-2 mt-2 border-top font-10">
+                                    <span class="text-muted d-flex align-items-center gap-1">
+                                        <i class="bx bx-map-pin text-primary"></i> {{ tour.district }}
+                                    </span>
+                                    <span class="badge rounded-pill font-9 fw-semibold px-2 py-0-5" :style="{ backgroundColor: tour.statusBg, color: tour.statusColor }">
+                                        {{ tour.statusLabel }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-              <!-- Thời lượng tour -->
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Thời Lượng (Số ngày)</label>
-                <input v-model.number="edit_tour.so_ngay" type="number" min="1" class="form-control form-control-sm" placeholder="1">
-              </div>
-
-              <!-- Số lượng khách tối đa -->
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Số Khách Tối Đa</label>
-                <input v-model.number="edit_tour.so_nguoi_toi_da" type="number" min="1" class="form-control form-control-sm" placeholder="20">
-              </div>
-
-              <!-- Trạng thái hiển thị mở bán -->
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Trạng Thái Hiển Thị</label>
-                <select v-model="edit_tour.trang_thai_hien_thi" class="form-select form-select-sm">
-                  <option :value="1">Hiển thị mở bán</option>
-                  <option :value="0">Tạm ẩn</option>
-                </select>
-              </div>
-
-              <!-- Trạng thái kiểm duyệt tour -->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">Trạng Thái Phê Duyệt</label>
-                <select v-model="edit_tour.trang_thai_duyet" class="form-select form-select-sm">
-                  <option value="DaDuyet">Đã duyệt (DaDuyet)</option>
-                  <option value="ChoDuyet">Chờ duyệt (ChoDuyet)</option>
-                  <option value="TuChoi">Từ chối (TuChoi)</option>
-                </select>
-              </div>
-
-              <!-- Lý do từ chối nếu có -->
-              <div class="col-md-6" v-if="edit_tour.trang_thai_duyet === 'TuChoi'">
-                <label class="form-label fw-semibold text-danger">Lý Do Từ Chối</label>
-                <input v-model="edit_tour.ly_do_tu_choi" type="text" class="form-control form-control-sm" placeholder="Nhập lý do từ chối tour...">
-              </div>
-
-              <!-- Mô tả chi tiết hành trình -->
-              <div class="col-12">
-                <label class="form-label fw-semibold">Mô Tả Chi Tiết Hành Trình</label>
-                <textarea v-model="edit_tour.mo_ta" class="form-control form-control-sm" rows="3" placeholder="Nhập mô tả hành trình tour..."></textarea>
-              </div>
+                    <!-- Bottom Tip Card -->
+                    <div class="p-3 rounded-4 mt-3" style="background-color: #FAF5FF; border: 1px dashed #DDD6FE;">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="bx bx-bulb font-18 text-purple mt-0-5"></i>
+                            <div>
+                                <span class="font-11 fw-bold text-dark d-block mb-1">Mẹo Thẩm Định:</span>
+                                <p class="font-11 text-muted mb-0 lh-base">
+                                    Các tour đi cano biển đảo cần kiểm tra kỹ giấy phép đăng kiểm phương tiện thủy nội địa và thẻ chứng chỉ thuyền viên trước khi xét duyệt lên sàn.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="modal-footer bg-light">
-            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
-            <button v-on:click="capNhatTour()" type="button" class="btn btn-primary btn-sm px-3" data-bs-dismiss="modal">Lưu Thay Đổi</button>
-          </div>
+
+            <!-- RIGHT COLUMN: CHI TIẾT THẨM ĐỊNH TOUR -->
+            <div class="col-12 col-lg-8 col-xl-8">
+                <div class="card border-0 shadow-xs rounded-4 bg-white p-3 p-lg-4">
+                    <!-- Top Breadcrumb & Partner Pill Block -->
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-2">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="badge rounded-pill font-11 fw-bold px-3 py-1 font-mono" style="background-color: #FDF2F8; color: #E11D48;">
+                                MÃ: {{ selectedTour.code }}
+                            </span>
+                            <span class="badge rounded-pill font-11 fw-bold px-3 py-1" style="background-color: #F3E8FF; color: #7C3AED;">
+                                {{ selectedTour.category }}
+                            </span>
+                            <span class="badge rounded-pill font-11 fw-bold px-3 py-1" style="background-color: #E0F2FE; color: #0284C7;">
+                                {{ selectedTour.subBadge || 'Cấp phép MÙA TỔNG LỄ' }}
+                            </span>
+                        </div>
+
+                        <!-- Partner Profile Badge -->
+                        <div class="d-flex align-items-center gap-2 p-1-5 px-3 rounded-pill border bg-light shadow-2xs">
+                            <div class="partner-avatar-circle rounded-circle d-flex align-items-center justify-content-center text-white font-11 fw-bold" style="background-color: #7C3AED; width: 30px; height: 30px;">
+                                DE
+                            </div>
+                            <div>
+                                <div class="font-12 fw-bold text-dark d-flex align-items-center gap-1">
+                                    <span>{{ selectedTour.partnerName }}</span>
+                                    <i class="bx bxs-check-circle text-primary font-14"></i>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 font-10">
+                                    <span class="fw-bold text-pink">Đối Tác Vàng (Tier 1)</span>
+                                    <span class="text-muted">•</span>
+                                    <span class="text-muted d-flex align-items-center gap-0-5">
+                                        <i class="bx bxs-star text-warning font-11"></i> 4.9 (420+ chuyến)
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Tour Title -->
+                    <h3 class="fw-bold text-dark font-20 mb-3 mt-1">
+                        {{ selectedTour.name }}
+                    </h3>
+
+                    <!-- 4 Info Metric Pills -->
+                    <div class="row g-2 mb-4">
+                        <div class="col-12 col-sm-6 col-xl-3">
+                            <div class="p-2-5 rounded-3 bg-light border d-flex align-items-center gap-2 h-100">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-pink" style="background-color: #FDF2F8; width: 32px; height: 32px;">
+                                    <i class="bx bx-map-pin font-16"></i>
+                                </div>
+                                <div>
+                                    <div class="font-9 text-muted fw-bold text-uppercase">LỘ TRÌNH</div>
+                                    <div class="font-11 fw-bold text-dark text-truncate" style="max-width: 120px;" title="Điểm đón: Cảng Sông Hàn (Quận Hải Châu)">
+                                        Điểm đón: Cảng Sông Hàn
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-sm-6 col-xl-3">
+                            <div class="p-2-5 rounded-3 bg-light border d-flex align-items-center gap-2 h-100">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-purple" style="background-color: #F5F3FF; width: 32px; height: 32px;">
+                                    <i class="bx bx-user-voice font-16"></i>
+                                </div>
+                                <div>
+                                    <div class="font-9 text-muted fw-bold text-uppercase">NGƯỜI HƯỚNG DẪN</div>
+                                    <div class="font-11 fw-bold text-dark">Tiếng Việt, Tiếng Anh</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-sm-6 col-xl-3">
+                            <div class="p-2-5 rounded-3 bg-light border d-flex align-items-center gap-2 h-100">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" style="background-color: #E0F2FE; width: 32px; height: 32px;">
+                                    <i class="bx bx-time-five font-16"></i>
+                                </div>
+                                <div>
+                                    <div class="font-9 text-muted fw-bold text-uppercase">THỜI LƯỢNG</div>
+                                    <div class="font-11 fw-bold text-dark">8 tiếng (08:00 - 16:00)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-sm-6 col-xl-3">
+                            <div class="p-2-5 rounded-3 bg-light border d-flex align-items-center gap-2 h-100">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-danger" style="background-color: #FEE2E2; width: 32px; height: 32px;">
+                                    <i class="bx bx-shield-quarter font-16"></i>
+                                </div>
+                                <div>
+                                    <div class="font-9 text-muted fw-bold text-uppercase">BẢO HIỂM DU LỊCH</div>
+                                    <div class="font-11 fw-bold text-danger">100.000.000 đ/ng</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel 1: Biểu Giá Đăng Ký & Dịch Vụ Đi Kèm -->
+                    <div class="border rounded-4 p-3 p-lg-4 mb-4" style="background-color: #FAFAFA;">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bx bx-wallet font-18 text-pink"></i>
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-0 font-14">Biểu Giá Đăng Ký & Dịch Vụ Đi Kèm</h6>
+                                    <span class="font-11 text-muted">Bảng giá niêm yết theo chính sách bình ổn giá TP Đà Nẵng</span>
+                                </div>
+                            </div>
+                            <span class="badge rounded-pill font-11 fw-bold px-3 py-1" style="background-color: #EDE9FE; color: #7C3AED;">
+                                Hoa hồng sàn: 12%
+                            </span>
+                        </div>
+
+                        <!-- 3 Price Tier Cards -->
+                        <div class="row g-3 mb-3">
+                            <!-- Card 1: Vé người lớn -->
+                            <div class="col-12 col-md-4">
+                                <div class="price-tier-box p-3 rounded-4 bg-white border h-100 shadow-2xs position-relative" style="border-color: #FECDD3 !important; background-color: #FFF1F2 !important;">
+                                    <span class="badge position-absolute top-0 end-0 m-2 font-9 fw-bold rounded-pill text-white" style="background-color: #E11D48;">
+                                        Chuẩn sàn
+                                    </span>
+                                    <div class="font-11 text-muted fw-bold text-uppercase mb-1">VÉ NGƯỜI LỚN (Từ 11 tuổi)</div>
+                                    <div class="font-20 fw-bold text-pink mb-1">{{ selectedTour.adultPriceStr }}</div>
+                                    <div class="font-11 text-muted">Bao gồm trọn gói cano, áo phao và ăn trưa</div>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Vé trẻ em -->
+                            <div class="col-12 col-md-4">
+                                <div class="price-tier-box p-3 rounded-4 bg-white border h-100 shadow-2xs">
+                                    <div class="font-11 text-muted fw-bold text-uppercase mb-1">VÉ TRẺ EM (5 - 10 TUỔI)</div>
+                                    <div class="font-20 fw-bold text-dark mb-1">{{ selectedTour.childPriceStr }}</div>
+                                    <div class="font-11 text-muted">Áp dụng tiêu chuẩn giường và suất ăn trẻ em</div>
+                                </div>
+                            </div>
+
+                            <!-- Card 3: Trẻ em dưới 5 tuổi -->
+                            <div class="col-12 col-md-4">
+                                <div class="price-tier-box p-3 rounded-4 bg-white border h-100 shadow-2xs">
+                                    <div class="font-11 text-muted fw-bold text-uppercase mb-1">TRẺ EM (0 - 4 TUỔI)</div>
+                                    <div class="font-20 fw-bold text-cyan mb-1">0 VNĐ</div>
+                                    <div class="font-11 text-muted">Miễn phí hoàn toàn (Đi cùng gia đình)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quyền Lợi Đã Kiểm Tra Đầy Đủ (4 pills) -->
+                        <div class="font-11 fw-bold text-muted text-uppercase tracking-wider mb-2">QUYỀN LỢI ĐÃ KIỂM TRA ĐẦY ĐỦ:</div>
+                        <div class="row g-2 font-11">
+                            <div class="col-12 col-md-6">
+                                <div class="p-2 px-3 rounded-pill bg-white border d-flex align-items-center gap-2">
+                                    <i class="bx bx-bus text-pink font-15"></i>
+                                    <span class="text-dark fw-medium">Xe du lịch Ford Transit đưa đón tận nơi máy lạnh</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="p-2 px-3 rounded-pill bg-white border d-flex align-items-center gap-2">
+                                    <i class="bx bx-dish text-pink font-15"></i>
+                                    <span class="text-dark fw-medium">Bữa trưa hải sản chuẩn biển tại Nhà Hàng Bé Mặn</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="p-2 px-3 rounded-pill bg-white border d-flex align-items-center gap-2">
+                                    <i class="bx bx-swim text-pink font-15"></i>
+                                    <span class="text-dark fw-medium">Kính lặn, ống thở, áo phao tiêu chuẩn châu Âu</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="p-2 px-3 rounded-pill bg-white border d-flex align-items-center gap-2">
+                                    <i class="bx bx-id-card text-pink font-15"></i>
+                                    <span class="text-dark fw-medium">Hướng dẫn viên suốt tuyến có thẻ Quốc tế</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel 2: Lộ Trình Tuyến Điểm & Tối Ưu OSRM -->
+                    <div class="border rounded-4 p-3 p-lg-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bx bx-navigation font-18 text-primary"></i>
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-0 font-14">Lộ Trình Tuyến Điểm & Tối Ưu OSRM</h6>
+                                    <span class="font-11 text-muted">Bản đồ tự động kết nối 3 POI (Tổng cự ly: 42 km - Thời gian: 1h15p)</span>
+                                </div>
+                            </div>
+                            <span class="badge rounded-pill font-11 fw-semibold px-3 py-1" style="background-color: #E0F2FE; color: #0284C7;">
+                                <i class="bx bx-info-circle me-1"></i> Thuật toán OSRM OpenRouteService đã kiểm tra
+                            </span>
+                        </div>
+
+                        <!-- Map Preview Container -->
+                        <div class="osrm-map-box rounded-4 overflow-hidden position-relative mb-3 border" style="height: 220px; background: linear-gradient(135deg, #a7f3d0 0%, #bae6fd 50%, #c7d2fe 100%);">
+                            <!-- SVG Map Graphic Representation of Son Tra Coastline -->
+                            <svg class="w-100 h-100" viewBox="0 0 700 220" preserveAspectRatio="none">
+                                <!-- Sea & Land Contours -->
+                                <path d="M 0,0 L 700,0 L 700,140 Q 550,180 400,130 T 200,160 T 0,200 Z" fill="#93C5FD" opacity="0.35"/>
+                                <path d="M 120,220 Q 250,90 420,110 T 680,80 L 700,220 Z" fill="#BBF7D0" opacity="0.4"/>
+                                
+                                <!-- Route Path Line -->
+                                <path d="M 160,180 Q 280,120 440,135 T 580,110" fill="none" stroke="#E11D48" stroke-width="4" stroke-dasharray="6,4"/>
+                            </svg>
+
+                            <!-- Son Tra Peninsula Mountain Landmark Overlay -->
+                            <div class="position-absolute top-50 start-50 translate-middle text-center p-2 rounded-3 bg-white bg-opacity-75 shadow-xs border">
+                                <span class="font-10 fw-bold text-secondary text-uppercase d-block">Bán đảo Sơn Trà & Vịnh Đà Nẵng</span>
+                                <span class="font-9 text-muted">InterContinental Danang Sun Peninsula Resort Area</span>
+                            </div>
+
+                            <!-- Waypoint Markers Overlay on Map -->
+                            <div class="position-absolute d-flex align-items-center justify-content-between px-4 w-100" style="bottom: 15px;">
+                                <div class="waypoint-badge d-flex align-items-center gap-1-5 px-3 py-1 rounded-pill bg-white shadow-sm border font-11 fw-bold text-dark">
+                                    <span class="waypoint-num" style="background-color: #E11D48;">1</span>
+                                    <span>Khởi hành: Trung Tâm</span>
+                                </div>
+                                <div class="waypoint-badge d-flex align-items-center gap-1-5 px-3 py-1 rounded-pill bg-white shadow-sm border font-11 fw-bold text-dark">
+                                    <span class="waypoint-num" style="background-color: #7C3AED;">2</span>
+                                    <span>Bãi Bụt Sơn Trà</span>
+                                </div>
+                                <div class="waypoint-badge d-flex align-items-center gap-1-5 px-3 py-1 rounded-pill bg-white shadow-sm border font-11 fw-bold text-dark">
+                                    <span class="waypoint-num" style="background-color: #0284C7;">3</span>
+                                    <span>Đỉnh Bàn Cờ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3 GIS Safety Assessment Pills below map -->
+                        <div class="row g-2 font-11">
+                            <div class="col-12 col-md-4">
+                                <div class="p-2 px-3 rounded-pill bg-light border d-flex align-items-center gap-2">
+                                    <i class="bx bx-check-circle text-success font-16"></i>
+                                    <div>
+                                        <div class="fw-bold text-dark">Tọa độ: Cảng Sông Hàn - Vũng Sơn Trà</div>
+                                        <div class="text-muted font-10">Đảm bảo an toàn luồng lạch.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="p-2 px-3 rounded-pill bg-light border d-flex align-items-center gap-2">
+                                    <i class="bx bx-check-circle text-success font-16"></i>
+                                    <div>
+                                        <div class="fw-bold text-dark">Tọa độ bến cano</div>
+                                        <div class="text-muted font-10">Đã đối soát Cảng vụ đường thủy.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="p-2 px-3 rounded-pill bg-light border d-flex align-items-center gap-2">
+                                    <i class="bx bx-check-circle text-success font-16"></i>
+                                    <div>
+                                        <div class="fw-bold text-dark">Vùng cấm quân sự</div>
+                                        <div class="text-muted font-10">Hoàn toàn không vi phạm.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2 Columns Below: Chính Sách Hủy Tour & Lịch Khởi Hành Mẫu -->
+                    <div class="row g-3 mb-4">
+                        <!-- Left Box: Chính Sách Hủy Tour -->
+                        <div class="col-12 col-md-6">
+                            <div class="border rounded-4 p-3 bg-white h-100">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="bx bx-calendar-x text-pink font-18"></i>
+                                    <h6 class="font-13 fw-bold text-dark mb-0">Chính Sách Hủy Tour</h6>
+                                </div>
+                                <div class="d-flex flex-column gap-2 font-11">
+                                    <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light">
+                                        <span class="text-dark fw-medium">Hủy trước 48 giờ</span>
+                                        <span class="badge rounded-pill font-11 fw-bold px-2-5 py-1" style="background-color: #E0F2FE; color: #0284C7;">
+                                            Hoàn 100% tiền
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light">
+                                        <span class="text-dark fw-medium">Hủy trước 24 giờ - 48 giờ</span>
+                                        <span class="badge rounded-pill font-11 fw-bold px-2-5 py-1" style="background-color: #F5F3FF; color: #7C3AED;">
+                                            Hoàn 50% tiền
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light">
+                                        <span class="text-dark fw-medium">Hủy trong vòng 24 giờ</span>
+                                        <span class="badge rounded-pill font-11 fw-bold px-2-5 py-1" style="background-color: #FEE2E2; color: #DC2626;">
+                                            Không hoàn tiền
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="font-10 text-muted mt-2 fst-italic">
+                                    Đã tuân thủ chuẩn quy định thương mại điện tử TP Đà Nẵng.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Box: Lịch Khởi Hành Mẫu -->
+                        <div class="col-12 col-md-6">
+                            <div class="border rounded-4 p-3 bg-white h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bx bx-calendar-event text-purple font-18"></i>
+                                        <h6 class="font-13 fw-bold text-dark mb-0">Lịch Khởi Hành Mẫu</h6>
+                                    </div>
+                                    <span class="badge rounded-pill font-9 fw-bold px-2 py-0-5" style="background-color: #FDF2F8; color: #E11D48;">
+                                        HÀNG NGÀY
+                                    </span>
+                                </div>
+                                <div class="font-11 text-muted mb-2">
+                                    <div class="d-flex justify-content-between py-1 border-bottom">
+                                        <span>Giờ đón khách:</span>
+                                        <b class="text-dark">07:30 - 08:00</b>
+                                    </div>
+                                    <div class="d-flex justify-content-between py-1 border-bottom">
+                                        <span>Giờ kết thúc & Trả khách:</span>
+                                        <b class="text-dark">16:00 - 17:00</b>
+                                    </div>
+                                    <div class="d-flex justify-content-between py-1">
+                                        <span>Tần suất vận hành:</span>
+                                        <b class="text-dark">Phổ biến trong tuần (12 chuyến)</b>
+                                    </div>
+                                </div>
+                                <!-- Micro Timeline -->
+                                <div class="d-flex align-items-center justify-content-between text-center pt-2 border-top font-10">
+                                    <div>
+                                        <b class="text-dark d-block">07:30</b>
+                                        <span class="text-muted">Đón</span>
+                                    </div>
+                                    <i class="bx bx-right-arrow-alt text-muted"></i>
+                                    <div>
+                                        <b class="text-dark d-block">09:00</b>
+                                        <span class="text-muted">Lặn san hô</span>
+                                    </div>
+                                    <i class="bx bx-right-arrow-alt text-muted"></i>
+                                    <div>
+                                        <b class="text-dark d-block">12:30</b>
+                                        <span class="text-muted">Ăn trưa</span>
+                                    </div>
+                                    <i class="bx bx-right-arrow-alt text-muted"></i>
+                                    <div>
+                                        <b class="text-dark d-block">16:00</b>
+                                        <span class="text-muted">Trả khách</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel 3: Quyết Định Kiểm Duyệt Tour (Bottom Action Form) -->
+                    <div class="border rounded-4 p-3 p-lg-4" style="background-color: #FFFDFD; border-color: #FECDD3 !important;">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="background-color: #7C3AED; width: 32px; height: 32px;">
+                                <i class="bx bx-check-double font-18"></i>
+                            </div>
+                            <div>
+                                <h6 class="font-14 fw-bold text-dark mb-0">Quyết Định Kiểm Duyệt Tour</h6>
+                                <span class="font-11 text-muted">Phản hồi sẽ được gửi tự động qua email & dashboard đối tác {{ selectedTour.partnerName }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Feedback Textarea -->
+                        <div class="mb-3">
+                            <label class="form-label font-11 fw-bold text-dark text-uppercase tracking-wider mb-1">
+                                GHI CHÚ PHẢN HỒI CHO ĐƠN VỊ LỮ HÀNH (TÙY CHỌN KHI DUYỆT, BẮT BUỘC KHI TỪ CHỐI):
+                            </label>
+                            <textarea 
+                                v-model="moderationNote" 
+                                class="form-control font-12 rounded-3 text-secondary" 
+                                rows="3"
+                                placeholder="Nhập nhận xét về lộ trình di chuyển, chứng từ bảo hiểm hoặc yêu cầu bổ sung thông tin chi tiết..."
+                            ></textarea>
+                        </div>
+
+                        <!-- Bottom Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-2 border-top">
+                            <button 
+                                class="btn btn-sm rounded-pill px-3 py-2 font-12 fw-bold d-flex align-items-center gap-1"
+                                style="background-color: #FEE2E2; color: #DC2626; border: 1px solid #FECACA;"
+                                @click="tuChoiTour"
+                            >
+                                <i class="bx bx-x font-16"></i>
+                                <span>Từ Chối Tour</span>
+                            </button>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <button 
+                                    class="btn btn-sm rounded-pill px-3 py-2 font-12 fw-bold d-flex align-items-center gap-1"
+                                    style="background-color: #EDE9FE; color: #7C3AED; border: 1px solid #DDD6FE;"
+                                    @click="yeuCauChinhSua"
+                                >
+                                    <i class="bx bx-edit font-16"></i>
+                                    <span>Yêu Cầu Chỉnh Sửa Lộ Trình</span>
+                                </button>
+                                <button 
+                                    class="btn btn-sm btn-pink-gradient text-white rounded-pill px-4 py-2 font-12 fw-bold shadow-sm d-flex align-items-center gap-1"
+                                    @click="pheDuyetTour"
+                                >
+                                    <i class="bx bx-check font-16"></i>
+                                    <span>Phê Duyệt & Xuất Bản Lên Sàn</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ========================================================= -->
-    <!-- 8. MODAL 3: XÉT DUYỆT TOUR (XEM CHI TIẾT & GIÁ KHỞI HÀNH) -->
-    <!-- ========================================================= -->
-    <div class="modal fade" id="duyetTourModal" tabindex="-1" aria-labelledby="duyetTourModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow">
-          <div class="modal-header bg-warning text-dark">
-            <h1 class="modal-title fs-5 fw-bold" id="duyetTourModalLabel">
-              <i class="bx bx-shield-quarter me-1"></i>Xét Duyệt Tour Du Lịch
-            </h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body p-3">
-            <!-- Box tóm tắt thông tin hồ sơ tour & đối tác -->
-            <div class="p-3 bg-light rounded-3 mb-3 border">
-              <div class="d-flex flex-wrap align-items-center justify-content-between mb-2 gap-2">
-                <div>
-                  <span class="badge bg-primary font-11 mb-1 me-2">Mã Tour: {{ duyet_Tour.ma_tour }}</span>
-                  <span class="badge bg-secondary font-11 mb-1">Mã Đối Tác: {{ duyet_Tour.ma_doi_tac }}</span>
-                  <h6 class="fw-bold text-dark mb-0 fs-6 mt-1">{{ duyet_Tour.ten_tour }}</h6>
+        <!-- MODAL: QUY CHUẨN DUYỆT TOUR -->
+        <div v-if="showModalQuyChuan" class="custom-modal-backdrop">
+            <div class="custom-modal-content rounded-4 p-4 bg-white shadow-lg" style="max-width: 620px; width: 92%;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0 font-16 d-flex align-items-center gap-2">
+                        <i class="bx bx-book-content text-pink"></i> Quy Chuẩn Kiểm Định Tour Du Lịch SmartTrip
+                    </h5>
+                    <button class="btn btn-sm btn-light rounded-circle p-1" @click="showModalQuyChuan = false">
+                        <i class="bx bx-x font-18"></i>
+                    </button>
                 </div>
-                <span class="badge px-2 py-1" :class="duyet_Tour.trang_thai_duyet === 'DaDuyet' ? 'bg-success' : (duyet_Tour.trang_thai_duyet === 'ChoDuyet' ? 'bg-warning text-dark' : 'bg-danger')">
-                  {{ duyet_Tour.trang_thai_duyet === 'DaDuyet' ? '● Đã duyệt' : (duyet_Tour.trang_thai_duyet === 'ChoDuyet' ? '● Chờ duyệt' : '● Từ chối') }}
-                </span>
-              </div>
-
-              <div class="row g-2 small text-muted pt-2 border-top mt-1">
-                <!-- Tên đơn vị đối tác -->
-                <div class="col-sm-6">
-                  <span class="text-secondary"><i class="bx bx-buildings me-1 text-primary"></i>Đơn vị cung cấp:</span>
-                  <div class="text-dark fw-bold mt-1">
-                    {{ duyet_Tour.ten_doi_tac || duyet_Tour.ma_doi_tac }}
-                  </div>
+                <div class="font-12 text-secondary mb-3 lh-base">
+                    <p class="mb-2"><strong>1. An toàn lộ trình (OSRM):</strong> Không được đi qua các khu vực cấm bay, quân sự, vùng nước nguy hiểm hoặc đường đèo cấm xe khách cỡ lớn.</p>
+                    <p class="mb-2"><strong>2. Bảo hiểm bắt buộc:</strong> Hạn mức bồi thường tối thiểu 100.000.000 VNĐ/du khách/vụ.</p>
+                    <p class="mb-2"><strong>3. Chính sách giá dịp lễ (DIFF 2025):</strong> Không tăng giá vé quá 20% so với giá niêm yết ngày thường đã đăng ký với Sở Du Lịch.</p>
+                    <p class="mb-0"><strong>4. Giấy phép cano:</strong> Phải có chứng chỉ đăng kiểm và số lượng áo phao đạt chuẩn 100% khách trên tàu.</p>
                 </div>
-
-                <!-- Giá khởi hành hiển thị trong modal duyệt -->
-                <div class="col-sm-6">
-                  <span class="text-secondary"><i class="bx bx-dollar-circle me-1 text-success"></i>Giá khởi hành:</span>
-                  <div class="text-primary fw-bold font-monospace mt-1 fs-6">
-                    {{ duyet_Tour.gia_tour && parseFloat(duyet_Tour.gia_tour) > 0 ? formatPrice(duyet_Tour.gia_tour) + ' VNĐ' : 'Chưa thiết lập giá' }}
-                  </div>
+                <div class="d-flex justify-content-end pt-2 border-top">
+                    <button class="btn btn-sm btn-pink-gradient text-white rounded-pill px-4" @click="showModalQuyChuan = false">Đã Hiểu</button>
                 </div>
-
-                <!-- Mã số thuế đối tác -->
-                <div class="col-sm-6">
-                  <span class="text-secondary"><i class="bx bx-receipt me-1 text-primary"></i>Mã số thuế:</span>
-                  <div class="text-dark fw-bold font-monospace mt-1">
-                    {{ duyet_Tour.ma_so_thue_doi_tac || 'Chưa cập nhật' }}
-                  </div>
-                </div>
-
-                <!-- Liên hệ đối tác -->
-                <div class="col-sm-6">
-                  <span class="text-secondary"><i class="bx bx-phone me-1 text-primary"></i>Liên hệ đối tác:</span>
-                  <div class="text-dark mt-1 font-monospace">
-                    {{ duyet_Tour.so_dien_thoai_doi_tac || duyet_Tour.email_doi_tac || 'Chưa cập nhật' }}
-                  </div>
-                </div>
-
-                <!-- Quy mô tour -->
-                <div class="col-sm-6">
-                  <span class="text-secondary"><i class="bx bx-time me-1 text-primary"></i>Quy mô tour:</span>
-                  <div class="text-dark mt-1">
-                    {{ duyet_Tour.so_ngay || 1 }} ngày • Tối đa {{ duyet_Tour.so_nguoi_toi_da || 20 }} khách
-                  </div>
-                </div>
-
-                <!-- Mô tả chi tiết tóm tắt -->
-                <div class="col-12" v-if="duyet_Tour.mo_ta">
-                  <span class="text-secondary"><i class="bx bx-file me-1 text-primary"></i>Mô tả tóm tắt:</span>
-                  <div class="text-dark mt-1 small bg-white p-2 rounded border">
-                    {{ duyet_Tour.mo_ta }}
-                  </div>
-                </div>
-              </div>
             </div>
-
-            <!-- Lựa chọn quyết định phê duyệt -->
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Quyết Định Phê Duyệt Tour <span class="text-danger">*</span></label>
-              <select v-model="duyet_Tour.trang_thai_duyet" class="form-select form-select-sm">
-                <option value="DaDuyet">✅ Phê duyệt tour (DaDuyet)</option>
-                <option value="ChoDuyet">⏳ Chờ kiểm duyệt hồ sơ (ChoDuyet)</option>
-                <option value="TuChoi">❌ Từ chối phê duyệt (TuChoi)</option>
-              </select>
-            </div>
-
-            <!-- Lý do từ chối nếu có -->
-            <div class="mb-2" v-if="duyet_Tour.trang_thai_duyet === 'TuChoi'">
-              <label class="form-label fw-semibold text-danger">Lý Do Từ Chối</label>
-              <textarea v-model="duyet_Tour.ly_do_tu_choi" class="form-control form-control-sm" rows="3" placeholder="Nhập lý do từ chối phê duyệt tour này (thông tin lộ trình chưa rõ ràng, giá chưa hợp lệ...)..."></textarea>
-            </div>
-          </div>
-          <div class="modal-footer bg-light p-2">
-            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
-            <button v-on:click="xacNhanDuyet()" type="button" class="btn btn-primary btn-sm px-3" data-bs-dismiss="modal">Lưu Quyết Định</button>
-          </div>
         </div>
-      </div>
     </div>
-
-    <!-- ========================================================= -->
-    <!-- 9. MODAL 4: XÁC NHẬN XÓA TOUR DU LỊCH -->
-    <!-- ========================================================= -->
-    <div class="modal fade" id="xoaTourModal" tabindex="-1" aria-labelledby="xoaTourModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-danger text-white">
-            <h1 class="modal-title fs-5 text-white" id="xoaTourModalLabel">
-              <i class="bx bx-trash me-1"></i>Xác Nhận Xóa Tour
-            </h1>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="alert alert-warning border-0 mb-0" role="alert">
-              <i class='bx bx-error-circle me-1 fs-5 align-middle'></i>
-              Bạn có chắc chắn muốn xóa tour <strong>{{ delete_tour.ten_tour }}</strong> 
-              (Mã: <code>{{ delete_tour.ma_tour }}</code>) không?
-            </div>
-          </div>
-          <div class="modal-footer bg-light">
-            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
-            <button v-on:click="xoaTour()" type="button" class="btn btn-danger btn-sm px-3" data-bs-dismiss="modal">Xác nhận xóa</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
 </template>
 
 <script>
-import api from '@/axios';
-
 export default {
-  name: "AdminTour",
+    name: 'KiemDuyetTourAdminComponent',
+    data() {
+        return {
+            activeSortLabel: 'Tất cả (15)',
+            filterStatus: 'all',
+            moderationNote: '',
+            showModalQuyChuan: false,
 
-  // =========================================================
-  // DATA: KHAI BÁO CÁC BIẾN TRẠNG THÁI (STATE) CỦA COMPONENT
-  // =========================================================
-  data() {
-    return {
-      list_tour: [],      // Danh sách tour lấy từ Backend API
-      list_doi_tac: [],   // Danh sách đối tác lấy từ Backend phục vụ dropdown
-      key_search: "",     // Từ khóa tìm kiếm nhập trên ô tìm kiếm
-      filterDoiTac: "",   // Bộ lọc theo mã đối tác
-      filterDuyet: "",    // Bộ lọc theo trạng thái kiểm duyệt (DaDuyet, ChoDuyet, TuChoi)
-      filterHienThi: "",  // Bộ lọc theo trạng thái hiển thị mở bán (1: Mở bán, 0: Tạm ẩn)
+            // Danh sách Tour chờ duyệt (Khớp 100% hình ảnh)
+            tours: [
+                {
+                    id: 1,
+                    code: 'TOUR-ST-DN-2025-004',
+                    name: 'Khám Phá Rừng Già Bán Đảo Sơn Trà & Lặn Ngắm San Hô Hòn Sụp 1 Ngày',
+                    category: 'Khám phá biển đảo & Sinh thái',
+                    subBadge: 'Cấp phép MÙA TỔNG LỄ',
+                    partnerName: 'Danang Explorer Corp',
+                    partnerTier: 'Đối Tác Vàng (Tier 1)',
+                    adultPriceStr: '1.250.000 đ',
+                    childPriceStr: '850.000 VNĐ',
+                    image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=150&auto=format&fit=crop&q=60',
+                    has360: true,
+                    timeAgo: 'Gửi 2 giờ trước',
+                    district: 'Bán đảo Sơn Trà',
+                    statusLabel: 'OSRM Checked',
+                    statusBg: '#E0F2FE',
+                    statusColor: '#0284C7',
+                    tagText: '#DIFF-2025 • Ưu tiên cao nhất',
+                    tagBg: '#FDF2F8',
+                    tagColor: '#E11D48',
+                    isUrgent: true,
+                    isRevised: false
+                },
+                {
+                    id: 2,
+                    code: 'TOUR-HOIAN-DN-2025-012',
+                    name: 'Tour Hoàng Hôn Phố Cổ & Thả Hoa Đăng Sông Hoài',
+                    category: 'Di sản văn hóa & Ẩm thực',
+                    subBadge: 'Chuẩn UNESCO',
+                    partnerName: 'Dana Heritage Travel',
+                    partnerTier: 'Đối Tác Bạc',
+                    adultPriceStr: '850.000 đ',
+                    childPriceStr: '550.000 VNĐ',
+                    image: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=150&auto=format&fit=crop&q=60',
+                    has360: false,
+                    timeAgo: 'Còn 4h kiểm định',
+                    district: 'Phố Cổ Hội An',
+                    statusLabel: 'Chờ duyệt',
+                    statusBg: '#FEF3C7',
+                    statusColor: '#D97706',
+                    tagText: 'DIFF 2025',
+                    tagBg: '#E0F2FE',
+                    tagColor: '#0284C7',
+                    isUrgent: true,
+                    isRevised: false
+                },
+                {
+                    id: 3,
+                    code: 'TOUR-BANA-DN-2025-018',
+                    name: 'Chinh Phục Đỉnh Bà Nà & Cây Cầu Bàn Tay Vàng Đón Mây',
+                    category: 'Công viên chủ đề & Check-in',
+                    subBadge: 'Best Seller',
+                    partnerName: 'Sun Viet Adventure',
+                    partnerTier: 'Đối Tác Kim Cương',
+                    adultPriceStr: '950.000 đ',
+                    childPriceStr: '700.000 VNĐ',
+                    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=150&auto=format&fit=crop&q=60',
+                    has360: true,
+                    timeAgo: 'Gửi 8h trước',
+                    district: 'Hòa Vang, Bà Nà',
+                    statusLabel: 'Chờ duyệt',
+                    statusBg: '#FEF3C7',
+                    statusColor: '#D97706',
+                    tagText: '#DIFF 2025',
+                    tagBg: '#F5F3FF',
+                    tagColor: '#7C3AED',
+                    isUrgent: false,
+                    isRevised: true
+                }
+            ],
 
-      // Object binding cho form THÊM MỚI Tour (kèm giá khởi hành gia_tour)
-      add_tour: {
-        ma_tour: "",
-        ma_doi_tac: "",
-        ten_tour: "",
-        gia_tour: 0,
-        mo_ta: "",
-        hinh_anh_dai_dien: "",
-        so_ngay: 1,
-        so_nguoi_toi_da: 20,
-        trang_thai_duyet: "DaDuyet",
-        trang_thai_hien_thi: 1,
-        ly_do_tu_choi: ""
-      },
-
-      // Object binding cho form CẬP NHẬT Tour (kèm giá khởi hành gia_tour)
-      edit_tour: {
-        ma_tour: "",
-        ma_doi_tac: "",
-        ten_tour: "",
-        gia_tour: 0,
-        mo_ta: "",
-        hinh_anh_dai_dien: "",
-        so_ngay: 1,
-        so_nguoi_toi_da: 20,
-        trang_thai_duyet: "DaDuyet",
-        trang_thai_hien_thi: 1,
-        ly_do_tu_choi: ""
-      },
-
-      // Object binding cho modal XÉT DUYỆT Tour (hiển thị đối tác, MST, giá khởi hành...)
-      duyet_Tour: {
-        ma_tour: "",
-        ma_doi_tac: "",
-        ten_tour: "",
-        ten_doi_tac: "",
-        ma_so_thue_doi_tac: "",
-        so_dien_thoai_doi_tac: "",
-        email_doi_tac: "",
-        gia_tour: 0,
-        so_ngay: 1,
-        so_nguoi_toi_da: 20,
-        mo_ta: "",
-        trang_thai_duyet: "DaDuyet",
-        ly_do_tu_choi: ""
-      },
-
-      // Object lưu thông tin tour cần XÓA
-      delete_tour: {
-        ma_tour: "",
-        ten_tour: ""
-      }
-    };
-  },
-
-  // =========================================================
-  // COMPUTED: CÁC THUỘC TÍNH TÍNH TOÁN TỰ ĐỘNG CẬP NHẬT
-  // =========================================================
-  computed: {
-    // 1. Tính tổng số tour đang mở bán hiển thị (trang_thai_hien_thi == 1)
-    countActive() {
-      return this.list_tour.filter(t => t.trang_thai_hien_thi == 1).length;
+            // Active selected tour (Mặc định chọn Tour 1 như trong hình)
+            selectedTour: {}
+        };
     },
-
-    // 2. Tính số lượng tour đang chờ admin kiểm duyệt hồ sơ
-    countPending() {
-      return this.list_tour.filter(t => t.trang_thai_duyet === 'ChoDuyet').length;
-    },
-
-    // 3. Tính số lượng tour đã được phê duyệt hợp lệ
-    countApproved() {
-      return this.list_tour.filter(t => t.trang_thai_duyet === 'DaDuyet').length;
-    },
-
-    // 4. Lọc danh sách tour đa điều kiện (từ khóa không dấu, đối tác, trạng thái duyệt, trạng thái hiển thị)
-    list_tour_loc() {
-      let list = this.list_tour;
-
-      // Bước 1: Lọc theo mã đối tác cung ứng
-      if (this.filterDoiTac !== "") {
-        list = list.filter(t => t.ma_doi_tac === this.filterDoiTac);
-      }
-
-      // Bước 2: Lọc theo trạng thái kiểm duyệt (DaDuyet, ChoDuyet, TuChoi)
-      if (this.filterDuyet !== "") {
-        list = list.filter(t => t.trang_thai_duyet === this.filterDuyet);
-      }
-
-      // Bước 3: Lọc theo trạng thái hiển thị (1: Mở bán, 0: Ẩn)
-      if (this.filterHienThi !== "") {
-        list = list.filter(t => t.trang_thai_hien_thi == parseInt(this.filterHienThi));
-      }
-
-      // Bước 4: Nếu không nhập từ khóa tìm kiếm, trả về danh sách sau lọc
-      if (!this.key_search) {
-        return list;
-      }
-
-      // Bước 5: Chuẩn hóa từ khóa tìm kiếm (bỏ dấu tiếng Việt, chuyển chữ thường)
-      let kw = this.removeVietnameseTones(this.key_search);
-
-      // Bước 6: Khớp tìm kiếm theo mã tour, tên tour, tên đối tác hoặc mô tả
-      return list.filter(t => {
-        let maTour    = this.removeVietnameseTones(t.ma_tour);
-        let tenTour   = this.removeVietnameseTones(t.ten_tour);
-        let tenDoiTac = this.removeVietnameseTones(t.ten_doi_tac);
-        let moTa      = this.removeVietnameseTones(t.mo_ta);
-
-        return maTour.includes(kw) || tenTour.includes(kw) || tenDoiTac.includes(kw) || moTa.includes(kw);
-      });
-    }
-  },
-
-  // =========================================================
-  // MOUNTED: VÒNG ĐỜI GỌI API KHI COMPONENT ĐƯỢC TẢI
-  // =========================================================
-  mounted() {
-    this.loadData();
-  },
-
-  // =========================================================
-  // METHODS: CÁC HÀM XỬ LÝ SỰ KIỆN VÀ GỌI API BACKEND
-  // =========================================================
-  methods: {
-    // 1. Hàm tiện ích loại bỏ toàn bộ dấu tiếng Việt hỗ trợ tìm kiếm linh hoạt
-    removeVietnameseTones(str) {
-      if (!str) return '';
-      return String(str)
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[đĐ]/g, 'd')
-        .toLowerCase()
-        .trim();
-    },
-
-    // 2. Hàm định dạng giá tiền VNĐ chuẩn quốc gia (VD: 2.500.000)
-    formatPrice(val) {
-      if (!val) return '0';
-      return Number(val).toLocaleString("vi-VN");
-    },
-
-    // 3. Hàm xử lý link ảnh đại diện với fallback an toàn
-    getImageUrl(img) {
-      if (!img) {
-        return "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=150&q=80";
-      }
-      if (img.startsWith('http://') || img.startsWith('https://')) {
-        return img;
-      }
-      return "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=150&q=80";
-    },
-
-    // 4. Xử lý khi ảnh lỗi không tải được thì gán ảnh mặc định
-    onImageError(e) {
-      e.target.src = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=150&q=80";
-    },
-
-    // 5. Gọi API GET lấy toàn bộ danh sách tour và đối tác từ Backend
-    loadData() {
-      api.get('/api/admin/tour/get-data')
-        .then(response => {
-          if (response.data.status) {
-            this.list_tour = response.data.data || [];
-            if (response.data.doi_tac) {
-              this.list_doi_tac = response.data.doi_tac;
+    computed: {
+        filteredTours() {
+            if (this.filterStatus === 'urgent') {
+                return this.tours.filter(t => t.isUrgent);
+            } else if (this.filterStatus === 'revised') {
+                return this.tours.filter(t => t.isRevised);
             }
-          }
-        })
-        .catch(error => {
-          console.error('Lỗi khi tải danh sách tour:', error);
-        });
+            return this.tours;
+        }
     },
-
-    // 6. Gọi API POST thêm mới tour kèm giá khởi hành
-    themMoiTour() {
-      api.post('/api/admin/tour/store', this.add_tour)
-        .then(response => {
-          if (response.data.status) {
-            this.$toast.success(response.data.message);
-            this.loadData(); // Tải lại danh sách sau khi thêm mới thành công
-            // Reset dữ liệu form thêm mới
-            this.add_tour = {
-              ma_tour: "",
-              ma_doi_tac: "",
-              ten_tour: "",
-              gia_tour: 0,
-              mo_ta: "",
-              hinh_anh_dai_dien: "",
-              so_ngay: 1,
-              so_nguoi_toi_da: 20,
-              trang_thai_duyet: "DaDuyet",
-              trang_thai_hien_thi: 1,
-              ly_do_tu_choi: ""
-            };
-          } else {
-            this.$toast.error(response.data.message || "Thêm tour thất bại!");
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-          this.$toast.error(msg);
-        });
+    created() {
+        if (this.tours.length > 0) {
+            this.selectedTour = JSON.parse(JSON.stringify(this.tours[0]));
+        }
     },
-
-    // 7. Mở modal cập nhật và gán dữ liệu tour hiện tại (bao gồm giá khởi hành gia_tour)
-    moModalCapNhat(t) {
-      this.edit_tour = {
-        ma_tour: t.ma_tour,
-        ma_doi_tac: t.ma_doi_tac,
-        ten_tour: t.ten_tour,
-        gia_tour: t.gia_tour ? parseFloat(t.gia_tour) : 0,
-        mo_ta: t.mo_ta || '',
-        hinh_anh_dai_dien: t.hinh_anh_dai_dien || '',
-        so_ngay: t.so_ngay || 1,
-        so_nguoi_toi_da: t.so_nguoi_toi_da || 20,
-        trang_thai_duyet: t.trang_thai_duyet || 'DaDuyet',
-        trang_thai_hien_thi: t.trang_thai_hien_thi !== undefined ? t.trang_thai_hien_thi : 1,
-        ly_do_tu_choi: t.ly_do_tu_choi || ''
-      };
-    },
-
-    // 8. Gọi API POST cập nhật thông tin tour và giá khởi hành
-    capNhatTour() {
-      api.post('/api/admin/tour/update', this.edit_tour)
-        .then(res => {
-          if (res.data.status) {
-            this.$toast.success(res.data.message);
-            this.loadData(); // Tải lại bảng sau khi cập nhật
-          } else {
-            this.$toast.error(res.data.message || "Cập nhật tour thất bại");
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-          this.$toast.error(msg);
-        });
-    },
-
-    // 9. Mở modal xét duyệt tour và tải đầy đủ thông tin chi tiết (đối tác, MST, giá khởi hành...)
-    moModalDuyet(t) {
-      this.duyet_Tour = {
-        ma_tour: t.ma_tour,
-        ma_doi_tac: t.ma_doi_tac,
-        ten_tour: t.ten_tour,
-        ten_doi_tac: t.ten_doi_tac || '',
-        ma_so_thue_doi_tac: t.ma_so_thue_doi_tac || '',
-        so_dien_thoai_doi_tac: t.so_dien_thoai_doi_tac || '',
-        email_doi_tac: t.email_doi_tac || '',
-        gia_tour: t.gia_tour ? parseFloat(t.gia_tour) : 0,
-        so_ngay: t.so_ngay || 1,
-        so_nguoi_toi_da: t.so_nguoi_toi_da || 20,
-        mo_ta: t.mo_ta || '',
-        trang_thai_duyet: t.trang_thai_duyet || 'DaDuyet',
-        ly_do_tu_choi: t.ly_do_tu_choi || ''
-      };
-    },
-
-    // 10. Gọi API POST lưu quyết định xét duyệt tour (DaDuyet, ChoDuyet, TuChoi)
-    xacNhanDuyet() {
-      api.post('/api/admin/tour/duyet', this.duyet_Tour)
-        .then(res => {
-          if (res.data.status) {
-            this.$toast.success(res.data.message);
-            this.loadData(); // Tải lại dữ liệu sau khi duyệt
-          } else {
-            this.$toast.error(res.data.message || "Cập nhật duyệt thất bại");
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-          this.$toast.error(msg);
-        });
-    },
-
-    // 11. Gọi API POST đổi trạng thái hiển thị mở bán (Bật / Tắt)
-    changeStatus(tour) {
-      api.post('/api/admin/tour/change-status', { ma_tour: tour.ma_tour })
-        .then(res => {
-          if (res.data.status) {
-            this.$toast.success(res.data.message);
-            tour.trang_thai_hien_thi = tour.trang_thai_hien_thi == 1 ? 0 : 1;
-            this.loadData();
-          } else {
-            this.$toast.error(res.data.message || "Đổi trạng thái thất bại");
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-          this.$toast.error(msg);
-        });
-    },
-
-    // 12. Gọi API POST xóa mềm tour du lịch
-    xoaTour() {
-      api.post('/api/admin/tour/delete', { ma_tour: this.delete_tour.ma_tour })
-        .then(res => {
-          if (res.data.status) {
-            this.$toast.success(res.data.message);
-            this.loadData(); // Tải lại danh sách sau khi xóa
-            this.delete_tour = {
-              ma_tour: "",
-              ten_tour: ""
-            };
-          } else {
-            this.$toast.error(res.data.message || "Xóa tour thất bại");
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : "Có lỗi xảy ra!";
-          this.$toast.error(msg);
-        });
+    methods: {
+        selectTour(tour) {
+            this.selectedTour = JSON.parse(JSON.stringify(tour));
+            this.moderationNote = '';
+        },
+        openModalQuyChuan() {
+            this.showModalQuyChuan = true;
+        },
+        xuatDanhSach() {
+            alert('Đang trích xuất danh sách 15 tour du lịch chờ duyệt định dạng Excel / PDF...');
+        },
+        duyetNhanhHangLoat() {
+            if (confirm('Bạn có chắc chắn muốn duyệt nhanh toàn bộ các tour đạt 100% chuẩn kiểm định OSRM & Bảo hiểm?')) {
+                alert('Đã phê duyệt nhanh thành công 12 tour đạt chuẩn!');
+            }
+        },
+        pheDuyetTour() {
+            alert(`Đã PHÊ DUYỆT thành công tour "${this.selectedTour.name}"! Thông báo đã gửi tới đối tác ${this.selectedTour.partnerName} và tour đã chính thức mở bán trên sàn.`);
+        },
+        yeuCauChinhSua() {
+            if (!this.moderationNote.trim()) {
+                alert('Vui lòng nhập nội dung ghi chú phản hồi yêu cầu đối tác chỉnh sửa lộ trình!');
+                return;
+            }
+            alert(`Đã gửi yêu cầu chỉnh sửa tour cho đối tác ${this.selectedTour.partnerName}: "${this.moderationNote}"`);
+        },
+        tuChoiTour() {
+            if (!this.moderationNote.trim()) {
+                alert('Vui lòng nhập lý do từ chối tour vào ô ghi chú phản hồi!');
+                return;
+            }
+            if (confirm(`Bạn có chắc muốn từ chối kiểm duyệt tour này?`)) {
+                alert(`Đã từ chối tour "${this.selectedTour.name}". Lý do: ${this.moderationNote}`);
+            }
+        }
     }
-  }
 };
 </script>
 
 <style scoped>
-/* Badge bo tròn trạng thái đồng bộ cơ sở dữ liệu */
-.sync-pill {
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  padding: 4px 12px;
-  border-radius: 999px;
+.tour-moderation-page {
+    background-color: #F8FAFC;
+    min-height: 100vh;
 }
 
-/* Chấm xanh nhấp nháy báo hiệu kết nối trực tuyến */
-.dot-green {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #22c55e;
+.font-28 { font-size: 28px; }
+.font-24 { font-size: 24px; }
+.font-20 { font-size: 20px; }
+.font-18 { font-size: 18px; }
+.font-16 { font-size: 16px; }
+.font-15 { font-size: 15px; }
+.font-14 { font-size: 14px; }
+.font-13 { font-size: 13px; }
+.font-12 { font-size: 12px; }
+.font-11 { font-size: 11px; }
+.font-10 { font-size: 10px; }
+.font-9 { font-size: 9px; }
+.font-8 { font-size: 8px; }
+
+.font-mono {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
 }
 
-/* Khung icon của các thẻ thống kê KPI */
-.kpi-icon-box {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
+.text-pink { color: #E11D48 !important; }
+.text-purple { color: #7C3AED !important; }
+.text-cyan { color: #0284C7 !important; }
+
+.pulse-dot-pink {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #E11D48;
+    display: inline-block;
+    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7);
+    animation: pulsePink 2s infinite;
 }
 
-/* Bảng màu nền mềm mại cho các icon KPI */
-.bg-light-primary { background-color: #e0f2fe; }
-.bg-light-success { background-color: #dcfce7; }
-.bg-light-info { background-color: #e0f2fe; }
-.bg-light-warning { background-color: #fef3c7; }
-.bg-light-danger { background-color: #fee2e2; }
-
-/* Nút thao tác tròn nhỏ trong bảng dữ liệu (Xem, Sửa, Xóa) */
-.btn-action {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  transition: all 0.2s;
+@keyframes pulsePink {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(225, 29, 72, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
 }
 
-.btn-action:hover {
-  background-color: #f1f5f9;
-  transform: translateY(-1px);
+.dot-pink {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #E11D48;
+    display: inline-block;
+}
+
+.btn-pink-gradient {
+    background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-pink-gradient:hover {
+    background: linear-gradient(135deg, #BE123C 0%, #9F1239 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
+}
+
+.shadow-xs {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-2xs {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.cursor-pointer { cursor: pointer; }
+
+/* Left Queue Cards */
+.active-tour-card {
+    background-color: #FFF1F2 !important;
+    border-color: #FECDD3 !important;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.08) !important;
+}
+
+.hover-shadow:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    border-color: #E2E8F0;
+}
+
+.badge-360-sm {
+    bottom: -2px;
+    right: -2px;
+    background-color: #0F172A;
+    color: #FFFFFF;
+    padding: 1px 3px;
+    border-radius: 3px;
+    border: 1px solid #FFFFFF;
+}
+
+.waypoint-badge {
+    backdrop-filter: blur(4px);
+}
+
+.waypoint-num {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+.p-2-5 { padding: 10px; }
+.gap-1-5 { gap: 6px; }
+.gap-2-5 { gap: 10px; }
+.tracking-wider { letter-spacing: 0.05em; }
+
+/* Modals */
+.custom-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+    backdrop-filter: blur(2px);
+}
+
+.custom-modal-content {
+    animation: modalScaleIn 0.2s ease-out;
+}
+
+@keyframes modalScaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.transition-all {
+    transition: all 0.2s ease;
 }
 </style>

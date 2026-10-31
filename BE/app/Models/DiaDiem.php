@@ -3,37 +3,45 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DiaDiem extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public const TRANG_THAI_TAM_TAT   = 0;
     public const TRANG_THAI_HOAT_DONG = 1;
 
-    protected $table = 'dia_diems';
+    protected $table = 'dia_diem';
 
     protected $primaryKey = 'ma_dia_diem';
-    protected $keyType = 'string';
-    public $incrementing = false;
+
+    const CREATED_AT = 'ngay_tao';
+    const UPDATED_AT = 'ngay_cap_nhat';
+
+    const DELETED_AT = 'ngay_xoa';
 
     protected $fillable = [
-        'ma_dia_diem',
-        'ma_doi_tac_tao',
+        'ma_danh_muc',
+        'ma_xa',
+        'ma_huyen_cu',
+        'nguoi_tao_id',
         'ten_dia_diem',
-        'loai',
+        'mo_ta',
         'dia_chi',
-        'so_dien_thoai',
-        'kinh_do',
         'vi_do',
+        'kinh_do',
+        'osm_id',
         'gio_mo_cua',
         'gio_dong_cua',
-        'gia_giao_dong',
-        'hinh_anh_dai_dien',
-        'mo_ta',
+        'gia_tham_khao',
+        'thoi_luong_tham_quan',
         'trang_thai_duyet',
-        'trang_thai_hien_thi',
-        'ly_do_tu_choi'
+        'nguoi_duyet_id',
+        'ly_do_tu_choi',
+        'ngay_tao',
+        'ngay_cap_nhat',
     ];
+
 }

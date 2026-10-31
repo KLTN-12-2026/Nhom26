@@ -17,8 +17,8 @@
                     </svg>
                 </div>
                 <div class="brand-info">
-                    <h2 class="brand-title">Da Nang SmartTrip AI</h2>
-                    <span class="brand-subtitle">ĐÀ NẴNG TRIP OPTIMIZER</span>
+                    <h2 class="brand-title">Da Nang</h2>
+                    <span class="brand-subtitle">Smart Itinerary Optimizer</span>
                 </div>
             </router-link>
 
@@ -42,9 +42,9 @@
                             </router-link>
                         </li>
                         <li class="menu-item">
-                            <router-link to="/client/ban-do-tuong-tac" class="menu-link" active-class="active" @click="handleItemClick">
-                                <span class="menu-icon"><i class="bx bx-map-alt"></i></span>
-                                <span class="menu-text">Bản Đồ Tương Tác OSM</span>
+                            <router-link to="/client/chi-tiet-danh-gia" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-map-pin"></i></span>
+                                <span class="menu-text">Chi Tiết & Đánh Giá</span>
                             </router-link>
                         </li>
                         <li class="menu-item">
@@ -101,9 +101,9 @@
                             </router-link>
                         </li>
                         <li class="menu-item">
-                            <router-link to="/client/danh-gia-gop-y" class="menu-link" active-class="active" @click="handleItemClick">
-                                <span class="menu-icon"><i class="bx bx-star"></i></span>
-                                <span class="menu-text">Đánh Giá & Góp Ý</span>
+                            <router-link to="/client/quan-ly-don-dat-tour" class="menu-link" active-class="active" @click="handleItemClick">
+                                <span class="menu-icon"><i class="bx bx-receipt"></i></span>
+                                <span class="menu-text">Quản Lý Đơn Đặt Tour</span>
                             </router-link>
                         </li>
                         <li class="menu-item">

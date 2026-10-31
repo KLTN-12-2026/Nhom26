@@ -21,7 +21,7 @@
             <!-- Back to top -->
             <a href="javascript:;" class="back-to-top" @click="scrollToTop"><i class='bx bxs-up-arrow-alt'></i></a>
 
-            <!-- Dark Navy Footer -->
+            <!-- Admin Footer -->
             <FooterAdmin></FooterAdmin>
         </div>
     </div>
@@ -45,7 +45,7 @@ export default {
     data() {
         return {
             isSidebarOpen: false
-        }
+        };
     },
     methods: {
         toggleSidebar() {
@@ -58,7 +58,7 @@ export default {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
-}
+};
 </script>
 
 <style>
@@ -76,10 +76,10 @@ export default {
     color: #1e293b;
 }
 
-/* Right Main Area with Left Sidebar Offset (250px) */
+/* Right Main Area with Left Sidebar Offset (260px) */
 .admin-main-area {
     flex: 1 1 auto;
-    margin-left: 250px;
+    margin-left: 260px;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -89,12 +89,12 @@ export default {
 
 .admin-page-content {
     flex: 1 0 auto;
-    padding: 24px 24px 40px;
+    padding: 24px 28px 40px;
     background-color: #f8fafc;
 }
 
 .admin-page-inner {
-    max-width: 1400px;
+    max-width: 1440px;
     margin: 0 auto;
 }
 
@@ -105,9 +105,34 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(15, 23, 42, 0.4);
+    background-color: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(2px);
     z-index: 1035;
+}
+
+/* Custom Back To Top */
+.admin-main-area .back-to-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 38px;
+    height: 38px;
+    background: #e11d48;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    z-index: 999;
+}
+
+.admin-main-area .back-to-top:hover {
+    background: #be123c;
+    transform: translateY(-2px);
 }
 
 @media (max-width: 991.98px) {

@@ -1,146 +1,157 @@
 <template>
     <aside class="admin-sidebar" :class="{ 'sidebar-mobile-open': isOpen }">
-        <!-- 1. Top Admin Profile Header (Giống hệt hình chụp) -->
-        <div class="sidebar-user-header p-3 border-bottom">
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <div class="admin-avatar-circle">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" class="admin-avatar-img" alt="avatar" />
+        <!-- 1. Brand Logo: SmartTrip AI ĐÀ NẴNG PORTAL -->
+        <div class="sidebar-header">
+            <div class="brand-wrapper">
+                <div class="brand-logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none" class="brand-svg">
+                        <circle cx="20" cy="20" r="18" fill="url(#adminBrandGrad)" />
+                        <path d="M20 10C15 15.5 12 18 12 22C12 26.418 15.582 30 20 30C24.418 30 28 26.418 28 22C28 18 25 15.5 20 10Z" fill="#FFFFFF" opacity="0.95" />
+                        <circle cx="20" cy="22" r="3.5" fill="#E11D48" />
+                        <defs>
+                            <linearGradient id="adminBrandGrad" x1="4" y1="4" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#E11D48" />
+                                <stop offset="1" stop-color="#BE123C" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
                 </div>
-                <div class="admin-user-info overflow-hidden">
-                    <div class="d-flex align-items-center gap-1">
-                        <span class="fw-bold text-dark font-13">Admin</span>
-                    </div>
-                    <div class="text-success font-11 fw-semibold d-flex align-items-center gap-1">
-                        <span class="dot-green"></span> Super Admin (Root)
-                    </div>
+                <div class="brand-info">
+                    <h2 class="brand-title">SmartTrip <span class="brand-ai">AI</span></h2>
+                    <span class="brand-subtitle">ĐÀ NẴNG PORTAL</span>
                 </div>
-                <button class="btn btn-sm btn-light border-0 d-lg-none ms-auto p-1" @click="closeSidebar">
-                    <i class="bx bx-x font-20 text-muted"></i>
-                </button>
             </div>
+
+            <!-- Mobile Close Button -->
+            <button class="mobile-close-btn d-lg-none" @click="closeSidebar" type="button" aria-label="Đóng menu">
+                <i class="bx bx-x"></i>
+            </button>
         </div>
 
-        <!-- 2. Section Header -->
-        <div class="px-3 pt-3 pb-1 d-flex align-items-center justify-content-between">
-            <span class="font-11 fw-bold text-uppercase text-secondary tracking-wider">PHÂN HỆ QUẢN TRỊ</span>
-            <span class="badge bg-light text-secondary font-10 border">Admin</span>
-        </div>
+        <!-- 2. Scrollable Navigation Menu -->
+        <div class="sidebar-scrollable">
+            <nav class="sidebar-menu">
+                <!-- Group 1: TỔNG QUAN -->
+                <div class="menu-section-header">TỔNG QUAN</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <router-link to="/admin/thong-ke" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-bar-chart-alt-2"></i></span>
+                            <span class="menu-text">Thống Kê & Báo Cáo</span>
+                        </router-link>
+                    </li>
+                </ul>
 
-        <!-- 3. Scrollable Navigation Menu (Đầy đủ 14 chức năng quản trị) -->
-        <div class="sidebar-scrollable p-2">
-            <ul class="nav flex-column gap-1">
-                <!-- 1. Quản lý admin (Active trong hình chụp) -->
-                <li class="nav-item">
-                    <router-link to="/admin/tai-khoan-admin" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-user-pin nav-icon"></i>
-                        <span>Quản lý Admin</span>
-                    </router-link>
-                </li>
+                <!-- Group 2: TÀI KHOẢN & PHÂN QUYỀN -->
+                <div class="menu-section-header">TÀI KHOẢN & PHÂN QUYỀN</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <router-link to="/admin/tai-khoan-admin" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-user-pin"></i></span>
+                            <span class="menu-text">Quản Lý Quản Trị Viên</span>
+                        </router-link>
+                    </li>
+                    <li class="menu-item">
+                        <router-link to="/admin/phan-quyen" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-shield-quarter"></i></span>
+                            <span class="menu-text">Phân Quyền & Chức Vụ</span>
+                        </router-link>
+                    </li>
+                    <li class="menu-item">
+                        <router-link to="/admin/chuc-nang" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-layer"></i></span>
+                            <span class="menu-text">Chức Năng Hệ Thống</span>
+                        </router-link>
+                    </li>
+                    <li class="menu-item">
+                        <router-link to="/admin/nguoi-dung" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-group"></i></span>
+                            <span class="menu-text">Tài Khoản Người Dùng</span>
+                        </router-link>
+                    </li>
+                </ul>
 
-                <!-- 2. Quản lý chức vụ -->
-                <li class="nav-item">
-                    <router-link to="/admin/chuc-vu" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-badge-check nav-icon"></i>
-                        <span>Quản lý chức vụ</span>
-                    </router-link>
-                </li>
+                <!-- Group 3: ĐỐI TÁC & KIỂM DUYỆT -->
+                <div class="menu-section-header">ĐỐI TÁC & KIỂM DUYỆT</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <router-link to="/admin/doi-tac" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-building-house"></i></span>
+                            <span class="menu-text">Xét Duyệt Đối Tác</span>
+                        </router-link>
+                    </li>
+                    <li class="menu-item">
+                        <router-link to="/admin/tour" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-flag"></i></span>
+                            <span class="menu-text">Kiểm Duyệt Tour Du Lịch</span>
+                        </router-link>
+                    </li>
+                    <li class="menu-item">
+                        <router-link to="/admin/de-xuat-dia-diem" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-map-pin"></i></span>
+                            <span class="menu-text">Địa Điểm Đề Xuất (POI)</span>
+                        </router-link>
+                    </li>
+                    <li class="menu-item">
+                        <router-link to="/admin/danh-gia" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-message-square-detail"></i></span>
+                            <span class="menu-text">Đánh Giá & Bình Luận</span>
+                        </router-link>
+                    </li>
+                    <li class="menu-item">
+                        <router-link to="/admin/bao-cao-vi-pham" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-error-circle"></i></span>
+                            <span class="menu-text">Báo Cáo Vi Phạm</span>
+                        </router-link>
+                    </li>
+                </ul>
 
-                <!-- 3. Quản lý chức năng -->
-                <li class="nav-item">
-                    <router-link to="/admin/chuc-nang" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-layer nav-icon"></i>
-                        <span>Quản lý chức năng</span>
-                    </router-link>
-                </li>
+                <!-- Group 4: KHO DỮ LIỆU ĐÀ NẴNG -->
+                <div class="menu-section-header">KHO DỮ LIỆU ĐÀ NẴNG</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <router-link to="/admin/kho-dia-diem" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-map-alt"></i></span>
+                            <span class="menu-text">Kho Địa Điểm</span>
+                        </router-link>
+                    </li>
+                    <li class="menu-item">
+                        <router-link to="/admin/danh-muc-dia-diem" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-category-alt"></i></span>
+                            <span class="menu-text">Danh Mục Địa Điểm</span>
+                        </router-link>
+                    </li>
+                    <li class="menu-item">
+                        <router-link to="/admin/tag" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-purchase-tag-alt"></i></span>
+                            <span class="menu-text">Thẻ Sở Thích (Tags)</span>
+                        </router-link>
+                    </li>
+                    <li class="menu-item">
+                        <router-link to="/admin/voucher" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-gift"></i></span>
+                            <span class="menu-text">Voucher Sàn</span>
+                        </router-link>
+                    </li>
+                </ul>
 
-                <!-- 4. Phân quyền -->
-                <li class="nav-item">
-                    <router-link to="/admin/phan-quyen" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-shield-quarter nav-icon"></i>
-                        <span>Phân quyền Admin</span>
-                    </router-link>
-                </li>
-
-                <!-- 5. Quản lý người dùng -->
-                <li class="nav-item">
-                    <router-link to="/admin/nguoi-dung" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-group nav-icon"></i>
-                        <span>Quản lý người dùng</span>
-                    </router-link>
-                </li>
-
-                <!-- 6. Quản lý đối tác -->
-                <li class="nav-item">
-                    <router-link to="/admin/doi-tac" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-briefcase nav-icon"></i>
-                        <span>Quản lý đối tác</span>
-                    </router-link>
-                </li>
-
-                <!-- 7. Kiểm duyệt địa điểm -->
-                <li class="nav-item">
-                    <router-link to="/admin/kiem-duyet-dia-diem" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-current-location nav-icon"></i>
-                        <span>Kiểm duyệt địa điểm</span>
-                    </router-link>
-                </li>
-
-                <!-- 8. Quản lý tour -->
-                <li class="nav-item">
-                    <router-link to="/admin/tour" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-map-alt nav-icon"></i>
-                        <span>Quản lý tour</span>
-                    </router-link>
-                </li>
-
-                <!-- 9. Quản lý đánh giá -->
-                <li class="nav-item">
-                    <router-link to="/admin/danh-gia" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-star nav-icon"></i>
-                        <span>Quản lý đánh giá</span>
-                    </router-link>
-                </li>
-
-                <!-- 10. Quản lý tài chính -->
-                <li class="nav-item">
-                    <router-link to="/admin/tai-chinh" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-dollar-circle nav-icon"></i>
-                        <span>Quản lý tài chính</span>
-                    </router-link>
-                </li>
-
-                <!-- 11. Thống kê & báo cáo -->
-                <li class="nav-item">
-                    <router-link to="/admin/thong-ke" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-bar-chart-alt-2 nav-icon"></i>
-                        <span>Thống kê & báo cáo</span>
-                    </router-link>
-                </li>
-
-                <!-- 12. Quản lý tag -->
-                <li class="nav-item">
-                    <router-link to="/admin/tag" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-purchase-tag-alt nav-icon"></i>
-                        <span>Quản lý tag</span>
-                    </router-link>
-                </li>
-
-                <!-- 13. Quản lý voucher Admin -->
-                <li class="nav-item">
-                    <router-link to="/admin/voucher" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-gift nav-icon"></i>
-                        <span>Quản lý voucher Admin</span>
-                    </router-link>
-                </li>
-
-                <!-- 14. Quản lý báo cáo lỗi -->
-                <li class="nav-item">
-                    <router-link to="/admin/bao-cao-loi" class="nav-link admin-nav-link" active-class="active" @click="handleItemClick">
-                        <i class="bx bx-bug nav-icon"></i>
-                        <span>Quản lý báo cáo lỗi</span>
-                    </router-link>
-                </li>
-            </ul>
+                <!-- Group 5: CẤU HÌNH & HỆ THỐNG -->
+                <div class="menu-section-header">CẤU HÌNH & HỆ THỐNG</div>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <router-link to="/admin/thuat-toan-ai" class="menu-link" active-class="active" @click="handleItemClick">
+                            <span class="menu-icon"><i class="bx bx-chip"></i></span>
+                            <span class="menu-text">Tham Số Thuật Toán AI</span>
+                        </router-link>
+                    </li>
+                    <li class="menu-item">
+                        <a href="javascript:;" class="menu-link text-danger" @click="handleLogout">
+                            <span class="menu-icon text-danger"><i class="bx bx-log-out"></i></span>
+                            <span class="menu-text">Đăng Xuất An Toàn</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </aside>
 </template>
@@ -162,60 +173,108 @@ export default {
             if (window.innerWidth < 992) {
                 this.closeSidebar();
             }
+        },
+        handleLogout() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất tài khoản Quản trị viên Admin Portal?')) {
+                localStorage.removeItem('xs');
+                localStorage.removeItem('token_admin');
+                this.$router.push('/admin/dashboard');
+            }
         }
     }
-}
+};
 </script>
 
 <style scoped>
 .admin-sidebar {
-    width: 250px;
+    width: 260px;
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     background-color: #ffffff;
-    border-right: 1px solid #e2e8f0;
+    border-right: 1px solid #f1f5f9;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
     z-index: 1040;
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     font-family: inherit;
-    box-shadow: 1px 0 10px rgba(0, 0, 0, 0.02);
 }
 
-.admin-avatar-circle {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    overflow: hidden;
+/* Header Brand */
+.sidebar-header {
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid #f8fafc;
     flex-shrink: 0;
-    border: 1px solid #e2e8f0;
+    position: relative;
 }
 
-.admin-avatar-img {
+.brand-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-logo-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+}
+
+.brand-svg {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    filter: drop-shadow(0 2px 6px rgba(225, 29, 72, 0.28));
 }
 
-.dot-green {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: #22c55e;
-    display: inline-block;
+.brand-info {
+    display: flex;
+    flex-direction: column;
 }
 
-.tracking-wider {
-    letter-spacing: 0.5px;
+.brand-title {
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1.15;
+    letter-spacing: -0.3px;
+    margin: 0;
 }
 
+.brand-ai {
+    color: #e11d48;
+}
+
+.brand-subtitle {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #e11d48;
+    letter-spacing: 1.2px;
+    line-height: 1;
+    margin-top: 3px;
+    text-transform: uppercase;
+}
+
+.mobile-close-btn {
+    position: absolute;
+    top: 18px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #64748b;
+    cursor: pointer;
+    padding: 2px;
+}
+
+/* Scrollable Menu */
 .sidebar-scrollable {
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
+    padding: 14px 12px;
 }
 
 .sidebar-scrollable::-webkit-scrollbar {
@@ -223,58 +282,85 @@ export default {
 }
 
 .sidebar-scrollable::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
+    background-color: #f1f5f9;
     border-radius: 4px;
 }
 
-/* Nav Link */
-.admin-nav-link {
+/* Section Header */
+.menu-section-header {
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 14px 10px 6px;
+}
+
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    margin-bottom: 2px;
+}
+
+/* Menu Link */
+.menu-link {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 9px 14px;
-    border-radius: 8px;
-    font-size: 0.84rem;
-    font-weight: 500;
-    color: #334155;
+    padding: 8px 12px;
+    color: #475569;
     text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 500;
     transition: all 0.15s ease;
+    position: relative;
 }
 
-.admin-nav-link:hover {
-    background-color: #f8fafc;
-    color: #0284c7;
+.menu-link:hover {
+    background-color: #fff1f2;
+    color: #e11d48;
 }
 
-.admin-nav-link:hover .nav-icon {
-    color: #0284c7;
+.menu-link:hover .menu-icon {
+    color: #e11d48;
 }
 
-/* Active Link State: Light blue capsule background with dark blue text, exactly matching screenshot */
-.admin-nav-link.active,
-.admin-nav-link.router-link-exact-active {
-    background-color: #e0f2fe !important;
-    color: #0284c7 !important;
-    font-weight: 600;
-    border: 1px solid #bae6fd;
+/* Active Link - Match screenshot with clean pink highlight */
+.menu-link.active,
+.menu-link.router-link-exact-active {
+    background-color: #fff1f2;
+    color: #e11d48;
+    font-weight: 700;
 }
 
-.admin-nav-link.active .nav-icon,
-.admin-nav-link.router-link-exact-active .nav-icon {
-    color: #0284c7 !important;
-}
-
-.nav-icon {
+.menu-icon {
     font-size: 1.15rem;
+    width: 22px;
+    margin-right: 10px;
     color: #64748b;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
     transition: color 0.15s;
 }
 
-/* Mobile drawer behavior */
+.menu-link.active .menu-icon,
+.menu-link.router-link-exact-active .menu-icon {
+    color: #e11d48;
+}
+
+.menu-text {
+    flex: 1 1 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Mobile drawer */
 @media (max-width: 991.98px) {
     .admin-sidebar {
         transform: translateX(-100%);

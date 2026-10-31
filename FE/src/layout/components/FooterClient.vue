@@ -29,7 +29,7 @@
                     <h6 class="footer-col-title mb-3">Khám Phá & Lập Kế Hoạch AI</h6>
                     <ul class="list-unstyled footer-link-list mb-0 small">
                         <li><router-link to="/client/kham-pha-dia-diem">Khám Phá Địa Điểm OSM</router-link></li>
-                        <li><router-link to="/client/ban-do-tuong-tac">Bản Đồ Tương Tác OSM</router-link></li>
+                        <li><router-link to="/client/chi-tiet-danh-gia">Chi Tiết & Đánh Giá</router-link></li>
                         <li><router-link to="/client/danh-muc-tour">Danh Mục Tour & So Sánh</router-link></li>
                         <li><router-link to="/client/ai-travel-planner">AI Travel Planner</router-link></li>
                         <li><router-link to="/client/lich-trinh-toi-uu">Lịch Trình Tối Ưu</router-link></li>
@@ -43,7 +43,7 @@
                     <ul class="list-unstyled footer-link-list mb-0 small">
                         <li><router-link to="/client/don-dat-thanh-toan">Đơn Đặt & Thanh Toán</router-link></li>
                         <li><router-link to="/client/diem-den-yeu-thich">Điểm Đến Yêu Thích</router-link></li>
-                        <li><router-link to="/client/danh-gia-gop-y">Đánh Giá & Góp Ý</router-link></li>
+                        <li><router-link to="/client/quan-ly-don-dat-tour">Quản Lý Đơn Đặt Tour</router-link></li>
                         <li><router-link to="/client/bao-cao-su-co">Báo Cáo Sự Cố</router-link></li>
                         <li><router-link to="/client/ho-so-so-thich">Hồ Sơ & Sở Thích</router-link></li>
                         <li><router-link to="/client/bao-mat-tai-khoan">Bảo Mật Tài Khoản</router-link></li>

@@ -10,31 +10,29 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class NguoiDung extends Authenticatable
 {
-    use SoftDeletes, HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     public const TRANG_THAI_TAM_TAT   = 0;
     public const TRANG_THAI_HOAT_DONG = 1;
 
-    protected $table = 'khach_hangs';
+    protected $table = 'nguoi_dung';
 
-    protected $primaryKey = 'ma_khach_hang';
-    protected $keyType = 'string';
-    public $incrementing = false;
+    protected $primaryKey = 'ma_nguoi_dung';
+
+    const CREATED_AT = 'ngay_tao';
+    const UPDATED_AT = 'ngay_cap_nhat';
+    const DELETED_AT = 'ngay_xoa';
 
     protected $fillable = [
-        'ma_khach_hang',
-        'ho_va_ten',
+        'ho_ten',
         'email',
         'mat_khau',
-        'ngay_sinh',
-        'gioi_tinh',
         'so_dien_thoai',
-        'is_block',
-        'is_xac_thuc',
-        'ma_xac_thuc',
-        'hash_reset',
+        'anh_dai_dien',
+        'trang_thai',
+        'ngay_tao',
+        'ngay_cap_nhat',
     ];
-
     protected $hidden = [
         'mat_khau',
     ];

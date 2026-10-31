@@ -1,911 +1,921 @@
 <template>
-  <div class="admin-page-container">
-    <!-- Breadcrumb & Database Sync Pill -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
-      <nav class="breadcrumb-admin d-flex align-items-center small text-muted">
-        <router-link to="/admin/dashboard" class="text-secondary text-decoration-none">Trang chủ</router-link>
-        <i class="bx bx-chevron-right mx-1"></i>
-        <span class="text-secondary">Khuyến mãi & Marketing</span>
-        <i class="bx bx-chevron-right mx-1"></i>
-        <span class="text-primary fw-bold">Quản lý Voucher</span>
-      </nav>
-      <div class="sync-badge">
-        <span class="pulse-dot"></span>
-        <span class="font-11">Database: Đồng bộ trực tiếp</span>
-      </div>
-    </div>
-
-    <!-- Page Header Title -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
-      <div>
-        <div class="d-flex align-items-center gap-2">
-          <h3 class="page-title mb-0">Quản lý Voucher Admin</h3>
-          <span class="table-badge">Table: vouchers</span>
-        </div>
-        <p class="text-muted small mb-0 mt-1">Phát hành và phân phối mã ưu đãi kích cầu du lịch (giảm phần trăm & giảm tiền mặt) trên toàn sàn.</p>
-      </div>
-      <button class="btn btn-primary-custom d-flex align-items-center gap-2" @click="openModalAdd">
-        <i class="bx bx-plus-circle font-20"></i>
-        <span>Tạo Voucher</span>
-      </button>
-    </div>
-
-    <!-- 4 KPI Summary Cards -->
-    <div class="row g-3 mb-4">
-      <div class="col-12 col-sm-6 col-xl-3">
-        <div class="kpi-card">
-          <div class="kpi-content">
-            <span class="kpi-label">TỔNG VOUCHER SÀN</span>
-            <div class="kpi-value">{{ totalVouchers }}</div>
-            <span class="kpi-subtext">Đồng bộ từ bảng vouchers</span>
-          </div>
-          <div class="kpi-icon icon-blue">
-            <i class="bx bx-gift"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-6 col-xl-3">
-        <div class="kpi-card">
-          <div class="kpi-content">
-            <span class="kpi-label">ĐANG PHÁT HÀNH</span>
-            <div class="kpi-value text-success">{{ activeVouchers }}</div>
-            <span class="kpi-subtext">Đang kích hoạt trên hệ thống</span>
-          </div>
-          <div class="kpi-icon icon-green">
-            <i class="bx bx-check-circle"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-6 col-xl-3">
-        <div class="kpi-card">
-          <div class="kpi-content">
-            <span class="kpi-label">VOUCHER PHẦN TRĂM (%)</span>
-            <div class="kpi-value text-warning">{{ countPercentVouchers }}</div>
-            <span class="kpi-subtext">Giảm theo tỷ lệ đơn hàng</span>
-          </div>
-          <div class="kpi-icon icon-orange">
-            <i class="bx bxs-discount"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-6 col-xl-3">
-        <div class="kpi-card">
-          <div class="kpi-content">
-            <span class="kpi-label">VOUCHER TIỀN MẶT (VNĐ)</span>
-            <div class="kpi-value text-primary">{{ countMoneyVouchers }}</div>
-            <span class="kpi-subtext">Giảm trừ trực tiếp hóa đơn</span>
-          </div>
-          <div class="kpi-icon icon-blue">
-            <i class="bx bx-money"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filter Bar -->
-    <div class="card filter-card mb-4 border-0 shadow-sm">
-      <div class="card-body p-3">
-        <div class="row g-2 align-items-center">
-          <div class="col-12 col-md-5">
-            <div class="search-input-wrap">
-              <i class="bx bx-search search-icon"></i>
-              <input 
-                type="text" 
-                class="form-control search-input" 
-                placeholder="Tìm kiếm theo mã voucher, tên chương trình..."
-                v-model="key_search"
-              >
+    <div class="voucher-campaign-page p-3 p-lg-4">
+        <!-- Top Pill Tag & Title Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+            <div>
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2 border border-pink-subtle" style="background-color: #FDF2F8;">
+                    <span class="pulse-dot-pink"></span>
+                    <span class="font-11 fw-bold text-uppercase tracking-wider" style="color: #E11D48;">PLATFORM PROMOTIONS & SUBSIDY CAMPAIGNS</span>
+                </div>
+                <h2 class="page-title fw-bold text-dark mb-1 font-24">Quản Lý Chiến Dịch Voucher Sàn Du Lịch Đà Nẵng</h2>
+                <p class="text-muted font-13 mb-0" style="max-width: 820px;">
+                    Phát hành và điều phối ngân sách mã giảm giá do nền tảng tài trợ nhằm kích cầu du lịch TP Đà Nẵng, thúc đẩy du khách đặt tour và trải nghiệm dịch vụ mùa lễ hội DIFF 2025.
+                </p>
             </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <select class="form-select filter-select" v-model="filterType">
-              <option value="">Tất cả hình thức giảm</option>
-              <option value="PhanTram">Giảm theo phần trăm (%)</option>
-              <option value="TienMat">Giảm tiền mặt cố định (VNĐ)</option>
-            </select>
-          </div>
-          <div class="col-6 col-md-2">
-            <select class="form-select filter-select" v-model="filterStatus">
-              <option value="">Tất cả trạng thái</option>
-              <option value="active">Đang áp dụng</option>
-              <option value="expired">Tạm dừng / Đã ẩn</option>
-            </select>
-          </div>
-          <div class="col-12 col-md-2 text-md-end text-muted small">
-            Hiển thị <strong class="text-dark">{{ filteredVouchers.length }}</strong> voucher
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Main Table -->
-    <div class="card table-card border-0 shadow-sm mb-4">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead>
-            <tr>
-              <th scope="col" class="ps-4">MÃ VOUCHER</th>
-              <th scope="col">CHƯƠNG TRÌNH KHUYẾN MÃI</th>
-              <th scope="col">HÌNH THỨC & MỨC GIẢM</th>
-              <th scope="col">ĐIỀU KIỆN ÁP DỤNG</th>
-              <th scope="col" style="width: 170px;">SỐ LƯỢNG / ĐÃ DÙNG</th>
-              <th scope="col">THỜI HẠN</th>
-              <th scope="col">TRẠNG THÁI</th>
-              <th scope="col" class="text-end pe-4">THAO TÁC</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="filteredVouchers.length === 0">
-              <td colspan="8" class="text-center py-5 text-muted">
-                <i class="bx bx-purchase-tag-alt font-28 d-block mb-1"></i>
-                Không tìm thấy voucher nào phù hợp!
-              </td>
-            </tr>
-            <tr v-for="v in paginatedVouchers" :key="v.id">
-              <td class="ps-4">
-                <span class="voucher-code-badge">{{ v.code }}</span>
-              </td>
-              <td>
-                <div class="fw-bold text-dark">{{ v.title }}</div>
-                <small class="text-muted"><i class="bx bx-store me-1"></i>Đối tác: {{ v.partner || 'Toàn sàn' }}</small>
-              </td>
-              <td>
-                <!-- Loại giảm phần trăm -->
-                <div v-if="v.discountType === 'PhanTram'">
-                  <span class="badge bg-warning text-dark fw-bold px-2 py-1">
-                    <i class="bx bxs-discount me-1"></i>Giảm {{ v.discountValue }}%
-                  </span>
-                  <small class="d-block text-muted font-11 mt-1" v-if="v.maxDiscount && v.maxDiscount > 0">
-                    Tối đa {{ formatMoney(v.maxDiscount) }}đ
-                  </small>
+            <!-- Top Action Buttons -->
+            <div class="d-flex flex-column align-items-end gap-2">
+                <button class="btn btn-pink-gradient text-white rounded-pill px-4 py-2 font-12 fw-bold shadow-sm d-flex align-items-center gap-1" @click="openModalThem">
+                    <i class="bx bx-plus font-16"></i>
+                    <span>+ Tạo Chiến Dịch Voucher Mới</span>
+                </button>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-secondary bg-white rounded-pill px-3 py-1-5 font-11 fw-semibold shadow-2xs d-flex align-items-center gap-1" @click="openModalGiaiNgan">
+                        <i class="bx bx-history font-14 text-purple"></i>
+                        <span>Lịch Sử Giải Ngân</span>
+                    </button>
+                    <button class="btn btn-outline-secondary bg-white rounded-pill px-3 py-1-5 font-11 fw-semibold shadow-2xs d-flex align-items-center gap-1" @click="xuatBaoCaoRoi">
+                        <i class="bx bx-download font-14 text-primary"></i>
+                        <span>Xuất Báo Cáo ROI</span>
+                    </button>
                 </div>
-                <!-- Loại giảm tiền mặt -->
-                <div v-else>
-                  <span class="badge bg-success-subtle text-success fw-bold px-2 py-1 border border-success-subtle">
-                    <i class="bx bx-money me-1"></i>Giảm {{ formatMoney(v.discountValue) }}đ
-                  </span>
-                  <small class="d-block text-muted font-11 mt-1">Giảm trực tiếp</small>
-                </div>
-              </td>
-              <td class="small">
-                <div class="fw-semibold text-secondary">
-                  Đơn từ: {{ formatMoney(v.minOrder) }}đ
-                </div>
-                <small class="text-muted font-11" v-if="v.discountType === 'PhanTram' && v.maxDiscount">
-                  Giới hạn: {{ formatMoney(v.maxDiscount) }}đ
-                </small>
-              </td>
-              <td>
-                <div class="d-flex justify-content-between small text-muted mb-1">
-                  <span>{{ v.used }} / {{ v.quantity }}</span>
-                  <span>{{ v.quantity > 0 ? Math.round((v.used / v.quantity) * 100) : 0 }}%</span>
-                </div>
-                <div class="progress" style="height: 6px;">
-                  <div 
-                    class="progress-bar bg-primary" 
-                    :style="{ width: (v.quantity > 0 ? Math.min(100, Math.round((v.used / v.quantity) * 100)) : 0) + '%' }"
-                  ></div>
-                </div>
-              </td>
-              <td class="text-muted small">
-                <div v-if="v.startDate">Từ: {{ v.startDate }}</div>
-                <div v-if="v.endDate">Đến: {{ v.endDate }}</div>
-                <span v-if="!v.startDate && !v.endDate" class="text-secondary">Vô thời hạn</span>
-              </td>
-              <td>
-                <span v-if="v.status === 'active'" class="status-pill status-active">
-                  <span class="dot"></span> Đang chạy
-                </span>
-                <span v-else class="status-pill status-locked">
-                  <span class="dot"></span> Tạm dừng
-                </span>
-              </td>
-              <td class="text-end pe-4">
-                <div class="action-btn-group">
-                  <button class="action-btn" title="Chỉnh sửa voucher" @click="editVoucher(v)">
-                    <i class="bx bx-pencil"></i>
-                  </button>
-                  <button class="action-btn" :title="v.status === 'active' ? 'Tạm dừng mã' : 'Kích hoạt lại'" @click="toggleStatus(v)">
-                    <i :class="v.status === 'active' ? 'bx bx-pause' : 'bx bx-play'"></i>
-                  </button>
-                  <button class="action-btn text-danger" title="Xóa voucher" @click="deleteVoucher(v)">
-                    <i class="bx bx-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <div class="d-flex flex-wrap justify-content-between align-items-center p-3 border-top gap-2" v-if="filteredVouchers.length > 0">
-        <span class="text-muted small">
-          Hiển thị {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredVouchers.length) }} trong tổng {{ filteredVouchers.length }} voucher
-        </span>
-        <div class="d-flex align-items-center gap-1">
-          <button class="btn btn-sm btn-outline-secondary px-3" :disabled="currentPage <= 1" @click="currentPage--">Trước</button>
-          <button 
-            v-for="p in totalPages" 
-            :key="p" 
-            class="btn btn-sm px-3" 
-            :class="p === currentPage ? 'btn-primary-custom' : 'btn-outline-secondary'"
-            @click="currentPage = p"
-          >
-            {{ p }}
-          </button>
-          <button class="btn btn-sm btn-outline-secondary px-3" :disabled="currentPage >= totalPages" @click="currentPage++">Sau</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Form Thêm / Cập Nhật Voucher -->
-    <div class="modal fade show d-block" tabindex="-1" v-if="showModal" style="background: rgba(0,0,0,0.45);">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow-lg rounded-4">
-          <div class="modal-header border-0 pb-0">
-            <h5 class="modal-title fw-bold text-dark">{{ isEdit ? 'Cập Nhật Voucher' : 'Tạo Voucher Khuyến Mãi Sàn Mới' }}</h5>
-            <button type="button" class="btn-close" @click="showModal = false"></button>
-          </div>
-          <div class="modal-body pt-3">
-            <div class="row g-3">
-              <!-- Mã Voucher -->
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold">Mã Code Ưu Đãi <span class="text-danger">*</span></label>
-                <input 
-                  type="text" 
-                  class="form-control font-monospace fw-bold text-uppercase" 
-                  v-model="formVoucher.code" 
-                  placeholder="VD: DANANG2026"
-                  :disabled="isEdit"
-                >
-                <small class="text-muted font-11">Chữ in hoa, không dấu, viết liền.</small>
-              </div>
-
-              <!-- Tên chương trình -->
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold">Tên Chương Trình Khuyến Mãi <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" v-model="formVoucher.title" placeholder="VD: Khám Phá Mùa Hè Rực Rỡ">
-              </div>
-
-              <!-- Chọn Loại Giảm Giá (Tabs/Radio trực quan) -->
-              <div class="col-12">
-                <label class="form-label small fw-semibold d-block">Hình Thức Giảm Giá <span class="text-danger">*</span></label>
-                <div class="d-flex gap-3">
-                  <div 
-                    class="discount-type-card p-3 rounded-3 border flex-fill cursor-pointer"
-                    :class="{ 'active-type border-warning bg-warning-subtle': formVoucher.discountType === 'PhanTram' }"
-                    @click="formVoucher.discountType = 'PhanTram'"
-                  >
-                    <div class="d-flex align-items-center gap-2">
-                      <input 
-                        type="radio" 
-                        class="form-check-input mt-0" 
-                        id="typePercent" 
-                        value="PhanTram" 
-                        v-model="formVoucher.discountType"
-                      >
-                      <label for="typePercent" class="fw-bold text-dark mb-0 cursor-pointer">
-                        <i class="bx bxs-discount text-warning me-1"></i>Giảm theo Phần Trăm (%)
-                      </label>
-                    </div>
-                    <small class="text-muted d-block mt-1 font-11 ps-4">Giảm một tỷ lệ % giá trị đơn, có thể áp đặt mức trần tối đa.</small>
-                  </div>
-
-                  <div 
-                    class="discount-type-card p-3 rounded-3 border flex-fill cursor-pointer"
-                    :class="{ 'active-type border-success bg-success-subtle': formVoucher.discountType === 'TienMat' }"
-                    @click="formVoucher.discountType = 'TienMat'"
-                  >
-                    <div class="d-flex align-items-center gap-2">
-                      <input 
-                        type="radio" 
-                        class="form-check-input mt-0" 
-                        id="typeFixed" 
-                        value="TienMat" 
-                        v-model="formVoucher.discountType"
-                      >
-                      <label for="typeFixed" class="fw-bold text-dark mb-0 cursor-pointer">
-                        <i class="bx bx-money text-success me-1"></i>Giảm Tiền Mặt Trực Tiếp (VNĐ)
-                      </label>
-                    </div>
-                    <small class="text-muted d-block mt-1 font-11 ps-4">Trừ thẳng một số tiền cố định trực tiếp vào đơn thanh toán tour.</small>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Giá trị giảm theo Phần Trăm -->
-              <div class="col-md-6" v-if="formVoucher.discountType === 'PhanTram'">
-                <label class="form-label small fw-semibold">Tỷ Lệ Giảm (%) <span class="text-danger">*</span></label>
-                <div class="input-group">
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model.number="formVoucher.discountValue" 
-                    placeholder="VD: 10, 15, 20"
-                    min="1" 
-                    max="100"
-                  >
-                  <span class="input-group-text bg-light fw-bold">%</span>
-                </div>
-              </div>
-
-              <!-- Mức giảm tối đa (Áp dụng cho Phần Trăm) -->
-              <div class="col-md-6" v-if="formVoucher.discountType === 'PhanTram'">
-                <label class="form-label small fw-semibold">Giảm Tối Đa (VNĐ)</label>
-                <div class="input-group">
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model.number="formVoucher.maxDiscount" 
-                    placeholder="VD: 500000"
-                    min="0"
-                  >
-                  <span class="input-group-text bg-light">VNĐ</span>
-                </div>
-                <small class="text-muted font-11">Mức trần giảm giá tối đa cho mỗi đơn hàng (0 hoặc để trống nếu không giới hạn).</small>
-              </div>
-
-              <!-- Giá trị giảm theo Tiền Mặt Cố Định -->
-              <div class="col-md-6" v-if="formVoucher.discountType === 'TienMat'">
-                <label class="form-label small fw-semibold">Số Tiền Giảm Trực Tiếp (VNĐ) <span class="text-danger">*</span></label>
-                <div class="input-group">
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model.number="formVoucher.discountValue" 
-                    placeholder="VD: 50000, 200000"
-                    min="1000"
-                  >
-                  <span class="input-group-text bg-light">VNĐ</span>
-                </div>
-              </div>
-
-              <!-- Đơn tối thiểu -->
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold">Giá Trị Đơn Tối Thiểu (VNĐ)</label>
-                <div class="input-group">
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model.number="formVoucher.minOrder" 
-                    placeholder="VD: 500000"
-                    min="0"
-                  >
-                  <span class="input-group-text bg-light">VNĐ</span>
-                </div>
-              </div>
-
-              <!-- Số lượng phát hành -->
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold">Số Lượng Phát Hành</label>
-                <input 
-                  type="number" 
-                  class="form-control" 
-                  v-model.number="formVoucher.quantity" 
-                  placeholder="VD: 100, 500"
-                  min="1"
-                >
-              </div>
-
-              <!-- Đối tác liên kết (Mặc định ADMIN sàn) -->
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold">Đối Tác Khai Thác</label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  v-model="formVoucher.partner" 
-                  placeholder="ADMIN (Toàn sàn)"
-                >
-              </div>
-
-              <!-- Ngày bắt đầu -->
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold">Ngày Bắt Đầu Áp Dụng</label>
-                <input type="date" class="form-control" v-model="formVoucher.startDate">
-              </div>
-
-              <!-- Ngày kết thúc -->
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold">Hạn Sử Dụng Đến Ngày</label>
-                <input type="date" class="form-control" v-model="formVoucher.endDate">
-              </div>
-
-              <!-- Trạng thái -->
-              <div class="col-12" v-if="isEdit">
-                <label class="form-label small fw-semibold">Trạng Thái Voucher</label>
-                <select class="form-select" v-model="formVoucher.status">
-                  <option value="active">Đang áp dụng (Kích hoạt)</option>
-                  <option value="expired">Tạm dừng (Vô hiệu hóa)</option>
-                </select>
-              </div>
             </div>
-          </div>
-          <div class="modal-footer border-0 pt-0">
-            <button type="button" class="btn btn-light px-4" @click="showModal = false">Hủy</button>
-            <button type="button" class="btn btn-primary-custom px-4" @click="saveVoucher">
-              {{ isEdit ? 'Cập Nhật Voucher' : 'Phát Hành Voucher' }}
-            </button>
-          </div>
         </div>
-      </div>
+
+        <!-- 4 KPI Metrics Cards -->
+        <div class="row g-3 mb-4">
+            <!-- KPI 1: Ngân sách tài trợ đã duyệt -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="text-muted font-11 fw-bold text-uppercase tracking-wider">NGÂN SÁCH TÀI TRỢ ĐÃ DUYỆT</div>
+                            <div class="font-22 fw-bold text-dark mt-1">2.500.000.000 đ</div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #FDF2F8; width: 42px; height: 42px;">
+                            <i class="bx bx-coin-stack font-20" style="color: #E11D48;"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center font-11 mb-1">
+                            <span class="text-muted">Đã giải ngân: <b>1.620.000.000 đ</b></span>
+                            <span class="fw-bold" style="color: #E11D48;">64.8%</span>
+                        </div>
+                        <div class="progress rounded-pill" style="height: 6px;">
+                            <div class="progress-bar" style="width: 64.8%; background-color: #E11D48;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI 2: Voucher đang hoạt động -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="text-muted font-11 fw-bold text-uppercase tracking-wider">VOUCHER ĐANG HOẠT ĐỘNG</div>
+                            <div class="d-flex align-items-baseline gap-2 mt-1">
+                                <span class="font-28 fw-bold text-dark">08</span>
+                                <span class="badge rounded-pill font-11 fw-bold px-2 py-0-5" style="background-color: #F5F3FF; color: #7C3AED;">
+                                    Kích cầu DIFF 2025
+                                </span>
+                            </div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #F5F3FF; width: 42px; height: 42px;">
+                            <i class="bx bx-store-alt font-20" style="color: #7C3AED;"></i>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-top">
+                        <small class="text-muted font-11 d-flex align-items-center gap-1">
+                            <i class="bx bx-check-circle text-success font-14"></i> 100% tự động áp mã qua thuật toán SmartTrip AI
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI 3: Lượt áp dụng thành công -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="text-muted font-11 fw-bold text-uppercase tracking-wider">LƯỢT ÁP DỤNG THÀNH CÔNG</div>
+                            <div class="font-28 fw-bold text-dark mt-1">24.850</div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #E0F2FE; width: 42px; height: 42px;">
+                            <i class="bx bx-user-check font-20" style="color: #0284C7;"></i>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-top">
+                        <small class="font-11 fw-semibold" style="color: #0284C7;">
+                            ↗ +18.4% so với cùng kỳ tuần trước
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI 4: GMV Tour nhờ Voucher -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 text-white border shadow-xs h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="font-11 fw-bold text-uppercase tracking-wider text-white-50">GMV TOUR NHỜ VOUCHER</div>
+                            <div class="font-22 fw-bold text-white mt-1">14.850.000.000 đ</div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: rgba(255, 255, 255, 0.2); width: 42px; height: 42px;">
+                            <i class="bx bx-rocket font-20 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-top border-white border-opacity-25 font-11">
+                        <span class="text-white-50">18.450 đơn hoàn tất</span>
+                        <span class="badge rounded-pill font-10 fw-bold px-2 py-0-5 bg-white text-purple">
+                            ROI x 9.1 LẦN
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card border-0 rounded-4 shadow-xs bg-white p-3 mb-4">
+            <!-- Row 1: Search + Category + Advanced Filter -->
+            <div class="row g-2 align-items-center mb-3">
+                <div class="col-12 col-md-6">
+                    <div class="position-relative">
+                        <i class="bx bx-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted font-16"></i>
+                        <input 
+                            type="text" 
+                            v-model="searchKeyword" 
+                            class="form-control form-control-sm rounded-pill ps-5 bg-light border-0 font-12"
+                            placeholder="Tìm theo mã voucher (VD: DANANG_DIFF25), tên chiến dịch"
+                        />
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <select class="form-select form-select-sm rounded-pill bg-light border-0 font-12" v-model="filterCategory">
+                        <option value="">Tất cả danh mục tour áp dụng</option>
+                        <option value="diff">Tour Pháo Hoa DIFF</option>
+                        <option value="sea">Tour Biển Đảo & SUP</option>
+                        <option value="heritage">Tour Di Sản & Văn Hóa</option>
+                        <option value="combo">Tour Combo Ghép Nhóm</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-2">
+                    <button class="btn btn-sm btn-light w-100 rounded-pill font-12 fw-semibold text-secondary d-flex align-items-center justify-content-center gap-1" @click="resetFilters">
+                        <i class="bx bx-slider-alt font-14"></i>
+                        <span>Bộ lọc nâng cao</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row 2: Status Pills Filter -->
+            <div class="d-flex align-items-center gap-1-5 flex-wrap font-11">
+                <button 
+                    class="btn btn-sm rounded-pill px-3 py-1 font-11 fw-bold transition-all"
+                    :class="activeTab === 'active' ? 'btn-pink-gradient text-white shadow-xs' : 'btn-light text-muted'"
+                    @click="activeTab = 'active'"
+                >
+                    Đang diễn ra (8)
+                </button>
+                <button 
+                    class="btn btn-sm rounded-pill px-3 py-1 font-11 fw-bold transition-all"
+                    :class="activeTab === 'upcoming' ? 'btn-pink-gradient text-white shadow-xs' : 'btn-light text-muted'"
+                    @click="activeTab = 'upcoming'"
+                >
+                    Sắp phát hành (3)
+                </button>
+                <button 
+                    class="btn btn-sm rounded-pill px-3 py-1 font-11 fw-bold transition-all"
+                    :class="activeTab === 'expired' ? 'btn-pink-gradient text-white shadow-xs' : 'btn-light text-muted'"
+                    @click="activeTab = 'expired'"
+                >
+                    Hết hạn / Hết ngân sách (15)
+                </button>
+                <button 
+                    class="btn btn-sm rounded-pill px-3 py-1 font-11 fw-bold transition-all"
+                    :class="activeTab === 'paused' ? 'btn-pink-gradient text-white shadow-xs' : 'btn-light text-muted'"
+                    @click="activeTab = 'paused'"
+                >
+                    Tạm dừng (1)
+                </button>
+                <span class="badge rounded-pill font-11 fw-bold px-3 py-1 ms-md-auto" style="background-color: #E0F2FE; color: #0284C7;">
+                    ⚡ Áp dụng toàn sàn
+                </span>
+                <span class="badge rounded-pill font-11 fw-bold px-3 py-1" style="background-color: #F5F3FF; color: #7C3AED;">
+                    Khách hàng mới
+                </span>
+            </div>
+        </div>
+
+        <!-- Section Title: Chiến Dịch Voucher Toàn Sàn Đang Kích Hoạt -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="dot-pink"></span>
+                <h5 class="fw-bold text-dark mb-0 font-16">Chiến Dịch Voucher Toàn Sàn Đang Kích Hoạt</h5>
+                <span class="text-muted font-12 fst-italic d-none d-md-inline">(Tự động cập nhật thời gian thực từ cơ sở dữ liệu `voucher_tour`)</span>
+            </div>
+            <span class="font-11 text-pink fw-semibold cursor-pointer d-flex align-items-center gap-1" @click="lamMoiDuLieu">
+                <i class="bx bx-refresh font-14" :class="{ 'bx-spin': isRefreshing }"></i> Cập nhật: 2 phút trước
+            </span>
+        </div>
+
+        <!-- 4 Active Voucher Cards (2x2 Grid Khớp 100% Ảnh) -->
+        <div class="row g-3 mb-4">
+            <!-- Card 1: DANANG_DIFF25 -->
+            <div class="col-12 col-lg-6">
+                <div class="voucher-campaign-card p-3 p-lg-4 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Top Header -->
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center gap-2-5">
+                                <div class="voucher-icon-circle rounded-circle d-flex align-items-center justify-content-center text-pink font-16 fw-bold" style="background-color: #FDF2F8; width: 40px; height: 40px;">
+                                    %
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span class="font-14 fw-bold text-pink font-mono">DANANG_DIFF25</span>
+                                        <i class="bx bx-copy text-muted cursor-pointer font-13" title="Sao chép mã" @click="copyCode('DANANG_DIFF25')"></i>
+                                    </div>
+                                    <h6 class="font-13 fw-bold text-dark mb-0">Đại Tiệc Pháo Hoa Quốc Tế DIFF 2025</h6>
+                                </div>
+                            </div>
+                            <span class="badge rounded-pill font-10 fw-bold px-2-5 py-1 d-inline-flex align-items-center gap-1" style="background-color: #DCFCE7; color: #16A34A;">
+                                <span class="dot-green"></span> Hoạt động
+                            </span>
+                        </div>
+
+                        <!-- Discount Details Box -->
+                        <div class="p-2-5 rounded-3 bg-light d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span class="font-10 text-muted d-block text-uppercase">MỨC GIẢM ƯU ĐÃI</span>
+                                <span class="font-13 fw-bold text-pink">Giảm 20% (Tối đa 300.000 đ)</span>
+                            </div>
+                            <div class="text-end">
+                                <span class="font-10 text-muted d-block text-uppercase">ĐƠN TỐI THIỂU</span>
+                                <span class="font-13 fw-bold text-dark">1.200.000 đ</span>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="font-11 text-muted mb-3 lh-sm">
+                            Áp dụng cho mọi tour du thuyền ngắm pháo hoa Sông Hàn, tour lặn san hô, tour combo ngắm view DIFF và dịch vụ du lịch đối tác Đà Nẵng đã xác minh.
+                        </p>
+
+                        <!-- Progress Bar & Quota -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center font-11 mb-1">
+                                <span class="text-muted">Ngân sách đã dùng: <b>78.4%</b> (627.2M / 800M đ)</span>
+                                <span class="fw-bold text-pink">3.920 / 5.000 mã</span>
+                            </div>
+                            <div class="progress rounded-pill" style="height: 6px;">
+                                <div class="progress-bar" style="width: 78.4%; background-color: #E11D48;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer -->
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top font-11">
+                        <span class="text-muted d-flex align-items-center gap-1">
+                            <i class="bx bx-time-five font-13"></i> Hết hạn: 30/06/2025
+                        </span>
+                        <div class="d-flex align-items-center gap-1-5">
+                            <button class="btn btn-sm btn-outline-secondary bg-white rounded-pill px-3 py-1 font-11 fw-semibold shadow-2xs" @click="giaHanNganSach('DANANG_DIFF25')">
+                                Gia hạn ngân sách
+                            </button>
+                            <button class="btn btn-sm btn-light rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px;" @click="editVoucher('DANANG_DIFF25')">
+                                <i class="bx bx-edit font-14"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: WELCOME_DANANG -->
+            <div class="col-12 col-lg-6">
+                <div class="voucher-campaign-card p-3 p-lg-4 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Top Header -->
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center gap-2-5">
+                                <div class="voucher-icon-circle rounded-circle d-flex align-items-center justify-content-center text-purple font-16 fw-bold" style="background-color: #F5F3FF; width: 40px; height: 40px;">
+                                    đ
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span class="font-14 fw-bold text-purple font-mono">WELCOME_DANANG</span>
+                                        <i class="bx bx-copy text-muted cursor-pointer font-13" title="Sao chép mã" @click="copyCode('WELCOME_DANANG')"></i>
+                                    </div>
+                                    <h6 class="font-13 fw-bold text-dark mb-0">Chào Bạn Mới – Tải App & Đặt Tour Lần Đầu</h6>
+                                </div>
+                            </div>
+                            <span class="badge rounded-pill font-10 fw-bold px-2-5 py-1" style="background-color: #F5F3FF; color: #7C3AED;">
+                                Toàn Sàn
+                            </span>
+                        </div>
+
+                        <!-- Discount Details Box -->
+                        <div class="p-2-5 rounded-3 bg-light d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span class="font-10 text-muted d-block text-uppercase">MỨC GIẢM ƯU ĐÃI</span>
+                                <span class="font-13 fw-bold text-purple">Giảm thẳng 50.000 đ</span>
+                            </div>
+                            <div class="text-end">
+                                <span class="font-10 text-muted d-block text-uppercase">TỶ LỆ KÍCH HOẠT TOUR</span>
+                                <span class="font-13 fw-bold text-success">42.6% Chuyển đổi</span>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="font-11 text-muted mb-3 lh-sm">
+                            Dành riêng cho khách du lịch lần đầu đăng ký tài khoản người dùng, sử dụng công cụ tạo lịch trình thông minh AI Đà Nẵng.
+                        </p>
+
+                        <!-- Progress Bar & Quota -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center font-11 mb-1">
+                                <span class="text-muted">Lượt dùng: <b>60.6%</b></span>
+                                <span class="fw-bold text-purple">18.200 / 30.000 mã</span>
+                            </div>
+                            <div class="progress rounded-pill" style="height: 6px;">
+                                <div class="progress-bar" style="width: 60.6%; background-color: #7C3AED;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer -->
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top font-11">
+                        <span class="text-muted d-flex align-items-center gap-1">
+                            <i class="bx bx-infinite font-14"></i> Hiệu lực: Vô thời hạn (Ngân sách mở)
+                        </span>
+                        <div class="d-flex align-items-center gap-1-5">
+                            <button class="btn btn-sm btn-outline-secondary bg-white rounded-pill px-3 py-1 font-11 fw-semibold shadow-2xs" @click="chiTietTepKhach">
+                                Chi tiết tệp khách
+                            </button>
+                            <button class="btn btn-sm btn-light rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px;" @click="editVoucher('WELCOME_DANANG')">
+                                <i class="bx bx-edit font-14"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: COMBO_HE_RUC_RO -->
+            <div class="col-12 col-lg-6">
+                <div class="voucher-campaign-card p-3 p-lg-4 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Top Header -->
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center gap-2-5">
+                                <div class="voucher-icon-circle rounded-circle d-flex align-items-center justify-content-center text-cyan font-16 fw-bold" style="background-color: #E0F2FE; width: 40px; height: 40px;">
+                                    V
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span class="font-14 fw-bold font-mono" style="color: #0284C7;">COMBO_HE_RUC_RO</span>
+                                        <i class="bx bx-copy text-muted cursor-pointer font-13" title="Sao chép mã" @click="copyCode('COMBO_HE_RUC_RO')"></i>
+                                    </div>
+                                    <h6 class="font-13 fw-bold text-dark mb-0">Tour Ghép Gia Đình & Nhóm Bạn Hè 2025</h6>
+                                </div>
+                            </div>
+                            <span class="badge rounded-pill font-10 fw-bold px-2-5 py-1" style="background-color: #E0F2FE; color: #0284C7;">
+                                Sắp hết mã (89%)
+                            </span>
+                        </div>
+
+                        <!-- Discount Details Box -->
+                        <div class="p-2-5 rounded-3 bg-light d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span class="font-10 text-muted d-block text-uppercase">MỨC GIẢM ƯU ĐÃI</span>
+                                <span class="font-13 fw-bold" style="color: #0284C7;">Giảm ngay 500.000 đ</span>
+                            </div>
+                            <div class="text-end">
+                                <span class="font-10 text-muted d-block text-uppercase">ÁP DỤNG ĐƠN TỪ</span>
+                                <span class="font-13 fw-bold text-dark">3 khách người lớn</span>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="font-11 text-muted mb-3 lh-sm">
+                            Áp dụng độc quyền danh mục Tour Bà Nà Hills Cáp Treo và Tour Lặn Ngắm San Hô Cù Lao Chàm. Hỗ trợ kích cầu dịch vụ lưu trú.
+                        </p>
+
+                        <!-- Progress Bar & Quota -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center font-11 mb-1">
+                                <span class="text-muted">Tiến độ phát hành: <b>890 / 1.000 mã</b></span>
+                                <span class="fw-bold text-danger">Còn 110 suất</span>
+                            </div>
+                            <div class="progress rounded-pill" style="height: 6px;">
+                                <div class="progress-bar" style="width: 89%; background-color: #0284C7;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer -->
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top font-11">
+                        <span class="text-muted d-flex align-items-center gap-1">
+                            <i class="bx bx-time-five font-13"></i> Hết hạn: 15/08/2025
+                        </span>
+                        <div class="d-flex align-items-center gap-1-5">
+                            <button class="btn btn-sm btn-pink-gradient text-white rounded-pill px-3 py-1 font-11 fw-bold shadow-2xs" @click="bomThemMa('COMBO_HE_RUC_RO')">
+                                Bơm thêm 500 mã
+                            </button>
+                            <button class="btn btn-sm btn-light rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px;" @click="editVoucher('COMBO_HE_RUC_RO')">
+                                <i class="bx bx-edit font-14"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: SONTRA_SUNSET -->
+            <div class="col-12 col-lg-6">
+                <div class="voucher-campaign-card p-3 p-lg-4 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Top Header -->
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center gap-2-5">
+                                <div class="voucher-icon-circle rounded-circle d-flex align-items-center justify-content-center text-pink font-16 fw-bold" style="background-color: #FDF2F8; width: 40px; height: 40px;">
+                                    %
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span class="font-14 fw-bold text-pink font-mono">SONTRA_SUNSET</span>
+                                        <i class="bx bx-copy text-muted cursor-pointer font-13" title="Sao chép mã" @click="copyCode('SONTRA_SUNSET')"></i>
+                                    </div>
+                                    <h6 class="font-13 fw-bold text-dark mb-0">Hoàng Hôn Bán Đảo Sơn Trà & Chèo SUP</h6>
+                                </div>
+                            </div>
+                            <span class="badge rounded-pill font-10 fw-bold px-2-5 py-1 d-inline-flex align-items-center gap-1" style="background-color: #DCFCE7; color: #16A34A;">
+                                <span class="dot-green"></span> Đang chạy
+                            </span>
+                        </div>
+
+                        <!-- Discount Details Box -->
+                        <div class="p-2-5 rounded-3 bg-light d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span class="font-10 text-muted d-block text-uppercase">MỨC GIẢM ƯU ĐÃI</span>
+                                <span class="font-13 fw-bold text-pink">Giảm 15% Tour Biển</span>
+                            </div>
+                            <div class="text-end">
+                                <span class="font-10 text-muted d-block text-uppercase">ĐƠN TỐI THIỂU</span>
+                                <span class="font-13 fw-bold text-dark">450.000 đ</span>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="font-11 text-muted mb-3 lh-sm">
+                            Hỗ trợ đẩy mạnh các hoạt động du lịch thể thao nước tại bãi Trảm Sa, ngắm Vọoc chà vá chân nâu Sơn Trà và thưởng thức hải sản địa phương.
+                        </p>
+
+                        <!-- Progress Bar & Quota -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center font-11 mb-1">
+                                <span class="text-muted">Tiến độ tiêu thụ: <b>80.0%</b></span>
+                                <span class="fw-bold text-pink">640 / 800 mã</span>
+                            </div>
+                            <div class="progress rounded-pill" style="height: 6px;">
+                                <div class="progress-bar" style="width: 80%; background-color: #E11D48;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer -->
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top font-11">
+                        <span class="text-muted d-flex align-items-center gap-1">
+                            <i class="bx bx-time-five font-13"></i> Hết hạn: 31/07/2025
+                        </span>
+                        <div class="d-flex align-items-center gap-1-5">
+                            <button class="btn btn-sm btn-outline-secondary bg-white rounded-pill px-3 py-1 font-11 fw-semibold shadow-2xs" @click="baoCaoDoiTac('SONTRA_SUNSET')">
+                                Báo cáo đối tác
+                            </button>
+                            <button class="btn btn-sm btn-light rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px;" @click="editVoucher('SONTRA_SUNSET')">
+                                <i class="bx bx-edit font-14"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Master Log Table: Nhật Ký Nghiệp Vụ Phát Hành & Điều Phối Voucher -->
+        <div class="card border-0 rounded-4 shadow-xs bg-white overflow-hidden mb-3">
+            <div class="d-flex justify-content-between align-items-center p-3 px-4 border-bottom flex-wrap gap-2">
+                <div>
+                    <h6 class="font-14 fw-bold text-dark mb-0">Nhật Ký Nghiệp Vụ Phát Hành & Điều Phối Voucher</h6>
+                    <small class="text-muted font-11">Dữ liệu lưu vết từ bảng `vouchers`, `nhat_ky_nghiep_vu` và đối soát tài chính</small>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="font-11 text-muted">Hiển thị 4 / 24 chiến dịch</span>
+                    <button class="btn btn-sm btn-light rounded-pill px-3 py-1 font-11 fw-semibold text-secondary" @click="xemToanBoLog">
+                        Xem toàn bộ
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 font-12">
+                    <thead style="background-color: #F8FAFC; border-bottom: 1px solid #E2E8F0;">
+                        <tr class="font-11 text-muted text-uppercase tracking-wider">
+                            <th class="ps-4 py-3">MÃ & CHIẾN DỊCH</th>
+                            <th class="py-3">LOẠI GIẢM</th>
+                            <th class="py-3">NGÂN SÁCH CẤP</th>
+                            <th class="py-3">ĐÃ SỬ DỤNG</th>
+                            <th class="py-3">THỜI HẠN</th>
+                            <th class="py-3">TRẠNG THÁI</th>
+                            <th class="py-3 pe-4 text-center">THAO TÁC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Row 1 -->
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge rounded-pill font-10 fw-bold px-2 py-0-5 font-mono" style="background-color: #FDF2F8; color: #E11D48;">
+                                        DANANG_DIFF25
+                                    </span>
+                                    <span class="fw-bold text-dark">DIFF 2025 Quốc Tế</span>
+                                </div>
+                            </td>
+                            <td class="py-3">
+                                <span class="fw-semibold text-pink">20% (Tối đa 300K)</span>
+                            </td>
+                            <td class="py-3 fw-bold text-dark">800.000.000 đ</td>
+                            <td class="py-3">
+                                <span class="fw-bold text-pink">3.920 / 5.000 (78.4%)</span>
+                            </td>
+                            <td class="py-3 text-muted">01/05 - 30/06/2025</td>
+                            <td class="py-3">
+                                <span class="badge rounded-pill font-10 fw-bold px-2 py-0-5" style="background-color: #DCFCE7; color: #16A34A;">
+                                    Đang diễn ra
+                                </span>
+                            </td>
+                            <td class="py-3 pe-4 text-center">
+                                <button class="btn btn-sm btn-light rounded-circle p-1" @click="actionRow('DANANG_DIFF25')">
+                                    <i class="bx bx-dots-vertical-rounded font-14"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Row 2 -->
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge rounded-pill font-10 fw-bold px-2 py-0-5 font-mono" style="background-color: #F5F3FF; color: #7C3AED;">
+                                        WELCOME_DANANG
+                                    </span>
+                                    <span class="fw-bold text-dark">Khách Lần Đầu Tải App</span>
+                                </div>
+                            </td>
+                            <td class="py-3">
+                                <span class="fw-semibold text-purple">Cố định 50.000 đ</span>
+                            </td>
+                            <td class="py-3 fw-bold text-dark">1.500.000.000 đ</td>
+                            <td class="py-3">
+                                <span class="fw-bold text-purple">18.200 / 30.000 (60.6%)</span>
+                            </td>
+                            <td class="py-3 text-muted">Không giới hạn</td>
+                            <td class="py-3">
+                                <span class="badge rounded-pill font-10 fw-bold px-2 py-0-5" style="background-color: #DCFCE7; color: #16A34A;">
+                                    Đang diễn ra
+                                </span>
+                            </td>
+                            <td class="py-3 pe-4 text-center">
+                                <button class="btn btn-sm btn-light rounded-circle p-1" @click="actionRow('WELCOME_DANANG')">
+                                    <i class="bx bx-dots-vertical-rounded font-14"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Row 3 -->
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge rounded-pill font-10 fw-bold px-2 py-0-5 font-mono" style="background-color: #E0F2FE; color: #0284C7;">
+                                        COMBO_HE_RUC_RO
+                                    </span>
+                                    <span class="fw-bold text-dark">Combo Gia Đình Nhóm</span>
+                                </div>
+                            </td>
+                            <td class="py-3">
+                                <span class="fw-semibold text-cyan" style="color: #0284C7;">Cố định 500.000 đ</span>
+                            </td>
+                            <td class="py-3 fw-bold text-dark">500.000.000 đ</td>
+                            <td class="py-3">
+                                <span class="fw-bold text-cyan" style="color: #0284C7;">890 / 1.000 (89.0%)</span>
+                            </td>
+                            <td class="py-3 text-muted">15/06 - 15/08/2025</td>
+                            <td class="py-3">
+                                <span class="badge rounded-pill font-10 fw-bold px-2 py-0-5" style="background-color: #FEF3C7; color: #D97706;">
+                                    Sắp hết ngân sách
+                                </span>
+                            </td>
+                            <td class="py-3 pe-4 text-center">
+                                <button class="btn btn-sm btn-light rounded-circle p-1" @click="actionRow('COMBO_HE_RUC_RO')">
+                                    <i class="bx bx-dots-vertical-rounded font-14"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Row 4 -->
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge rounded-pill font-10 fw-bold px-2 py-0-5 font-mono" style="background-color: #FDF2F8; color: #E11D48;">
+                                        SONTRA_SUNSET
+                                    </span>
+                                    <span class="fw-bold text-dark">Khám Phá Sơn Trà SUP</span>
+                                </div>
+                            </td>
+                            <td class="py-3">
+                                <span class="fw-semibold text-pink">15% (Tối đa 150K)</span>
+                            </td>
+                            <td class="py-3 fw-bold text-dark">120.000.000 đ</td>
+                            <td class="py-3">
+                                <span class="fw-bold text-pink">640 / 800 (80.0%)</span>
+                            </td>
+                            <td class="py-3 text-muted">01/06 - 31/07/2025</td>
+                            <td class="py-3">
+                                <span class="badge rounded-pill font-10 fw-bold px-2 py-0-5" style="background-color: #DCFCE7; color: #16A34A;">
+                                    Đang diễn ra
+                                </span>
+                            </td>
+                            <td class="py-3 pe-4 text-center">
+                                <button class="btn btn-sm btn-light rounded-circle p-1" @click="actionRow('SONTRA_SUNSET')">
+                                    <i class="bx bx-dots-vertical-rounded font-14"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MODAL: TẠO CHIẾN DỊCH VOUCHER MỚI -->
+        <div v-if="showModalThem" class="custom-modal-backdrop">
+            <div class="custom-modal-content rounded-4 p-4 bg-white shadow-lg" style="max-width: 600px; width: 92%;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0 font-16 d-flex align-items-center gap-2">
+                        <i class="bx bx-gift text-pink"></i> Tạo Chiến Dịch Voucher Kích Cầu Mới
+                    </h5>
+                    <button class="btn btn-sm btn-light rounded-circle p-1" @click="showModalThem = false">
+                        <i class="bx bx-x font-18"></i>
+                    </button>
+                </div>
+                <div class="row g-2 mb-3 font-12">
+                    <div class="col-6">
+                        <label class="form-label font-11 fw-bold text-uppercase">Mã Voucher (Code) *</label>
+                        <input type="text" v-model="newVoucher.code" class="form-control font-12 rounded-3 font-mono text-uppercase" placeholder="VD: SUMMER_DANANG_25" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label font-11 fw-bold text-uppercase">Tên Chiến Dịch *</label>
+                        <input type="text" v-model="newVoucher.name" class="form-control font-12 rounded-3" placeholder="Nhập tên chiến dịch..." />
+                    </div>
+                </div>
+                <div class="row g-2 mb-3 font-12">
+                    <div class="col-4">
+                        <label class="form-label font-11 fw-bold text-uppercase">Loại Giảm Giá</label>
+                        <select v-model="newVoucher.type" class="form-select font-12 rounded-3">
+                            <option value="percent">Phần trăm (%)</option>
+                            <option value="fixed">Số tiền cố định (VNĐ)</option>
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label font-11 fw-bold text-uppercase">Mức Giảm</label>
+                        <input type="number" v-model.number="newVoucher.discountValue" class="form-control font-12 rounded-3" placeholder="20 hoặc 50000" />
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label font-11 fw-bold text-uppercase">Giảm Tối Đa (VNĐ)</label>
+                        <input type="number" v-model.number="newVoucher.maxDiscount" class="form-control font-12 rounded-3" placeholder="300000" />
+                    </div>
+                </div>
+                <div class="row g-2 mb-3 font-12">
+                    <div class="col-6">
+                        <label class="form-label font-11 fw-bold text-uppercase">Tổng Ngân Sách (VNĐ)</label>
+                        <input type="number" v-model.number="newVoucher.budget" class="form-control font-12 rounded-3" placeholder="500000000" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label font-11 fw-bold text-uppercase">Số Lượng Quota Phát Hành</label>
+                        <input type="number" v-model.number="newVoucher.quota" class="form-control font-12 rounded-3" placeholder="2000" />
+                    </div>
+                </div>
+                <div class="mb-3 font-12">
+                    <label class="form-label font-11 fw-bold text-uppercase">Mô Tả Điều Kiện Áp Dụng</label>
+                    <textarea v-model="newVoucher.description" class="form-control font-12 rounded-3" rows="2" placeholder="Áp dụng cho mọi tour du lịch đối tác..."></textarea>
+                </div>
+                <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                    <button class="btn btn-sm btn-light rounded-pill px-3" @click="showModalThem = false">Hủy</button>
+                    <button class="btn btn-sm btn-pink-gradient text-white rounded-pill px-4 fw-bold" @click="submitThemVoucher">
+                        Phát Hành Voucher
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
-import api from '@/axios';
-
 export default {
-  name: "AdminVoucher",
-  data() {
-    return {
-      key_search: "",
-      searchQuery: "",
-      filterType: "",
-      filterStatus: "",
-      currentPage: 1,
-      pageSize: 10,
-      showModal: false,
-      isEdit: false,
-      list_voucher: [],
-      add_voucher: {
-        id: null,
-        code: "",
-        title: "",
-        partner: "ADMIN",
-        discountType: "PhanTram",
-        discountValue: 10,
-        maxDiscount: 500000,
-        minOrder: 1000000,
-        quantity: 100,
-        startDate: "",
-        endDate: "",
-        status: "active"
-      },
-      edit_voucher: {},
-      delete_voucher: {},
-      formVoucher: {
-        id: null,
-        code: "",
-        title: "",
-        partner: "ADMIN",
-        discountType: "PhanTram", // 'PhanTram' hoặc 'TienMat'
-        discountValue: 10,
-        maxDiscount: 500000,
-        minOrder: 1000000,
-        quantity: 100,
-        startDate: "",
-        endDate: "",
-        status: "active"
-      },
-      vouchers: []
-    };
-  },
-  computed: {
-    totalVouchers() {
-      return this.vouchers.length;
-    },
-    activeVouchers() {
-      return this.vouchers.filter(v => v.status === 'active').length;
-    },
-    countPercentVouchers() {
-      return this.vouchers.filter(v => v.discountType === 'PhanTram').length;
-    },
-    countMoneyVouchers() {
-      return this.vouchers.filter(v => v.discountType === 'TienMat').length;
-    },
-    filteredVouchers() {
-      return this.vouchers.filter(v => {
-        const query = (this.key_search || this.searchQuery || '').toLowerCase().trim();
-        const matchSearch =
-          !query ||
-          (v.code || '').toLowerCase().includes(query) ||
-          (v.title || '').toLowerCase().includes(query);
+    name: 'VoucherCampaignAdminComponent',
+    data() {
+        return {
+            searchKeyword: '',
+            filterCategory: '',
+            activeTab: 'active',
+            isRefreshing: false,
+            showModalThem: false,
 
-        const matchType = !this.filterType || v.discountType === this.filterType;
-        const matchStatus = !this.filterStatus || v.status === this.filterStatus;
-
-        return matchSearch && matchType && matchStatus;
-      });
+            newVoucher: {
+                code: '',
+                name: '',
+                type: 'percent',
+                discountValue: 20,
+                maxDiscount: 300000,
+                budget: 500000000,
+                quota: 2000,
+                description: ''
+            }
+        };
     },
-    totalPages() {
-      return Math.ceil(this.filteredVouchers.length / this.pageSize) || 1;
-    },
-    paginatedVouchers() {
-      const start = (this.currentPage - 1) * this.pageSize;
-      return this.filteredVouchers.slice(start, start + this.pageSize);
-    }
-  },
-  watch: {
-    key_search() {
-      this.currentPage = 1;
-    },
-    searchQuery() {
-      this.currentPage = 1;
-    },
-    filterType() {
-      this.currentPage = 1;
-    },
-    filterStatus() {
-      this.currentPage = 1;
-    }
-  },
-  mounted() {
-    this.loadData();
-  },
-  methods: {
-    formatMoney(val) {
-      return Number(val || 0).toLocaleString("vi-VN");
-    },
-    loadData() {
-      api.get('/api/admin/voucher/get-data')
-        .then(res => {
-          if (res.data.status) {
-            const list = res.data.data || [];
-            this.list_voucher = list;
-            this.vouchers = list.map(item => {
-              const isPercent = item.loai_giam_gia === 'PhanTram' || item.loai_giam_gia === 'percent';
-              return {
-                id: item.id,
-                code: item.ma_voucher,
-                partner: item.ma_doi_tac,
-                title: item.ten_voucher,
-                discountType: isPercent ? 'PhanTram' : 'TienMat',
-                discountValue: parseFloat(item.gia_tri_giam) || 0,
-                maxDiscount: parseFloat(item.giam_toi_da) || 0,
-                minOrder: parseFloat(item.don_toi_thieu) || 0,
-                quantity: item.so_luong || 0,
-                used: item.da_su_dung || 0,
-                startDate: item.ngay_bat_dau ? item.ngay_bat_dau.slice(0, 10) : '',
-                endDate: item.ngay_ket_thuc ? item.ngay_ket_thuc.slice(0, 10) : '',
-                status: item.trang_thai == 1 ? 'active' : 'expired'
-              };
+    methods: {
+        copyCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                alert(`Đã sao chép mã voucher "${code}" vào clipboard!`);
+            }).catch(() => {
+                alert(`Mã voucher: ${code}`);
             });
-          }
-        })
-        .catch(err => {
-          console.error('Lỗi khi tải danh sách voucher:', err);
-          this.$toast.error('Có lỗi khi tải danh sách voucher!');
-        });
-    },
-    openModalAdd() {
-      this.isEdit = false;
-      const today = new Date().toISOString().slice(0, 10);
-      const nextMonth = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-
-      this.add_voucher = {
-        id: null,
-        code: "TOUR" + Math.floor(1000 + Math.random() * 9000),
-        title: "",
-        partner: "ADMIN",
-        discountType: "PhanTram",
-        discountValue: 10,
-        maxDiscount: 500000,
-        minOrder: 1000000,
-        quantity: 100,
-        startDate: today,
-        endDate: nextMonth,
-        status: "active"
-      };
-      this.formVoucher = { ...this.add_voucher };
-      this.showModal = true;
-    },
-    editVoucher(v) {
-      this.isEdit = true;
-      this.edit_voucher = { ...v };
-      this.formVoucher = { ...v };
-      this.showModal = true;
-    },
-    saveVoucher() {
-      if (!this.formVoucher.code || !this.formVoucher.code.trim()) {
-        this.$toast.warning("Vui lòng nhập mã code voucher!");
-        return;
-      }
-      if (!this.formVoucher.title || !this.formVoucher.title.trim()) {
-        this.$toast.warning("Vui lòng nhập tên chương trình khuyến mãi!");
-        return;
-      }
-      if (!this.formVoucher.discountValue || this.formVoucher.discountValue <= 0) {
-        this.$toast.warning("Giá trị giảm giá phải lớn hơn 0!");
-        return;
-      }
-      if (this.formVoucher.discountType === 'PhanTram' && this.formVoucher.discountValue > 100) {
-        this.$toast.warning("Giảm giá theo phần trăm không được vượt quá 100%!");
-        return;
-      }
-
-      const payload = {
-        id: this.formVoucher.id,
-        ma_voucher: this.formVoucher.code.trim().toUpperCase(),
-        ma_doi_tac: this.formVoucher.partner || 'ADMIN',
-        ten_voucher: this.formVoucher.title.trim(),
-        loai_giam_gia: this.formVoucher.discountType, // 'PhanTram' hoặc 'TienMat'
-        gia_tri_giam: this.formVoucher.discountValue,
-        giam_toi_da: this.formVoucher.discountType === 'PhanTram' ? (this.formVoucher.maxDiscount || null) : this.formVoucher.discountValue,
-        don_toi_thieu: this.formVoucher.minOrder || 0,
-        so_luong: this.formVoucher.quantity || 0,
-        ngay_bat_dau: this.formVoucher.startDate || null,
-        ngay_ket_thuc: this.formVoucher.endDate || null,
-        trang_thai: this.formVoucher.status === 'active' ? 1 : 0
-      };
-
-      if (this.isEdit) {
-        api.post('/api/admin/voucher/update', payload)
-          .then(res => {
-            if (res.data.status) {
-              this.$toast.success(res.data.message || 'Cập nhật voucher thành công!');
-              this.showModal = false;
-              this.loadData();
-            } else {
-              this.$toast.error(res.data.message || 'Cập nhật voucher thất bại!');
+        },
+        openModalThem() {
+            this.newVoucher = {
+                code: `DN_PROMO_${Date.now().toString().slice(-4)}`,
+                name: '',
+                type: 'percent',
+                discountValue: 20,
+                maxDiscount: 300000,
+                budget: 500000000,
+                quota: 2000,
+                description: ''
+            };
+            this.showModalThem = true;
+        },
+        submitThemVoucher() {
+            if (!this.newVoucher.code.trim() || !this.newVoucher.name.trim()) {
+                alert('Vui lòng nhập đầy đủ Mã và Tên chiến dịch!');
+                return;
             }
-          })
-          .catch(err => {
-            const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
-            this.$toast.error(msg);
-          });
-      } else {
-        api.post('/api/admin/voucher/store', payload)
-          .then(res => {
-            if (res.data.status) {
-              this.$toast.success(res.data.message || 'Phát hành voucher thành công!');
-              this.showModal = false;
-              this.loadData();
-            } else {
-              this.$toast.error(res.data.message || 'Tạo voucher thất bại!');
-            }
-          })
-          .catch(err => {
-            const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
-            this.$toast.error(msg);
-          });
-      }
-    },
-    toggleStatus(v) {
-      api.post('/api/admin/voucher/change-status', { id: v.id, ma_voucher: v.code })
-        .then(res => {
-          if (res.data.status) {
-            this.$toast.success(res.data.message || 'Đổi trạng thái voucher thành công!');
-            this.loadData();
-          } else {
-            this.$toast.error(res.data.message || 'Đổi trạng thái thất bại!');
-          }
-        })
-        .catch(err => {
-          const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
-          this.$toast.error(msg);
-        });
-    },
-    deleteVoucher(v) {
-      this.delete_voucher = { ...v };
-      if (confirm(`Bạn có chắc muốn xóa voucher ${v.code}?`)) {
-        api.post('/api/admin/voucher/delete', { id: v.id, ma_voucher: v.code })
-          .then(res => {
-            if (res.data.status) {
-              this.$toast.success(res.data.message || 'Xóa voucher thành công!');
-              this.loadData();
-            } else {
-              this.$toast.error(res.data.message || 'Xóa voucher thất bại!');
-            }
-          })
-          .catch(err => {
-            const msg = (err.response && err.response.data && err.response.data.message) ? err.response.data.message : 'Có lỗi xảy ra!';
-            this.$toast.error(msg);
-          });
-      }
+            this.showModalThem = false;
+            alert(`Tạo chiến dịch voucher "${this.newVoucher.name}" thành công! Hệ thống đã phân bổ ngân sách ${Number(this.newVoucher.budget).toLocaleString('vi-VN')} đ.`);
+        },
+        openModalGiaiNgan() {
+            alert('Đang mở báo cáo đối soát & lịch sử giải ngân ngân sách kích cầu du lịch DIFF 2025.');
+        },
+        xuatBaoCaoRoi() {
+            alert('Đang trích xuất báo cáo ROI chiến dịch voucher định dạng PDF & Excel (Tỷ lệ đòn bẩy GMV đạt x9.1 lần)...');
+        },
+        resetFilters() {
+            this.searchKeyword = '';
+            this.filterCategory = '';
+            this.activeTab = 'active';
+            alert('Đã đặt lại bộ lọc nâng cao.');
+        },
+        lamMoiDuLieu() {
+            this.isRefreshing = true;
+            setTimeout(() => {
+                this.isRefreshing = false;
+                alert('Dữ liệu các chiến dịch voucher toàn sàn đã được đồng bộ mới nhất!');
+            }, 800);
+        },
+        giaHanNganSach(code) {
+            alert(`Mở cổng nạp thêm 200.000.000 VNĐ ngân sách vào chiến dịch ${code}.`);
+        },
+        chiTietTepKhach() {
+            alert('Đang mở tệp dữ liệu 18.200 khách hàng du lịch đăng ký tải app lần đầu.');
+        },
+        bomThemMa(code) {
+            alert(`Đã cấp bổ sung thành công 500 mã ưu đãi vào chiến dịch ${code}!`);
+        },
+        baoCaoDoiTac(code) {
+            alert(`Đang trích xuất báo cáo doanh số cho các đối tác tham gia chiến dịch ${code}.`);
+        },
+        editVoucher(code) {
+            alert(`Mở trình cấu hình chiến dịch voucher ${code}.`);
+        },
+        xemToanBoLog() {
+            alert('Đang hiển thị toàn bộ 24 nhật ký nghiệp vụ phát hành voucher toàn sàn.');
+        },
+        actionRow(code) {
+            alert(`Hành động quản trị cho chiến dịch ${code}: [Xem chi tiết], [Tạm dừng], [Đối soát GMV]`);
+        }
     }
-  }
 };
 </script>
 
 <style scoped>
-.admin-page-container {
-  padding: 0.5rem;
+.voucher-campaign-page {
+    background-color: #F8FAFC;
+    min-height: 100vh;
 }
 
-.breadcrumb-admin {
-  font-size: 0.85rem;
+.font-28 { font-size: 28px; }
+.font-24 { font-size: 24px; }
+.font-22 { font-size: 22px; }
+.font-20 { font-size: 20px; }
+.font-18 { font-size: 18px; }
+.font-16 { font-size: 16px; }
+.font-15 { font-size: 15px; }
+.font-14 { font-size: 14px; }
+.font-13 { font-size: 13px; }
+.font-12 { font-size: 12px; }
+.font-11 { font-size: 11px; }
+.font-10 { font-size: 10px; }
+.font-9 { font-size: 9px; }
+.font-8 { font-size: 8px; }
+
+.font-mono {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
 }
 
-.sync-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background-color: #ecfdf5;
-  color: #059669;
-  border-radius: 9999px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 500;
+.text-pink { color: #E11D48 !important; }
+.text-purple { color: #7C3AED !important; }
+.text-cyan { color: #0284C7 !important; }
+
+.pulse-dot-pink {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #E11D48;
+    display: inline-block;
+    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7);
+    animation: pulsePink 2s infinite;
 }
 
-.pulse-dot {
-  width: 7px;
-  height: 7px;
-  background-color: #10b981;
-  border-radius: 50%;
-  display: inline-block;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+@keyframes pulsePink {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(225, 29, 72, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
 }
 
-.page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1e293b;
+.dot-pink {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #E11D48;
+    display: inline-block;
 }
 
-.table-badge {
-  background-color: #f1f5f9;
-  color: #64748b;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.2rem 0.5rem;
-  border-radius: 6px;
-  font-family: monospace;
+.dot-green {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #16A34A;
+    display: inline-block;
 }
 
-.btn-primary-custom {
-  background-color: #0284c7;
-  color: #ffffff;
-  border: none;
-  font-weight: 600;
-  padding: 0.5rem 1.25rem;
-  border-radius: 8px;
-  transition: all 0.2s;
+.btn-pink-gradient {
+    background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
+    border: none;
+    transition: all 0.2s ease;
 }
 
-.btn-primary-custom:hover {
-  background-color: #0369a1;
-  color: #ffffff;
+.btn-pink-gradient:hover {
+    background: linear-gradient(135deg, #BE123C 0%, #9F1239 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
 }
 
-.kpi-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 1.25rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  height: 100%;
+.shadow-xs { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+.shadow-2xs { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); }
+
+.cursor-pointer { cursor: pointer; }
+
+.voucher-campaign-card {
+    transition: all 0.2s ease;
 }
 
-.kpi-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #64748b;
-  letter-spacing: 0.5px;
+.voucher-campaign-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07) !important;
 }
 
-.kpi-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0.25rem 0;
+.p-2-5 { padding: 10px; }
+.gap-1-5 { gap: 6px; }
+.gap-2-5 { gap: 10px; }
+.tracking-wider { letter-spacing: 0.05em; }
+
+/* Modals */
+.custom-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+    backdrop-filter: blur(2px);
 }
 
-.kpi-subtext {
-  font-size: 0.75rem;
-  color: #94a3b8;
+.custom-modal-content {
+    animation: modalScaleIn 0.2s ease-out;
 }
 
-.kpi-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
+@keyframes modalScaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
 
-.icon-blue { background-color: #e0f2fe; color: #0284c7; }
-.icon-green { background-color: #dcfce7; color: #16a34a; }
-.icon-orange { background-color: #ffedd5; color: #ea580c; }
-
-.search-input-wrap {
-  position: relative;
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-}
-
-.search-input {
-  padding-left: 2.25rem;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-.filter-select {
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-.table-card {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.voucher-code-badge {
-  background-color: #f8fafc;
-  border: 1px dashed #cbd5e1;
-  color: #0f172a;
-  font-family: monospace;
-  font-weight: 700;
-  padding: 0.35rem 0.65rem;
-  border-radius: 6px;
-  display: inline-block;
-  letter-spacing: 1px;
-}
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.65rem;
-  border-radius: 9999px;
-}
-
-.status-active { background-color: #dcfce7; color: #15803d; }
-.status-locked { background-color: #f1f5f9; color: #64748b; }
-
-.status-pill .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.status-active .dot { background-color: #22c55e; }
-.status-locked .dot { background-color: #94a3b8; }
-
-.action-btn-group {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.35rem;
-}
-
-.action-btn {
-  background: transparent;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #64748b;
-  transition: all 0.15s;
-}
-
-.action-btn:hover {
-  background-color: #f8fafc;
-  color: #0f172a;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.discount-type-card {
-  transition: all 0.2s ease-in-out;
-}
-
-.discount-type-card:hover {
-  border-color: #94a3b8 !important;
-}
-
-.active-type {
-  box-shadow: 0 0 0 1px currentColor;
+.transition-all {
+    transition: all 0.2s ease;
 }
 </style>

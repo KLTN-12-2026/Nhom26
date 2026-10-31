@@ -2,17 +2,19 @@
     <footer class="doitac-footer">
         <div class="footer-inner">
             <div class="footer-left">
-                <span class="copyright-text">
-                    © 2026 <strong>Đà Nẵng Smart Travel</strong> — Cổng đối tác B2B. Đối tác <strong>Lotus Heritage Ltd</strong>.
+                <span class="status-dot-pink"></span>
+                <span class="sync-info-text">
+                    Đồng bộ thực thi dữ liệu đối tác: <strong>32 tour</strong> • <strong>1.280 vé xuất</strong> • Hóa đơn điện tử e-Invoice tự động kích hoạt
                 </span>
             </div>
             <div class="footer-right">
-                <a href="javascript:;" class="footer-link">Tài liệu API</a>
-                <span class="link-divider">·</span>
-                <a href="javascript:;" class="footer-link">Chính sách hợp tác</a>
-                <span class="link-divider">·</span>
-                <a href="javascript:;" class="footer-link">Hỗ trợ kỹ thuật</a>
-                <span class="version-tag">v2.8.4-prod</span>
+                <span class="security-badge">
+                    <i class="bx bx-shield-quarter text-pink me-1"></i> Đối soát PCI-DSS Bảo mật
+                </span>
+                <span class="link-divider">|</span>
+                <span class="time-stamp">
+                    <i class="bx bx-time-five me-1"></i> Cập nhật lúc: <strong>{{ currentTime }}</strong>
+                </span>
             </div>
         </div>
     </footer>
@@ -20,7 +22,31 @@
 
 <script>
 export default {
-    name: 'FooterDoiTac'
+    name: 'FooterDoiTac',
+    data() {
+        return {
+            currentTime: '14:32:05',
+            timer: null
+        }
+    },
+    mounted() {
+        this.updateTime();
+        this.timer = setInterval(this.updateTime, 1000);
+    },
+    beforeUnmount() {
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
+    },
+    methods: {
+        updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            this.currentTime = `${hours}:${minutes}:${seconds}`;
+        }
+    }
 }
 </script>
 
@@ -28,8 +54,8 @@ export default {
 .doitac-footer {
     background-color: #ffffff;
     border-top: 1px solid #f1f5f9;
-    padding: 14px 24px;
-    font-size: 0.76rem;
+    padding: 12px 24px;
+    font-size: 0.75rem;
     color: #64748b;
     margin-top: auto;
 }
@@ -45,52 +71,66 @@ export default {
 .footer-left {
     display: flex;
     align-items: center;
+    gap: 8px;
 }
 
-.copyright-text strong {
+.status-dot-pink {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #e11d48;
+    box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.18);
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.sync-info-text strong {
     color: #0f172a;
 }
 
 .footer-right {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
-.footer-link {
-    color: #64748b;
-    text-decoration: none;
-    transition: color 0.15s;
+.security-badge {
+    display: flex;
+    align-items: center;
+    color: #475569;
+    font-weight: 500;
 }
 
-.footer-link:hover {
-    color: #e11d48;
-    text-decoration: underline;
+.text-pink {
+    color: #e11d48 !important;
 }
 
 .link-divider {
     color: #cbd5e1;
 }
 
-.version-tag {
-    font-size: 0.68rem;
+.time-stamp {
+    color: #64748b;
+    display: flex;
+    align-items: center;
+}
+
+.time-stamp strong {
+    color: #0f172a;
     font-family: monospace;
-    background-color: #f1f5f9;
-    color: #475569;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 600;
+    font-size: 0.8rem;
+    margin-left: 2px;
 }
 
 @media (max-width: 767.98px) {
     .doitac-footer {
-        padding: 12px 16px;
-        text-align: center;
+        padding: 12px 14px;
     }
     .footer-inner {
         flex-direction: column;
-        justify-content: center;
+        align-items: flex-start;
+        gap: 8px;
     }
 }
 </style>

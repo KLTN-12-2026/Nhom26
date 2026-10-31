@@ -1,15 +1,30 @@
 <?php
+
 namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class ChucVuSeeder extends Seeder {
-    public function run(): void {
-        DB::table("chuc_vus")->insert([
-            ["ma_chuc_vu" => "CV01", "ten_chuc_vu" => "Quản trị viên cấp cao", "mo_ta" => "Toàn quyền hệ thống"],
-            ["ma_chuc_vu" => "CV02", "ten_chuc_vu" => "Quản lý đối tác", "mo_ta" => "Quản lý và duyệt đối tác/tour"],
-            ["ma_chuc_vu" => "CV03", "ten_chuc_vu" => "Chăm sóc khách hàng", "mo_ta" => "Hỗ trợ khách hàng, giải quyết khiếu nại"],
-            ["ma_chuc_vu" => "CV04", "ten_chuc_vu" => "Kế toán", "mo_ta" => "Đối soát và quản lý tài chính"],
+class ChucVuSeeder extends Seeder
+{
+    public function run(): void
+    {
+        DB::table('chuc_vu')->insert([
+            [
+                'ma_chuc_vu'  => 1,
+                'ten_chuc_vu' => 'quan_tri_vien',
+                'mo_ta'       => 'Quản trị viên toàn hệ thống, toàn quyền quản lý',
+            ],
+            [
+                'ma_chuc_vu'  => 2,
+                'ten_chuc_vu' => 'doi_tac',
+                'mo_ta'       => 'Đối tác doanh nghiệp du lịch, tạo và quản lý tour',
+            ],
+            [
+                'ma_chuc_vu'  => 3,
+                'ten_chuc_vu' => 'du_khach',
+                'mo_ta'       => 'Người dùng du khách sử dụng hệ thống lên lịch trình và đặt tour',
+            ],
         ]);
     }
 }

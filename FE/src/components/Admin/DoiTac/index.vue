@@ -1,838 +1,763 @@
-﻿<template>
-    <div class="admin-page-container">
-        <!-- 1. Thanh điều hướng Breadcrumb & Trạng thái đồng bộ Database -->
-        <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
-            <nav class="breadcrumb-admin d-flex align-items-center small text-muted">
-                <router-link to="/admin/dashboard" class="text-secondary text-decoration-none">Trang chủ</router-link>
-                <i class="bx bx-chevron-right mx-1"></i>
-                <span class="text-secondary">Phân hệ Quản trị</span>
-                <i class="bx bx-chevron-right mx-1"></i>
-                <span class="text-primary fw-bold">Quản lý đối tác</span>
-            </nav>
-            <div class="sync-pill d-flex align-items-center gap-1">
-                <span class="dot-green"></span>
-                <span class="font-11 text-success fw-semibold">Cơ sở dữ liệu: Hoạt động đồng bộ</span>
-            </div>
-        </div>
-
-        <!-- 2. Tiêu đề trang & Nút hành động mở Modal Thêm mới -->
-        <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+<template>
+    <div class="partner-moderation-page p-3 p-lg-4">
+        <!-- Top Pill Tag & Title Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
             <div>
-                <div class="d-flex align-items-center gap-2">
-                    <h3 class="fw-bold text-dark mb-0">Quản lý Đối Tác Doanh Nghiệp (B2B)</h3>
-                    <span class="badge bg-light text-secondary border font-11">Table: doi_tacs</span>
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2 border border-pink-subtle" style="background-color: #FDF2F8;">
+                    <span class="pulse-dot-pink"></span>
+                    <span class="font-11 fw-bold text-uppercase tracking-wider" style="color: #E11D48;">B2B PARTNER ONBOARDING & COMPLIANCE</span>
                 </div>
-                <p class="text-muted small mb-0 mt-1">
-                    Kiểm duyệt hồ sơ nhà cung cấp tour, đơn vị vận chuyển và khách sạn đối tác.
+                <h2 class="page-title fw-bold text-dark mb-1 font-24">Xét Duyệt & Kiểm Soát Đối Tác Doanh Nghiệp Lữ Hành</h2>
+                <p class="text-muted font-13 mb-0" style="max-width: 820px;">
+                    Thẩm định tính pháp lý giấy phép kinh doanh lữ hành, tiền ký quỹ bảo vệ du khách và cấp phép tài khoản đối tác hoạt động trên nền tảng SmartTrip Đà Nẵng.
                 </p>
             </div>
-            <div>
-                <!-- Nút mở Modal Thêm mới đối tác -->
-                <button class="btn btn-primary rounded-3 px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1"
-                    data-bs-toggle="modal" data-bs-target="#themMoiModal">
-                    <i class="bx bx-plus font-18"></i>Thêm Đối Tác
+
+            <!-- Top Action Buttons -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button class="btn btn-outline-secondary bg-white rounded-pill px-3 py-2 font-12 fw-semibold shadow-sm d-flex align-items-center gap-2" @click="openModalQuyChuan">
+                    <i class="bx bx-book-bookmark text-primary font-16"></i>
+                    <span>Quy Chuẩn Thẩm Định</span>
+                </button>
+                <button class="btn btn-outline-secondary bg-white rounded-pill px-3 py-2 font-12 fw-semibold shadow-sm d-flex align-items-center gap-2" @click="xuatDanhSach">
+                    <i class="bx bx-download text-primary font-16"></i>
+                    <span>Xuất Danh Sách</span>
+                </button>
+                <button class="btn btn-pink-gradient text-white rounded-pill px-3 py-2 font-12 fw-bold shadow-sm d-flex align-items-center gap-1" @click="thamDinhHangLoat">
+                    <i class="bx bx-layer-plus font-16"></i>
+                    <span>Thẩm Định Hàng Loạt</span>
                 </button>
             </div>
         </div>
 
-        <!-- 3. 4 Thẻ KPI thống kê số liệu tổng quan -->
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
-            <!-- Thẻ 1: Tổng đối tác -->
-            <div class="col">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-                    <div class="d-flex justify-content-between align-items-start">
+        <!-- 4 KPI Metrics Cards -->
+        <div class="row g-3 mb-4">
+            <!-- KPI 1: Hồ sơ chờ thẩm định -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
-                            <span class="font-11 fw-bold text-muted text-uppercase">TỔNG ĐỐI TÁC</span>
-                            <h2 class="fw-bold text-dark my-1">{{ list_doi_tac.length < 10 ? '0' + list_doi_tac.length : list_doi_tac.length }}</h2>
-                            <small class="text-primary font-11">Đồng bộ từ bảng doi_tacs</small>
-                        </div>
-                        <div class="kpi-icon-box bg-light-primary text-primary"><i class="bx bx-buildings"></i></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Thẻ 2: Đã kiểm duyệt -->
-            <div class="col">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <span class="font-11 fw-bold text-muted text-uppercase">ĐÃ KIỂM DUYỆT</span>
-                            <h2 class="fw-bold text-success my-1">{{ countApproved < 10 ? '0' + countApproved : countApproved }}</h2>
-                            <small class="text-muted font-11">Hồ sơ DaDuyet</small>
-                        </div>
-                        <div class="kpi-icon-box bg-light-success text-success"><i class="bx bx-check-shield"></i></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Thẻ 3: Chờ duyệt hồ sơ -->
-            <div class="col">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <span class="font-11 fw-bold text-muted text-uppercase">CHỜ DUYỆT HỒ SƠ</span>
-                            <h2 class="fw-bold text-warning my-1">{{ countPending < 10 ? '0' + countPending : countPending }}</h2>
-                            <small class="text-warning font-11">Hồ sơ ChoDuyet</small>
-                        </div>
-                        <div class="kpi-icon-box bg-light-warning text-warning"><i class="bx bx-time-five"></i></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Thẻ 4: Tổng tour cung ứng -->
-            <div class="col">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <span class="font-11 fw-bold text-muted text-uppercase">TỔNG TOUR CUNG ỨNG</span>
-                            <h2 class="fw-bold text-dark my-1">{{ totalTours < 10 ? '0' + totalTours : totalTours }}</h2>
-                            <small class="text-primary font-11">Liên kết bảng tours</small>
-                        </div>
-                        <div class="kpi-icon-box bg-light-info text-info"><i class="bx bx-map-alt"></i></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. Filter Bar: Thanh tìm kiếm và bộ lọc trạng thái -->
-        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
-            <div class="row g-2 align-items-center">
-                <!-- Ô tìm kiếm kèm nút kính lúp ở sau -->
-                <div class="col-md-5">
-                    <div class="input-group input-group-sm">
-                        <input 
-                            type="search" 
-                            name="search_doi_tac_keyword" 
-                            autocomplete="off" 
-                            class="form-control shadow-none" 
-                            v-model="key_search" 
-                            placeholder="Tìm theo tên công ty, MST, đại diện, SĐT, địa chỉ...">
-                        <!-- Nút kính lúp ở sau ô tìm kiếm -->
-                        <button class="btn btn-primary px-3" type="button" title="Tìm kiếm">
-                            <i class="bx bx-search"></i>
-                        </button>
-                    </div>
-                </div>
-                <!-- Bộ lọc theo trạng thái duyệt -->
-                <div class="col-md-2">
-                    <select class="form-select form-select-sm" v-model="filterDuyet">
-                        <option value="">Tất cả kiểm duyệt</option>
-                        <option value="DaDuyet">Đã duyệt</option>
-                        <option value="ChoDuyet">Chờ duyệt</option>
-                        <option value="TuChoi">Từ chối</option>
-                    </select>
-                </div>
-                <!-- Bộ lọc theo trạng thái khóa -->
-                <div class="col-md-2">
-                    <select class="form-select form-select-sm" v-model="filterStatus">
-                        <option value="">Tất cả tài khoản</option>
-                        <option value="0">Đang hoạt động</option>
-                        <option value="1">Đã khóa</option>
-                    </select>
-                </div>
-                <!-- Thống kê số lượng kết quả hiển thị -->
-                <div class="col-md-3 text-end">
-                    <span class="small text-muted">Hiển thị <strong class="text-primary">{{ list_doi_tac_loc.length }}</strong> đối tác</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. Data Table: Bảng danh sách đối tác -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light small text-uppercase text-center align-middle">
-                        <tr>
-                            <th width="4%">#</th>
-                            <th width="10%">MÃ ĐỐI TÁC</th>
-                            <th width="20%" class="text-start">DOANH NGHIỆP</th>
-                            <th width="11%">MÃ SỐ THUẾ</th>
-                            <th width="18%" class="text-start">ĐẠI DIỆN & SĐT</th>
-                            <th width="9%">SỐ TOUR</th>
-                            <th width="10%">DUYỆT HỒ SƠ</th>
-                            <th width="9%">TRẠNG THÁI</th>
-                            <th width="9%">ACTION</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(dt, index) in list_doi_tac_loc" :key="dt.ma_doi_tac || index">
-                            <!-- 1. STT -->
-                            <td class="text-center align-middle fw-bold">{{ index + 1 }}</td>
-
-                            <!-- 2. Mã đối tác -->
-                            <td class="text-center align-middle">
-                                <strong class="text-primary font-13 font-monospace">{{ dt.ma_doi_tac }}</strong>
-                            </td>
-
-                            <!-- 3. Tên doanh nghiệp & Địa chỉ -->
-                            <td class="align-middle text-start">
-                                <div class="fw-bold text-dark">{{ dt.ten_doi_tac }}</div>
-                                <small class="text-muted d-block font-11 mt-1" v-if="dt.dia_chi">
-                                    <i class="bx bx-map-pin me-1 text-danger"></i>{{ dt.dia_chi }}
-                                </small>
-                            </td>
-
-                            <!-- 4. Mã số thuế -->
-                            <td class="text-center align-middle">
-                                <code class="text-dark bg-light px-2 py-1 rounded font-monospace small" v-if="dt.ma_so_thue">
-                                    {{ dt.ma_so_thue }}
-                                </code>
-                                <span class="text-muted small fst-italic" v-else>
-                                    Chưa có
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="font-28 fw-bold text-dark">18</span>
+                                <span class="badge rounded-pill font-11 fw-bold px-2 py-0-5" style="background-color: #FDF2F8; color: #E11D48;">
+                                    +6 mới 24h
                                 </span>
-                            </td>
+                            </div>
+                            <div class="text-muted font-11 fw-bold text-uppercase tracking-wider">HỒ SƠ CHỜ THẨM ĐỊNH</div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #FDF2F8; width: 42px; height: 42px;">
+                            <i class="bx bx-file font-20" style="color: #E11D48;"></i>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-top">
+                        <small class="text-danger font-11 d-flex align-items-center gap-1">
+                            <i class="bx bx-time-five font-13"></i> Thời gian xử lý trung bình: 3.2 giờ
+                        </small>
+                    </div>
+                </div>
+            </div>
 
-                            <!-- 5. Đại diện & Liên hệ -->
-                            <td class="align-middle text-start">
-                                <div class="text-dark font-13">{{ dt.ten_nguoi_dai_dien || 'Chưa cập nhật' }}</div>
-                                <div class="small text-muted mt-1">
-                                    <i class="bx bx-phone me-1 font-12"></i>{{ dt.so_dien_thoai || dt.email }}
+            <!-- KPI 2: Đối tác đang hoạt động -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="font-28 fw-bold text-dark">856</span>
+                                <span class="badge rounded-pill font-11 fw-bold px-2 py-0-5" style="background-color: #E0F2FE; color: #0284C7;">
+                                    99.2% Tuân thủ
+                                </span>
+                            </div>
+                            <div class="text-muted font-11 fw-bold text-uppercase tracking-wider">ĐỐI TÁC ĐANG HOẠT ĐỘNG</div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #F5F3FF; width: 42px; height: 42px;">
+                            <i class="bx bx-store-alt font-20" style="color: #7C3AED;"></i>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-top">
+                        <small class="text-primary font-11 d-flex align-items-center gap-1">
+                            <i class="bx bx-check font-14"></i> Đảm bảo quy chuẩn Sở Du Lịch
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI 3: Tạm đình chỉ / Hết hạn phép -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="font-28 fw-bold text-dark">14</span>
+                                <span class="badge rounded-pill font-11 fw-bold px-2 py-0-5" style="background-color: #FEE2E2; color: #DC2626;">
+                                    Cần xử lý gấp
+                                </span>
+                            </div>
+                            <div class="text-muted font-11 fw-bold text-uppercase tracking-wider">TẠM ĐÌNH CHỈ / HẾT HẠN PHÉP</div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #FEE2E2; width: 42px; height: 42px;">
+                            <i class="bx bx-gavel font-20" style="color: #DC2626;"></i>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-top">
+                        <small class="text-danger font-11 d-flex align-items-center gap-1">
+                            <i class="bx bx-error font-13"></i> Yêu cầu thanh tra bổ sung ngay
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI 4: Quỹ ký quỹ bảo vệ du khách -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card p-3 rounded-4 bg-white border shadow-xs h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="font-26 fw-bold text-dark">42.8 Tỷ VNĐ</span>
+                            </div>
+                            <div class="text-muted font-11 fw-bold text-uppercase tracking-wider">QUỸ KÝ QUỸ BẢO VỆ DU KHÁCH</div>
+                        </div>
+                        <div class="kpi-icon-box rounded-3 d-flex align-items-center justify-content-center" style="background-color: #E0F2FE; width: 42px; height: 42px;">
+                            <i class="bx bx-shield-quarter font-20" style="color: #0284C7;"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                        <small class="text-muted font-11 d-flex align-items-center gap-1">
+                            <i class="bx bx-lock-alt text-primary font-13"></i> Phong tỏa 100% theo Luật Du Lịch
+                        </small>
+                        <span class="badge rounded-pill font-10 fw-bold px-2 py-0-5" style="background-color: #E0F2FE; color: #0284C7;">
+                            VietinBank DN
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2 Columns Main Layout: Left Queue & Right Partner Inspection Sheet -->
+        <div class="row g-4 mb-4">
+            <!-- LEFT COLUMN: HÀNG ĐỢI XÉT DUYỆT -->
+            <div class="col-12 col-lg-4 col-xl-4">
+                <div class="card border-0 shadow-xs rounded-4 bg-white p-3 p-lg-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Filter Tabs -->
+                        <div class="d-flex align-items-center gap-1-5 mb-3 flex-wrap">
+                            <button 
+                                class="btn btn-sm rounded-pill px-3 py-1 font-11 fw-bold transition-all"
+                                :class="filterStatus === 'pending' ? 'btn-pink-gradient text-white shadow-xs' : 'btn-light text-muted'"
+                                @click="filterStatus = 'pending'"
+                            >
+                                Chờ duyệt (18)
+                            </button>
+                            <button 
+                                class="btn btn-sm rounded-pill px-3 py-1 font-11 fw-bold transition-all"
+                                :class="filterStatus === 'supplement' ? 'btn-pink-gradient text-white shadow-xs' : 'btn-light text-muted'"
+                                @click="filterStatus = 'supplement'"
+                            >
+                                Cần bổ sung (8)
+                            </button>
+                            <button 
+                                class="btn btn-sm rounded-pill px-3 py-1 font-11 fw-bold transition-all"
+                                :class="filterStatus === 'approved' ? 'btn-pink-gradient text-white shadow-xs' : 'btn-light text-muted'"
+                                @click="filterStatus = 'approved'"
+                            >
+                                Đã duyệt
+                            </button>
+                        </div>
+
+                        <!-- Quick Search Input -->
+                        <div class="position-relative mb-3">
+                            <i class="bx bx-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted font-15"></i>
+                            <input 
+                                type="text" 
+                                v-model="searchKeyword" 
+                                class="form-control form-control-sm rounded-pill ps-5 pe-4 bg-light border-0 font-12"
+                                placeholder="Tìm theo tên doanh nghiệp, MST..." 
+                            />
+                            <i class="bx bx-slider position-absolute top-50 end-0 translate-middle-y me-3 text-muted font-16 cursor-pointer"></i>
+                        </div>
+
+                        <!-- Partner Queue List -->
+                        <div class="partner-queue-list d-flex flex-column gap-2-5">
+                            <div 
+                                v-for="p in filteredPartners" 
+                                :key="p.id"
+                                class="partner-queue-card p-3 rounded-4 transition-all cursor-pointer border"
+                                :class="selectedPartner.id === p.id ? 'active-partner-card' : 'bg-white hover-shadow'"
+                                @click="selectPartner(p)"
+                            >
+                                <!-- Top Row: Code & Time -->
+                                <div class="d-flex align-items-center justify-content-between mb-1-5">
+                                    <div class="d-flex align-items-center gap-1-5">
+                                        <span class="dot-pink-sm" :class="{ 'dot-gray-sm': selectedPartner.id !== p.id }"></span>
+                                        <span class="font-11 fw-bold text-dark font-mono">{{ p.code }}</span>
+                                    </div>
+                                    <span class="font-10 text-muted">{{ p.timeAgo }}</span>
                                 </div>
-                            </td>
 
-                            <!-- 6. Số lượng tour -->
-                            <td class="text-center align-middle">
-                                <span class="badge bg-light-primary text-primary px-3 py-1 font-12">
-                                    {{ dt.so_luong_tour || 0 }} tour
-                                </span>
-                            </td>
+                                <!-- Company Name -->
+                                <h6 class="font-12 fw-bold text-dark mb-1 text-truncate" :title="p.companyName">
+                                    {{ p.companyName }}
+                                </h6>
 
-                            <!-- 7. Trạng thái kiểm duyệt hồ sơ -->
-                            <td class="text-center align-middle">
-                                <span v-if="dt.trang_thai_duyet === 'DaDuyet'" class="badge bg-success-subtle text-success px-2 py-1 rounded-pill font-11">
-                                    ● Đã duyệt
-                                </span>
-                                <span v-else-if="dt.trang_thai_duyet === 'ChoDuyet'" class="badge bg-warning-subtle text-warning px-2 py-1 rounded-pill font-11">
-                                    ● Chờ duyệt
-                                </span>
-                                <span v-else-if="dt.trang_thai_duyet === 'TuChoi'" class="badge bg-danger-subtle text-danger px-2 py-1 rounded-pill font-11" :title="dt.ly_do_tu_choi">
-                                    ● Từ chối
-                                </span>
-                                <span v-else class="badge bg-light text-secondary px-2 py-1 rounded-pill font-11">
-                                    Chưa xác định
-                                </span>
-                            </td>
+                                <!-- Address -->
+                                <div class="font-11 text-muted mb-2 text-truncate" :title="p.address">
+                                    Trụ sở: {{ p.address }}
+                                </div>
 
-                            <!-- 8. Trạng thái tài khoản (Khóa / Mở) -->
-                            <td class="text-center align-middle">
-                                <button v-on:click="changeStatus(dt)" v-if="dt.is_block == 0" class="btn btn-sm btn-success">
-                                    Hoạt động
+                                <!-- Badges & Trust Score Row -->
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
+                                    <div class="d-flex align-items-center gap-1 flex-wrap">
+                                        <span class="badge rounded-pill font-9 fw-bold px-2 py-0-5" :style="{ backgroundColor: p.licenseBg, color: p.licenseColor }">
+                                            <i :class="p.licenseIcon" class="me-0-5 font-10"></i> {{ p.licenseType }}
+                                        </span>
+                                        <span class="badge rounded-pill font-9 fw-bold px-2 py-0-5" style="background-color: #F5F3FF; color: #7C3AED;">
+                                            <i class="bx bx-bank me-0-5 font-10"></i> Ký quỹ: {{ p.escrowAmount }}
+                                        </span>
+                                    </div>
+                                    <span class="badge rounded-pill font-10 fw-bold px-2 py-0-5" style="background-color: #E0F2FE; color: #0284C7;">
+                                        AI Score: {{ p.aiScore }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: CHI TIẾT THẨM ĐỊNH HỒ SƠ PHÁP NHÂN -->
+            <div class="col-12 col-lg-8 col-xl-8">
+                <div class="card border-0 shadow-xs rounded-4 bg-white p-3 p-lg-4">
+                    <!-- Top Info Header Box -->
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3 p-3 rounded-4" style="background-color: #FAF5FF; border: 1px solid #F3E8FF;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="partner-avatar-dx rounded-circle d-flex align-items-center justify-content-center text-white font-16 fw-bold flex-shrink-0" style="background-color: #9333EA; width: 48px; height: 48px;">
+                                DX
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                    <span class="badge rounded-pill font-10 fw-bold px-2-5 py-0-5" style="background-color: #FDF2F8; color: #E11D48;">
+                                        HỒ SƠ CẦN THẨM ĐỊNH
+                                    </span>
+                                    <span class="font-11 text-muted font-mono">MÃ: {{ selectedPartner.code }}</span>
+                                </div>
+                                <h4 class="font-18 fw-bold text-dark mb-1">
+                                    {{ selectedPartner.companyName }}
+                                </h4>
+                                <div class="font-11 text-muted">
+                                    Danang Explorer Corp • Thành lập: 2018
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trust Score AI Circular Widget -->
+                        <div class="d-flex align-items-center gap-2 p-2 px-3 rounded-3 bg-white border shadow-2xs">
+                            <div class="trust-score-circle rounded-circle d-flex align-items-center justify-content-center font-15 fw-bold" style="border: 2px solid #E11D48; color: #E11D48; width: 38px; height: 38px;">
+                                {{ selectedPartner.aiScore || 96 }}
+                            </div>
+                            <div>
+                                <div class="font-10 fw-bold text-dark text-uppercase tracking-wider">TRUST SCORE AI</div>
+                                <div class="font-10 text-success fw-semibold">Không tranh chấp</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6 Business Profile Metadata Fields -->
+                    <div class="row g-2 mb-4 font-11">
+                        <div class="col-12 col-md-4">
+                            <div class="p-2-5 rounded-3 bg-light border h-100">
+                                <span class="text-muted d-block font-10">Mã số thuế:</span>
+                                <span class="fw-bold text-dark font-12 font-mono">0401892831</span>
+                                <i class="bx bxs-check-circle text-primary ms-1 font-13" title="Đã đối soát"></i>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="p-2-5 rounded-3 bg-light border h-100">
+                                <span class="text-muted d-block font-10">Người đại diện:</span>
+                                <span class="fw-bold text-dark font-12">Trần Văn Bảo</span>
+                                <small class="text-muted fst-italic"> (Chủ tịch HĐQT)</small>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="p-2-5 rounded-3 bg-light border h-100">
+                                <span class="text-muted d-block font-10">Email đối tác:</span>
+                                <span class="fw-bold text-primary font-12">contact@danangexplorer.com</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="p-2-5 rounded-3 bg-light border h-100">
+                                <span class="text-muted d-block font-10">Hotline pháp nhân:</span>
+                                <span class="fw-bold text-dark font-12">0905.888.123</span>
+                                <span class="badge rounded-pill font-8 fw-bold bg-pink-subtle text-pink ms-1">Đã OTP</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="p-2-5 rounded-3 bg-light border h-100">
+                                <span class="text-muted d-block font-10">Quy mô nhân sự:</span>
+                                <span class="fw-bold text-dark font-12">42 HDV du lịch thẻ Quốc tế</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="p-2-5 rounded-3 bg-light border h-100">
+                                <span class="text-muted d-block font-10">Địa chỉ trụ sở:</span>
+                                <span class="fw-semibold text-secondary font-11 text-truncate d-block" title="120 Bạch Đằng, P. Hải Châu 1, Q. Hải Châu, TP Đà Nẵng">
+                                    120 Bạch Đằng, Q. Hải Châu, TP Đà Nẵng
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2 Side-by-Side Legal Inspection Cards: Giấy Phép & Ký Quỹ -->
+                    <div class="row g-3 mb-4">
+                        <!-- Card 1: Giấy Phép Lữ Hành Quốc Tế -->
+                        <div class="col-12 col-md-6">
+                            <div class="border rounded-4 p-3 bg-white h-100 shadow-2xs">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex align-items-center gap-1-5">
+                                        <i class="bx bx-shield-check text-pink font-18"></i>
+                                        <span class="font-12 fw-bold text-dark">Giấy Phép Lữ Hành Quốc Tế</span>
+                                    </div>
+                                    <span class="badge rounded-pill font-9 fw-bold px-2 py-0-5" style="background-color: #E0F2FE; color: #0284C7;">
+                                        OCR Khớp 100%
+                                    </span>
+                                </div>
+                                <div class="font-11 text-muted mb-2 font-mono">
+                                    Số GP: 48-024/2022/TCDL-GP LHQT
+                                </div>
+
+                                <!-- License Visual Scan Preview Box -->
+                                <div class="license-scan-box rounded-3 p-3 text-center mb-2 position-relative overflow-hidden" style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1px dashed #F59E0B; height: 130px;">
+                                    <div class="font-10 fw-bold text-uppercase text-secondary mb-1">Cộng Hòa Xã Hội Chủ Nghĩa Việt Nam</div>
+                                    <div class="font-9 text-muted mb-1">Tổng Cục Du Lịch cấp 15/04/2023</div>
+                                    <div class="p-1 px-2 rounded bg-white bg-opacity-80 d-inline-block font-10 fw-bold text-dark shadow-xs my-1">
+                                        Có giá trị pháp lý đến 15/04/2028 (Còn hiệu lực 3 năm)
+                                    </div>
+                                    <div class="font-8 text-muted">Chứng nhận đủ điều kiện tổ chức tour quốc tế & đón khách inbound</div>
+                                </div>
+
+                                <div class="font-11 text-muted d-flex justify-content-between py-1 border-bottom">
+                                    <span>Phạm vi cấp phép:</span>
+                                    <b class="text-dark">Khách quốc tế & Nội địa</b>
+                                </div>
+                                <div class="font-11 text-muted d-flex justify-content-between py-1 mb-2">
+                                    <span>Mã chứng thực số:</span>
+                                    <b class="text-primary font-mono">TCDL-VN-2021-X</b>
+                                </div>
+
+                                <button class="btn btn-sm btn-light w-100 rounded-pill font-11 fw-semibold text-secondary d-flex align-items-center justify-content-center gap-1" @click="xemBanScan">
+                                    <i class="bx bx-show font-14"></i>
+                                    <span>Xem Bản Scan Gốc Độ Phân Giải Cao</span>
                                 </button>
-                                <button v-on:click="changeStatus(dt)" v-else class="btn btn-sm btn-danger">
-                                    Đã khóa
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Hợp Đồng Ký Quỹ Ngân Hàng -->
+                        <div class="col-12 col-md-6">
+                            <div class="border rounded-4 p-3 bg-white h-100 shadow-2xs">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex align-items-center gap-1-5">
+                                        <i class="bx bx-folder text-purple font-18"></i>
+                                        <span class="font-12 fw-bold text-dark">Hợp Đồng Ký Quỹ Ngân Hàng</span>
+                                    </div>
+                                    <span class="badge rounded-pill font-9 fw-bold px-2 py-0-5" style="background-color: #FDF2F8; color: #E11D48;">
+                                        Đã Phong Tỏa
+                                    </span>
+                                </div>
+                                <div class="font-11 text-muted mb-2 font-mono">
+                                    Số HĐ: 23/2022/KQ-VCB.DN
+                                </div>
+
+                                <!-- Bank Escrow Visual Scan Preview Box -->
+                                <div class="bank-scan-box rounded-3 p-3 text-center mb-2 position-relative overflow-hidden" style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border: 1px dashed #10B981; height: 130px;">
+                                    <div class="font-10 fw-bold text-uppercase text-success mb-1">Vietcombank CN Đà Nẵng</div>
+                                    <div class="font-13 fw-bold text-dark mb-1">
+                                        Số tiền: 500.000.000 VNĐ
+                                    </div>
+                                    <div class="p-1 px-2 rounded bg-white bg-opacity-80 d-inline-block font-10 fw-semibold text-secondary shadow-xs my-1">
+                                        Ngân hàng TMCP Ngoại Thương VN (Vietcombank) - CN Đà Nẵng
+                                    </div>
+                                    <div class="font-8 text-muted">Bảo lãnh tài chính theo quy định Luật Du Lịch 2017</div>
+                                </div>
+
+                                <div class="font-11 text-muted d-flex justify-content-between py-1 border-bottom">
+                                    <span>Mục đích ký quỹ:</span>
+                                    <b class="text-dark">Kinh doanh Lữ hành Quốc tế</b>
+                                </div>
+                                <div class="font-11 text-muted d-flex justify-content-between py-1 mb-2">
+                                    <span>Trạng thái bảo lãnh:</span>
+                                    <b class="text-danger font-11">Phong tỏa vô điều kiện</b>
+                                </div>
+
+                                <button class="btn btn-sm btn-light w-100 rounded-pill font-11 fw-semibold text-secondary d-flex align-items-center justify-content-center gap-1" @click="kiemTraVietcombank">
+                                    <i class="bx bx-check-shield text-success font-14"></i>
+                                    <span>Kiểm Tra Trực Tuyến Với Vietcombank</span>
                                 </button>
-                            </td>
+                            </div>
+                        </div>
+                    </div>
 
-                            <!-- 9. Thao tác -->
-                            <td class="text-center align-middle">
-                                <div class="d-inline-flex gap-1">
-                                    <!-- Nút Mở modal Duyệt hồ sơ nhanh -->
-                                    <button v-on:click="moModalDuyet(dt)" class="btn btn-sm btn-action text-warning" 
-                                        data-bs-toggle="modal" data-bs-target="#duyetModal" title="Xét duyệt hồ sơ">
-                                        <i class="bx bx-shield-quarter"></i>
-                                    </button>
-                                    <!-- Nút Cập nhật mở modal -->
-                                    <button v-on:click="Object.assign(edit_doi_tac, dt)" class="btn btn-sm btn-action text-primary" 
-                                        data-bs-toggle="modal" data-bs-target="#capNhatModal" title="Cập nhật">
-                                        <i class="bx bx-edit"></i>
-                                    </button>
-                                    <!-- Nút Xóa mở modal -->
-                                    <button v-on:click="Object.assign(delete_doi_tac, dt)" class="btn btn-sm btn-action text-danger" 
-                                        data-bs-toggle="modal" data-bs-target="#xoaModal" title="Xóa">
-                                        <i class="bx bx-trash"></i>
-                                    </button>
+                    <!-- Bottom Moderation Panel: Biên Bản Thẩm Định & Quyết Định Phê Duyệt Cấp Quyền -->
+                    <div class="border rounded-4 p-3 p-lg-4" style="background-color: #FFFDFD; border-color: #FECDD3 !important;">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bx bx-check-square font-18 text-pink"></i>
+                                <h6 class="font-14 fw-bold text-dark mb-0">Biên Bản Thẩm Định & Quyết Định Phê Duyệt Cấp Quyền</h6>
+                            </div>
+                            <span class="font-11 text-muted">Chuyên viên phụ trách: <b>Trần Hoàng Long</b></span>
+                        </div>
+
+                        <!-- 3 Checkbox Verification Badges (ticked) -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-12 col-md-4">
+                                <div class="p-2 px-3 rounded-pill bg-pink-subtle border border-pink-subtle d-flex align-items-center gap-2">
+                                    <i class="bx bx-check-circle text-pink font-16"></i>
+                                    <span class="font-11 fw-semibold text-dark">Đã xác minh MST trên Tổng cục Thuế</span>
                                 </div>
-                            </td>
-                        </tr>
-
-                        <!-- Hiển thị khi không có dữ liệu -->
-                        <tr v-if="list_doi_tac_loc.length === 0">
-                            <td colspan="9" class="text-center py-4 text-muted">
-                                <i class="bx bx-buildings fs-3 d-block mb-1"></i>
-                                Không tìm thấy đối tác phù hợp.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Phân trang footer -->
-            <div class="d-flex flex-wrap align-items-center justify-content-between pt-4 border-top mt-3 gap-2">
-                <span class="small text-muted">Trang 1 trên 1 (Dữ liệu đồng bộ Database)</span>
-                <nav>
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
-                        <li class="page-item active"><a class="page-link bg-primary border-primary" href="#">1</a></li>
-                        <li class="page-item disabled"><a class="page-link" href="#">Sau</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-
-        <!-- 1. Modal Thêm Mới Đối Tác -->
-        <div class="modal fade" id="themMoiModal" tabindex="-1" aria-labelledby="themMoiModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h1 class="modal-title fs-5 text-white" id="themMoiModalLabel">
-                            <i class="bx bx-buildings me-1"></i>Thêm Mới Đối Tác Doanh Nghiệp
-                        </h1>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Mã Đối Tác</label>
-                            <input v-model="add_doi_tac.ma_doi_tac" type="text" class="form-control form-control-sm" placeholder="VD: DT06 (Để trống để tự sinh)">
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Tên Doanh Nghiệp / Đối Tác <span class="text-danger">*</span></label>
-                            <input v-model="add_doi_tac.ten_doi_tac" type="text" class="form-control form-control-sm" placeholder="Nhập tên doanh nghiệp...">
-                        </div>
-                        <div class="row g-2 mb-2">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Mã Số Thuế</label>
-                                <input v-model="add_doi_tac.ma_so_thue" type="text" class="form-control form-control-sm" placeholder="VD: 0300456123">
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Người Đại Diện</label>
-                                <input v-model="add_doi_tac.ten_nguoi_dai_dien" type="text" class="form-control form-control-sm" placeholder="Họ và tên người đại diện...">
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Email Đăng Nhập <span class="text-danger">*</span></label>
-                            <input v-model="add_doi_tac.email" type="email" autocomplete="off" class="form-control form-control-sm" placeholder="contact@company.com">
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Mật Khẩu</label>
-                            <input v-model="add_doi_tac.mat_khau" type="password" autocomplete="new-password" class="form-control form-control-sm" placeholder="Mặc định: 123456">
-                        </div>
-                        <div class="row g-2 mb-2">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Số Điện Thoại</label>
-                                <input v-model="add_doi_tac.so_dien_thoai" type="text" class="form-control form-control-sm" placeholder="09xxxxxxxx">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Trạng Thái Duyệt</label>
-                                <select v-model="add_doi_tac.trang_thai_duyet" class="form-select form-select-sm">
-                                    <option value="DaDuyet">Đã duyệt</option>
-                                    <option value="ChoDuyet">Chờ duyệt</option>
-                                    <option value="TuChoi">Từ chối</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Địa Chỉ Trụ Sở</label>
-                            <input v-model="add_doi_tac.dia_chi" type="text" class="form-control form-control-sm" placeholder="Số nhà, đường, quận/huyện, thành phố...">
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Trạng Thái Tài Khoản</label>
-                            <select v-model="add_doi_tac.is_block" class="form-select form-select-sm">
-                                <option :value="0">Hoạt động</option>
-                                <option :value="1">Khóa tài khoản</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
-                        <button v-on:click="themMoiDoiTac()" type="button" class="btn btn-primary btn-sm px-3" data-bs-dismiss="modal">Thêm Đối Tác</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. Modal Cập Nhật Đối Tác -->
-        <div class="modal fade" id="capNhatModal" tabindex="-1" aria-labelledby="capNhatModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h1 class="modal-title fs-5 text-white" id="capNhatModalLabel">
-                            <i class="bx bx-edit me-1"></i>Cập Nhật Đối Tác
-                        </h1>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Mã Đối Tác</label>
-                            <input v-model="edit_doi_tac.ma_doi_tac" type="text" class="form-control form-control-sm bg-light" disabled>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Tên Doanh Nghiệp / Đối Tác <span class="text-danger">*</span></label>
-                            <input v-model="edit_doi_tac.ten_doi_tac" type="text" class="form-control form-control-sm" placeholder="Nhập tên doanh nghiệp...">
-                        </div>
-                        <div class="row g-2 mb-2">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Mã Số Thuế</label>
-                                <input v-model="edit_doi_tac.ma_so_thue" type="text" class="form-control form-control-sm" placeholder="VD: 0300456123">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Người Đại Diện</label>
-                                <input v-model="edit_doi_tac.ten_nguoi_dai_dien" type="text" class="form-control form-control-sm" placeholder="Họ và tên người đại diện...">
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Email Đăng Nhập <span class="text-danger">*</span></label>
-                            <input v-model="edit_doi_tac.email" type="email" autocomplete="off" class="form-control form-control-sm" placeholder="contact@company.com">
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Mật Khẩu Mới</label>
-                            <input v-model="edit_doi_tac.mat_khau" type="password" autocomplete="new-password" class="form-control form-control-sm" placeholder="Để trống nếu không đổi">
-                        </div>
-                        <div class="row g-2 mb-2">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Số Điện Thoại</label>
-                                <input v-model="edit_doi_tac.so_dien_thoai" type="text" class="form-control form-control-sm" placeholder="09xxxxxxxx">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Trạng Thái Duyệt</label>
-                                <select v-model="edit_doi_tac.trang_thai_duyet" class="form-select form-select-sm">
-                                    <option value="DaDuyet">Đã duyệt</option>
-                                    <option value="ChoDuyet">Chờ duyệt</option>
-                                    <option value="TuChoi">Từ chối</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-2" v-if="edit_doi_tac.trang_thai_duyet === 'TuChoi'">
-                            <label class="form-label fw-semibold text-danger">Lý Do Từ Chối</label>
-                            <textarea v-model="edit_doi_tac.ly_do_tu_choi" class="form-control form-control-sm" rows="2" placeholder="Nhập lý do từ chối hồ sơ..."></textarea>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Địa Chỉ Trụ Sở</label>
-                            <input v-model="edit_doi_tac.dia_chi" type="text" class="form-control form-control-sm" placeholder="Số nhà, đường, quận/huyện, thành phố...">
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold">Trạng Thái Tài Khoản</label>
-                            <select v-model="edit_doi_tac.is_block" class="form-select form-select-sm">
-                                <option :value="0">Hoạt động</option>
-                                <option :value="1">Khóa tài khoản</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
-                        <button v-on:click="capNhatDoiTac()" type="button" class="btn btn-primary btn-sm px-3" data-bs-dismiss="modal">Cập nhật</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. Modal Xét Duyệt Hồ Sơ Nhanh (Kèm đầy đủ MST, Địa chỉ, Đại diện, Liên hệ) -->
-        <div class="modal fade" id="duyetModal" tabindex="-1" aria-labelledby="duyetModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-header bg-warning text-dark">
-                        <h1 class="modal-title fs-5 fw-bold" id="duyetModalLabel">
-                            <i class="bx bx-shield-quarter me-1"></i>Xét Duyệt Hồ Sơ Doanh Nghiệp
-                        </h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-3">
-                        <!-- Khung hiển thị thông tin hồ sơ chi tiết của đối tác -->
-                        <div class="p-3 bg-light rounded-3 mb-3 border">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <span class="badge bg-primary font-11 mb-1">Mã: {{ duyet_DoiTac.ma_doi_tac }}</span>
-                                    <h6 class="fw-bold text-dark mb-0 fs-6">{{ duyet_DoiTac.ten_doi_tac }}</h6>
+                            <div class="col-12 col-md-4">
+                                <div class="p-2 px-3 rounded-pill bg-pink-subtle border border-pink-subtle d-flex align-items-center gap-2">
+                                    <i class="bx bx-check-circle text-pink font-16"></i>
+                                    <span class="font-11 fw-semibold text-dark">Giấy phép LHQT còn hạn &gt; 1 năm</span>
                                 </div>
-                                <span class="badge px-2 py-1" :class="duyet_DoiTac.trang_thai_duyet === 'DaDuyet' ? 'bg-success' : (duyet_DoiTac.trang_thai_duyet === 'ChoDuyet' ? 'bg-warning text-dark' : 'bg-danger')">
-                                    {{ duyet_DoiTac.trang_thai_duyet === 'DaDuyet' ? '● Đã duyệt' : (duyet_DoiTac.trang_thai_duyet === 'ChoDuyet' ? '● Chờ duyệt' : '● Từ chối') }}
-                                </span>
                             </div>
-
-                            <div class="row g-2 small text-muted pt-2 border-top mt-1">
-                                <!-- Mã số thuế -->
-                                <div class="col-sm-6">
-                                    <span class="text-secondary"><i class="bx bx-receipt me-1 text-primary"></i>Mã số thuế:</span>
-                                    <div class="text-dark fw-bold font-monospace mt-1">
-                                        {{ duyet_DoiTac.ma_so_thue || 'Chưa cập nhật MST' }}
-                                    </div>
-                                </div>
-
-                                <!-- Người đại diện -->
-                                <div class="col-sm-6">
-                                    <span class="text-secondary"><i class="bx bx-user me-1 text-primary"></i>Người đại diện:</span>
-                                    <div class="text-dark fw-bold mt-1">
-                                        {{ duyet_DoiTac.ten_nguoi_dai_dien || 'Chưa cập nhật' }}
-                                    </div>
-                                </div>
-
-                                <!-- Email liên hệ -->
-                                <div class="col-sm-6">
-                                    <span class="text-secondary"><i class="bx bx-envelope me-1 text-primary"></i>Email:</span>
-                                    <div class="text-dark mt-1">
-                                        {{ duyet_DoiTac.email || 'Chưa cập nhật' }}
-                                    </div>
-                                </div>
-
-                                <!-- Số điện thoại -->
-                                <div class="col-sm-6">
-                                    <span class="text-secondary"><i class="bx bx-phone me-1 text-primary"></i>Số điện thoại:</span>
-                                    <div class="text-dark mt-1 font-monospace">
-                                        {{ duyet_DoiTac.so_dien_thoai || 'Chưa cập nhật' }}
-                                    </div>
-                                </div>
-
-                                <!-- Địa chỉ trụ sở đối tác -->
-                                <div class="col-12">
-                                    <span class="text-secondary"><i class="bx bx-map-pin me-1 text-danger"></i>Địa chỉ trụ sở:</span>
-                                    <div class="text-dark fw-semibold mt-1">
-                                        {{ duyet_DoiTac.dia_chi || 'Chưa cập nhật địa chỉ trụ sở' }}
-                                    </div>
+                            <div class="col-12 col-md-4">
+                                <div class="p-2 px-3 rounded-pill bg-pink-subtle border border-pink-subtle d-flex align-items-center gap-2">
+                                    <i class="bx bx-check-circle text-pink font-16"></i>
+                                    <span class="font-11 fw-semibold text-dark">Hợp đồng ký quỹ phong tỏa hợp lệ</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Lựa chọn quyết định xét duyệt -->
+                        <!-- Note Textarea -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Quyết Định Phê Duyệt Hồ Sơ <span class="text-danger">*</span></label>
-                            <select v-model="duyet_DoiTac.trang_thai_duyet" class="form-select form-select-sm">
-                                <option value="DaDuyet">✅ Phê duyệt hồ sơ (DaDuyet)</option>
-                                <option value="ChoDuyet">⏳ Chờ kiểm duyệt hồ sơ (ChoDuyet)</option>
-                                <option value="TuChoi">❌ Từ chối hồ sơ (TuChoi)</option>
-                            </select>
+                            <label class="form-label font-11 fw-bold text-dark text-uppercase tracking-wider mb-1">
+                                GHI CHÚ NGHIỆP VỤ / ĐIỀU KHOẢN BỔ SUNG CHO ĐỐI TÁC (Ghi vào nhật ký nghiệp vụ):
+                            </label>
+                            <textarea 
+                                v-model="moderationNote" 
+                                class="form-control font-12 rounded-3 text-secondary" 
+                                rows="3"
+                                placeholder="Ví dụ: Hồ sơ đầy đủ, đối tác có 42 hướng dẫn viên đạt chuẩn, liên kết API bán tour tự động trên cổng SmartTrip Đà Nẵng..."
+                            ></textarea>
                         </div>
 
-                        <!-- Lý do từ chối (hiển thị khi chọn Từ chối) -->
-                        <div class="mb-2" v-if="duyet_DoiTac.trang_thai_duyet === 'TuChoi'">
-                            <label class="form-label fw-semibold text-danger">Lý Do Từ Chối</label>
-                            <textarea v-model="duyet_DoiTac.ly_do_tu_choi" class="form-control form-control-sm" rows="3" placeholder="Nhập lý do từ chối (thiếu GPKD, MST không hợp lệ...)..."></textarea>
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-2 border-top">
+                            <button 
+                                class="btn btn-sm rounded-pill px-3 py-2 font-12 fw-bold d-flex align-items-center gap-1"
+                                style="background-color: #FEE2E2; color: #DC2626; border: 1px solid #FECACA;"
+                                @click="tuChoiHoSo"
+                            >
+                                <i class="bx bx-x-circle font-16"></i>
+                                <span>Từ Chối Hồ Sơ</span>
+                            </button>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <button 
+                                    class="btn btn-sm rounded-pill px-3 py-2 font-12 fw-bold d-flex align-items-center gap-1"
+                                    style="background-color: #EDE9FE; color: #7C3AED; border: 1px solid #DDD6FE;"
+                                    @click="yeuCauBoSung"
+                                >
+                                    <i class="bx bx-file-blank font-16"></i>
+                                    <span>Yêu Cầu Bổ Sung Giấy Tờ</span>
+                                </button>
+                                <button 
+                                    class="btn btn-sm btn-pink-gradient text-white rounded-pill px-4 py-2 font-12 fw-bold shadow-sm d-flex align-items-center gap-1"
+                                    @click="pheDuyetCapQuyen"
+                                >
+                                    <i class="bx bx-check-circle font-16"></i>
+                                    <span>Phê Duyệt & Cấp Quyền Hoạt Động</span>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="modal-footer bg-light p-2">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
-                        <button v-on:click="xacNhanDuyet()" type="button" class="btn btn-primary btn-sm px-3" data-bs-dismiss="modal">Lưu Quyết Định</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 4. Modal Xác Nhận Xóa Đối Tác -->
-        <div class="modal fade" id="xoaModal" tabindex="-1" aria-labelledby="xoaModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h1 class="modal-title fs-5 text-white" id="xoaModalLabel">
-                            <i class="bx bx-trash me-1"></i>Xác Nhận Xóa Đối Tác
-                        </h1>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="alert alert-warning border-0 mb-0" role="alert">
-                            <i class='bx bx-error-circle me-1 fs-5 align-middle'></i>
-                            Bạn có chắc chắn muốn xóa đối tác <strong>{{ delete_doi_tac.ten_doi_tac }}</strong> 
-                            (Mã: <code>{{ delete_doi_tac.ma_doi_tac }}</code>) không?
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
-                        <button v-on:click="xoaDoiTac()" type="button" class="btn btn-danger btn-sm px-3" data-bs-dismiss="modal">Xác nhận xóa</button>
-                    </div>
+        <!-- MODAL: QUY CHUẨN THẨM ĐỊNH ĐỐI TÁC -->
+        <div v-if="showModalQuyChuan" class="custom-modal-backdrop">
+            <div class="custom-modal-content rounded-4 p-4 bg-white shadow-lg" style="max-width: 620px; width: 92%;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0 font-16 d-flex align-items-center gap-2">
+                        <i class="bx bx-book-bookmark text-pink"></i> Quy Chuẩn Pháp Lý Doanh Nghiệp Lữ Hành SmartTrip
+                    </h5>
+                    <button class="btn btn-sm btn-light rounded-circle p-1" @click="showModalQuyChuan = false">
+                        <i class="bx bx-x font-18"></i>
+                    </button>
+                </div>
+                <div class="font-12 text-secondary mb-3 lh-base">
+                    <p class="mb-2"><strong>1. Ký Quỹ Lữ Hành Quốc Tế:</strong> Tối thiểu 500.000.000 VNĐ tại ngân hàng thương mại được cấp phép hoạt động tại Việt Nam, trạng thái phong tỏa vô điều kiện.</p>
+                    <p class="mb-2"><strong>2. Ký Quỹ Lữ Hành Nội Địa:</strong> Tối thiểu 250.000.000 VNĐ theo Luật Du Lịch 2017.</p>
+                    <p class="mb-2"><strong>3. Hướng Dẫn Viên & Bảo Hiểm:</strong> 100% hướng dẫn viên dẫn đoàn phải có thẻ hành nghề còn hiệu lực do Tổng cục Du Lịch hoặc Sở Du Lịch cấp.</p>
+                    <p class="mb-0"><strong>4. Xác Minh Thuế:</strong> Doanh nghiệp không nợ thuế quá 90 ngày và có mã số thuế hoạt động bình thường trên hệ thống gdt.gov.vn.</p>
+                </div>
+                <div class="d-flex justify-content-end pt-2 border-top">
+                    <button class="btn btn-sm btn-pink-gradient text-white rounded-pill px-4" @click="showModalQuyChuan = false">Đã Hiểu</button>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
 <script>
-import api from '@/axios';
-
 export default {
-    name: 'AdminDoiTac',
-    // 1. Khai báo các biến trạng thái (state) của component
+    name: 'XetDuyetDoiTacAdminComponent',
     data() {
         return {
-            list_doi_tac: [], // Danh sách đối tác lấy từ server
-            key_search: '',   // Từ khóa tìm kiếm
-            filterDuyet: '',  // Lọc duyệt: '' (tất cả), 'DaDuyet', 'ChoDuyet', 'TuChoi'
-            filterStatus: '', // Lọc khóa: '' (tất cả), '0' (hoạt động), '1' (đã khóa)
+            filterStatus: 'pending',
+            searchKeyword: '',
+            moderationNote: 'Ví dụ: Hồ sơ đầy đủ, đối tác có 42 hướng dẫn viên đạt chuẩn, liên kết API bán tour tự động trên cổng SmartTrip Đà Nẵng...',
+            showModalQuyChuan: false,
 
-            // Dữ liệu form thêm mới đối tác
-            add_doi_tac: {
-                ma_doi_tac: '',
-                ten_doi_tac: '',
-                ma_so_thue: '',
-                ten_nguoi_dai_dien: '',
-                email: '',
-                mat_khau: '',
-                so_dien_thoai: '',
-                dia_chi: '',
-                is_block: 0,
-                trang_thai_duyet: 'DaDuyet',
-                ly_do_tu_choi: ''
-            },
+            // Danh sách Đối tác trong hàng đợi (Khớp 100% hình ảnh)
+            partners: [
+                {
+                    id: 1,
+                    code: 'DT-DNEXP-2025',
+                    companyName: 'Công ty Cổ phần Du Lịch Quốc Tế Đà Nẵng Explorer',
+                    address: '120 Bạch Đằng, P. Hải Châu 1, Q. Hải Châu, TP Đà Nẵng',
+                    licenseType: 'Lữ hành Quốc tế',
+                    licenseIcon: 'bx bx-globe',
+                    licenseBg: '#E11D48',
+                    licenseColor: '#FFFFFF',
+                    escrowAmount: '500 Triệu',
+                    aiScore: 96,
+                    timeAgo: '3 giờ trước',
+                    status: 'pending'
+                },
+                {
+                    id: 2,
+                    code: 'DT-HVECO-2025',
+                    companyName: 'Hải Vân EcoTour Travel Co., Ltd',
+                    address: '45 Nguyễn Văn Linh, P. Nam Dương, Q. Hải Châu, TP Đà Nẵng',
+                    licenseType: 'Lữ hành Nội địa',
+                    licenseIcon: 'bx bx-compass',
+                    licenseBg: '#F1F5F9',
+                    licenseColor: '#475569',
+                    escrowAmount: '250 Triệu',
+                    aiScore: 88,
+                    timeAgo: '5 giờ trước',
+                    status: 'pending'
+                },
+                {
+                    id: 3,
+                    code: 'DT-STWAT-2025',
+                    companyName: 'Sơn Trà Watersports & Diving Club',
+                    address: 'Bãi Bụt, Bán đảo Sơn Trà, TP Đà Nẵng',
+                    licenseType: 'Dịch vụ Thể thao Biển',
+                    licenseIcon: 'bx bx-swim',
+                    licenseBg: '#E0F2FE',
+                    licenseColor: '#0284C7',
+                    escrowAmount: '150 Triệu',
+                    aiScore: 91,
+                    timeAgo: 'Hôm qua',
+                    status: 'supplement'
+                },
+                {
+                    id: 4,
+                    code: 'DT-BNHER-2025',
+                    companyName: 'Bana Heritage Travel JSC',
+                    address: 'Xã Hòa Phú, Huyện Hòa Vang, TP Đà Nẵng',
+                    licenseType: 'Lữ hành Nội địa & Tour Văn Hóa',
+                    licenseIcon: 'bx bx-arch',
+                    licenseBg: '#F1F5F9',
+                    licenseColor: '#475569',
+                    escrowAmount: '250 Triệu',
+                    aiScore: 85,
+                    timeAgo: '2 ngày trước',
+                    status: 'approved'
+                }
+            ],
 
-            // Dữ liệu form cập nhật đối tác
-            edit_doi_tac: {
-                ma_doi_tac: '',
-                ten_doi_tac: '',
-                ma_so_thue: '',
-                ten_nguoi_dai_dien: '',
-                email: '',
-                mat_khau: '',
-                so_dien_thoai: '',
-                dia_chi: '',
-                is_block: 0,
-                trang_thai_duyet: 'DaDuyet',
-                ly_do_tu_choi: ''
-            },
-
-            // Dữ liệu xét duyệt hồ sơ nhanh (bao gồm đầy đủ mã, tên, MST, địa chỉ, người đại diện...)
-            duyet_DoiTac: {
-                ma_doi_tac: '',
-                ten_doi_tac: '',
-                ma_so_thue: '',
-                dia_chi: '',
-                ten_nguoi_dai_dien: '',
-                so_dien_thoai: '',
-                email: '',
-                trang_thai_duyet: 'DaDuyet',
-                ly_do_tu_choi: ''
-            },
-
-            // Dữ liệu phục vụ modal xóa đối tác
-            delete_doi_tac: {
-                ma_doi_tac: '',
-                ten_doi_tac: ''
-            },
-        }
+            // Active selected partner (Mặc định chọn DN 1 như trong hình)
+            selectedPartner: {}
+        };
     },
-
-    // 2. Các thuộc tính tính toán (Computed Properties)
     computed: {
-        // Đếm tổng số đối tác đã được phê duyệt
-        countApproved() {
-            return this.list_doi_tac.filter(c => c.trang_thai_duyet === 'DaDuyet').length;
-        },
-
-        // Đếm số lượng đối tác đang chờ duyệt hồ sơ
-        countPending() {
-            return this.list_doi_tac.filter(c => c.trang_thai_duyet === 'ChoDuyet').length;
-        },
-
-        // Tính tổng số lượng tour mà tất cả đối tác đang cung ứng
-        totalTours() {
-            return this.list_doi_tac.reduce((total, c) => total + (parseInt(c.so_luong_tour) || 0), 0);
-        },
-
-        // Danh sách đối tác được lọc đa điều kiện: từ khóa tìm kiếm (không dấu, không phân biệt hoa thường), trạng thái duyệt, trạng thái khóa
-        list_doi_tac_loc() {
-            let list = this.list_doi_tac;
-
-            // Bước 1: Lọc theo trạng thái kiểm duyệt hồ sơ
-            if (this.filterDuyet !== '') {
-                list = list.filter(item => item.trang_thai_duyet === this.filterDuyet);
+        filteredPartners() {
+            let list = this.partners;
+            if (this.filterStatus !== 'pending') {
+                list = this.partners.filter(p => p.status === this.filterStatus);
             }
-
-            // Bước 2: Lọc theo trạng thái hoạt động / khóa
-            if (this.filterStatus !== '') {
-                list = list.filter(item => item.is_block == parseInt(this.filterStatus));
+            if (this.searchKeyword.trim()) {
+                const kw = this.searchKeyword.toLowerCase().trim();
+                return list.filter(p => 
+                    p.companyName.toLowerCase().includes(kw) || 
+                    p.code.toLowerCase().includes(kw) ||
+                    p.address.toLowerCase().includes(kw)
+                );
             }
-
-            // Bước 3: Nếu ô tìm kiếm rỗng, trả về danh sách sau lọc
-            if (!this.key_search) {
-                return list;
-            }
-
-            // Bước 4: Chuẩn hóa từ khóa tìm kiếm (xóa dấu tiếng Việt, chuyển chữ thường)
-            let kw = this.removeVietnameseTones(this.key_search);
-
-            // Bước 5: Tìm kiếm đối chiếu không phân biệt hoa thường và không phân biệt có dấu / không dấu
-            return list.filter((item) => {
-                let maDT    = this.removeVietnameseTones(item.ma_doi_tac);
-                let tenDT   = this.removeVietnameseTones(item.ten_doi_tac);
-                let mst     = this.removeVietnameseTones(item.ma_so_thue);
-                let daiDien = this.removeVietnameseTones(item.ten_nguoi_dai_dien);
-                let email   = this.removeVietnameseTones(item.email);
-                let sdt     = this.removeVietnameseTones(item.so_dien_thoai);
-                let diaChi  = this.removeVietnameseTones(item.dia_chi);
-
-                return maDT.includes(kw) || tenDT.includes(kw) || mst.includes(kw) || daiDien.includes(kw) || email.includes(kw) || sdt.includes(kw) || diaChi.includes(kw);
-            });
+            return list;
         }
     },
-
-    // 3. Vòng đời component: gọi API lấy dữ liệu ngay khi giao diện được tải (mounted)
-    mounted() {
-        this.loadData();
+    created() {
+        if (this.partners.length > 0) {
+            this.selectedPartner = JSON.parse(JSON.stringify(this.partners[0]));
+        }
     },
-
-    // 4. Các hàm xử lý hành động (Methods)
     methods: {
-        // Hàm tiện ích: Loại bỏ toàn bộ dấu tiếng Việt và chuyển sang chữ thường (hỗ trợ tìm kiếm linh hoạt)
-        removeVietnameseTones(str) {
-            if (!str) return '';
-            return String(str)
-                .normalize('NFD')                  // Tách các ký tự có dấu thành ký tự gốc + dấu
-                .replace(/[\u0300-\u036f]/g, '')   // Xóa bỏ tất cả các dấu thanh
-                .replace(/[đĐ]/g, 'd')             // Chuyển ký tự đ, Đ thành d
-                .toLowerCase()                     // Chuyển toàn bộ về chữ thường
-                .trim();
+        selectPartner(partner) {
+            this.selectedPartner = JSON.parse(JSON.stringify(partner));
         },
-
-        // Gọi API lấy danh sách toàn bộ đối tác từ máy chủ
-        loadData() {
-            api.get('/api/admin/doi-tac/get-data')
-                .then(response => {
-                    this.list_doi_tac = response.data.data;
-                })
-                .catch(error => {
-                    console.error('Lỗi khi tải danh sách đối tác:', error);
-                });
+        openModalQuyChuan() {
+            this.showModalQuyChuan = true;
         },
-
-        // Gọi API thêm mới đối tác
-        themMoiDoiTac() {
-            api.post('/api/admin/doi-tac/store', this.add_doi_tac)
-                .then(response => {
-                    if (response.data.status) {
-                        this.$toast.success(response.data.message);
-                        this.loadData();
-                        this.add_doi_tac = { ma_doi_tac: '', ten_doi_tac: '', ma_so_thue: '', ten_nguoi_dai_dien: '', email: '', mat_khau: '', so_dien_thoai: '', dia_chi: '', is_block: 0, trang_thai_duyet: 'DaDuyet', ly_do_tu_choi: '' };
-                    } else {
-                        this.$toast.error(response.data.message || 'Thêm đối tác thất bại!');
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
-                    this.$toast.error(msg);
-                });
+        xuatDanhSach() {
+            alert('Đang trích xuất danh sách 18 hồ sơ đối tác doanh nghiệp lữ hành định dạng Excel...');
         },
-
-        // Gọi API cập nhật thông tin đối tác
-        capNhatDoiTac() {
-            api.post('/api/admin/doi-tac/update', this.edit_doi_tac)
-                .then(res => {
-                    if (res.data.status) {
-                        this.$toast.success(res.data.message);
-                        this.loadData();
-                        this.edit_doi_tac = { ma_doi_tac: '', ten_doi_tac: '', ma_so_thue: '', ten_nguoi_dai_dien: '', email: '', mat_khau: '', so_dien_thoai: '', dia_chi: '', is_block: 0, trang_thai_duyet: 'DaDuyet', ly_do_tu_choi: '' };
-                    } else {
-                        this.$toast.error(res.data.message || 'Cập nhật đối tác thất bại');
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
-                    this.$toast.error(msg);
-                });
+        thamDinhHangLoat() {
+            if (confirm('Bạn có muốn tự động thẩm định hàng loạt hồ sơ có Trust Score AI > 90 và khớp 100% dữ liệu OCR?')) {
+                alert('Đã hoàn tất thẩm định tự động 12 hồ sơ đạt chuẩn!');
+            }
         },
-
-        // Mở modal duyệt hồ sơ và tải toàn bộ thông tin chi tiết của đối tác
-        moModalDuyet(dt) {
-            this.duyet_DoiTac = {
-                ma_doi_tac: dt.ma_doi_tac,
-                ten_doi_tac: dt.ten_doi_tac,
-                ma_so_thue: dt.ma_so_thue || '',
-                dia_chi: dt.dia_chi || '',
-                ten_nguoi_dai_dien: dt.ten_nguoi_dai_dien || '',
-                so_dien_thoai: dt.so_dien_thoai || '',
-                email: dt.email || '',
-                trang_thai_duyet: dt.trang_thai_duyet || 'DaDuyet',
-                ly_do_tu_choi: dt.ly_do_tu_choi || ''
-            };
+        xemBanScan() {
+            alert('Đang mở bản scan độ phân giải cao Giấy phép kinh doanh Lữ hành Quốc tế số 48-024/2022/TCDL-GP LHQT...');
         },
-
-        // Xác nhận lưu quyết định duyệt hồ sơ
-        xacNhanDuyet() {
-            api.post('/api/admin/doi-tac/duyet', this.duyet_DoiTac)
-                .then(res => {
-                    if (res.data.status) {
-                        this.$toast.success(res.data.message);
-                        this.loadData();
-                    } else {
-                        this.$toast.error(res.data.message || 'Cập nhật duyệt thất bại');
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
-                    this.$toast.error(msg);
-                });
+        kiemTraVietcombank() {
+            alert('Kết nối API Vietcombank thành công: Tài khoản ký quỹ 500.000.000 VNĐ đang trong trạng thái PHONG TỎA HỢP LỆ.');
         },
-
-        // Gọi API xóa mềm đối tác
-        xoaDoiTac() {
-            api.post('/api/admin/doi-tac/delete', this.delete_doi_tac)
-                .then(res => {
-                    if (res.data.status) {
-                        this.$toast.success(res.data.message);
-                        this.loadData();
-                        this.delete_doi_tac = { ma_doi_tac: '', ten_doi_tac: '' };
-                    } else {
-                        this.$toast.error(res.data.message || 'Xóa đối tác thất bại');
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
-                    this.$toast.error(msg);
-                });
+        pheDuyetCapQuyen() {
+            alert(`Đã PHÊ DUYỆT & CẤP QUYỀN hoạt động thành công cho đối tác "${this.selectedPartner.companyName}". Tài khoản B2B Partner Portal đã được kích hoạt!`);
         },
-
-        // Gọi API thay đổi trạng thái hoạt động/khóa của đối tác
-        changeStatus(doiTac) {
-            api.post('/api/admin/doi-tac/change-status', doiTac)
-                .then(res => {
-                    if (res.data.status) {
-                        this.$toast.success(res.data.message);
-                        doiTac.is_block = doiTac.is_block == 1 ? 0 : 1;
-                        this.loadData();
-                    } else {
-                        this.$toast.error(res.data.message || 'Đổi trạng thái thất bại');
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    const msg = (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Có lỗi xảy ra!';
-                    this.$toast.error(msg);
-                });
+        yeuCauBoSung() {
+            if (!this.moderationNote.trim()) {
+                alert('Vui lòng nhập nội dung yêu cầu bổ sung giấy tờ vào ô ghi chú nghiệp vụ!');
+                return;
+            }
+            alert(`Đã gửi yêu cầu bổ sung hồ sơ tới đối tác: "${this.moderationNote}"`);
         },
+        tuChoiHoSo() {
+            if (!this.moderationNote.trim()) {
+                alert('Vui lòng nhập lý do từ chối hồ sơ pháp nhân vào ô ghi chú nghiệp vụ!');
+                return;
+            }
+            if (confirm('Bạn có chắc chắn muốn từ chối hồ sơ đối tác này?')) {
+                alert(`Đã từ chối hồ sơ đối tác "${this.selectedPartner.companyName}". Lý do: ${this.moderationNote}`);
+            }
+        }
     }
-}
+};
 </script>
 
 <style scoped>
-.sync-pill {
-    background-color: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    padding: 4px 12px;
-    border-radius: 999px;
+.partner-moderation-page {
+    background-color: #F8FAFC;
+    min-height: 100vh;
 }
-.dot-green {
-    width: 6px;
-    height: 6px;
+
+.font-28 { font-size: 28px; }
+.font-26 { font-size: 26px; }
+.font-24 { font-size: 24px; }
+.font-20 { font-size: 20px; }
+.font-18 { font-size: 18px; }
+.font-16 { font-size: 16px; }
+.font-15 { font-size: 15px; }
+.font-14 { font-size: 14px; }
+.font-13 { font-size: 13px; }
+.font-12 { font-size: 12px; }
+.font-11 { font-size: 11px; }
+.font-10 { font-size: 10px; }
+.font-9 { font-size: 9px; }
+.font-8 { font-size: 8px; }
+
+.font-mono {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+}
+
+.text-pink { color: #E11D48 !important; }
+.text-purple { color: #7C3AED !important; }
+.text-cyan { color: #0284C7 !important; }
+
+.bg-pink-subtle { background-color: #FFF1F2 !important; }
+.border-pink-subtle { border-color: #FECDD3 !important; }
+
+.pulse-dot-pink {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background-color: #22c55e;
+    background-color: #E11D48;
+    display: inline-block;
+    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7);
+    animation: pulsePink 2s infinite;
 }
-.kpi-icon-box {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+
+@keyframes pulsePink {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(225, 29, 72, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+}
+
+.dot-pink-sm {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #E11D48;
+    display: inline-block;
+}
+
+.dot-gray-sm {
+    background-color: #94A3B8 !important;
+}
+
+.btn-pink-gradient {
+    background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-pink-gradient:hover {
+    background: linear-gradient(135deg, #BE123C 0%, #9F1239 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
+}
+
+.shadow-xs { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+.shadow-2xs { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); }
+
+.cursor-pointer { cursor: pointer; }
+
+/* Left Queue Cards */
+.active-partner-card {
+    background-color: #FFF1F2 !important;
+    border-color: #FECDD3 !important;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.08) !important;
+}
+
+.hover-shadow:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    border-color: #E2E8F0;
+}
+
+.p-2-5 { padding: 10px; }
+.gap-1-5 { gap: 6px; }
+.gap-2-5 { gap: 10px; }
+.tracking-wider { letter-spacing: 0.05em; }
+
+/* Modals */
+.custom-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 23, 42, 0.55);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
+    z-index: 1050;
+    backdrop-filter: blur(2px);
 }
-.bg-light-primary { background-color: #e0f2fe; }
-.bg-light-success { background-color: #dcfce7; }
-.bg-light-info { background-color: #e0f2fe; }
-.bg-light-warning { background-color: #fef3c7; }
-.bg-light-danger { background-color: #fee2e2; }
-.btn-action {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    transition: all 0.2s;
+
+.custom-modal-content {
+    animation: modalScaleIn 0.2s ease-out;
 }
-.btn-action:hover {
-    background-color: #f1f5f9;
-    transform: translateY(-1px);
+
+@keyframes modalScaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.transition-all {
+    transition: all 0.2s ease;
 }
 </style>

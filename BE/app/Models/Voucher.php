@@ -3,30 +3,37 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Voucher extends Model
 {
-    use SoftDeletes;
+    use HasFactory;
 
     public const TRANG_THAI_TAM_TAT   = 0;
     public const TRANG_THAI_HOAT_DONG = 1;
 
-    protected $table = 'vouchers';
+    protected $table = 'voucher';
+
+    protected $primaryKey = 'ma_voucher';
+
+    const CREATED_AT = 'ngay_tao';
+    const UPDATED_AT = null;
 
 
     protected $fillable = [
-        'ma_voucher',
+        'nguoi_tao_id',
         'ma_doi_tac',
-        'ten_voucher',
+        'ma_giam_gia',
         'loai_giam_gia',
         'gia_tri_giam',
+        'gia_tri_don_toi_thieu',
         'giam_toi_da',
-        'don_toi_thieu',
-        'so_luong',
-        'da_su_dung',
         'ngay_bat_dau',
         'ngay_ket_thuc',
-        'trang_thai'
+        'gioi_han_su_dung',
+        'so_lan_da_dung',
+        'trang_thai_kich_hoat',
+        'ngay_tao',
     ];
+
 }
