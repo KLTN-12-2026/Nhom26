@@ -1,0 +1,32 @@
+# Backend (Laravel)
+BE/.env
+BE/.env.backup
+BE/.env.production
+BE/vendor/
+BE/storage/*.key
+BE/storage/pail/
+BE/storage/logs/*.log
+BE/storage/framework/cache/data/*
+BE/storage/framework/sessions/*
+BE/storage/framework/views/*
+BE/bootstrap/cache/*.php
+BE/public/storage
+BE/public/hot
+BE/_ide_helper.php
+BE/.phpunit.result.cache
+
+# Frontend (Vue / Vite)
+FE/node_modules/
+FE/dist/
+FE/dist-ssr/
+FE/*.local
+
+# General
+node_modules/
+vendor/
+.env
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
